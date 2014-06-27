@@ -1,0 +1,16 @@
+{
+  "name": "irc",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "David Jackson",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.4.5",
+    "knex": "^0.6.19",
+    "sqlite3": "^2.2.3"
+  }
+}
