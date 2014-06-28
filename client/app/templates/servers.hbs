@@ -1,9 +1,18 @@
-<h3>Servers</h3>
+<div class="servers-menu">
+  <h3>Servers</h3>
+  <ul class="servers">
+  {{#each server in model}}
+    <li>
+      {{#link-to "index"}}{{server.name}}{{/link-to}}
+    </li>
+  {{/each}}
 
-<ul class="servers">
-{{#each server in model}}
-  <li>
-    {{#link-to "index"}}{{server.name}}{{/link-to}}
-  </li>
-{{/each}}
-</ul>
+    <li>
+      {{#link-to "servers/new"}}New Server{{/link-to}}
+    </li>
+  </ul>
+</div>
+
+<div class="server-panel">
+  {{outlet}}
+</div>
