@@ -13,5 +13,21 @@ export default Ember.Route.extend({
     if (model.get('isNew')) {
       model.deleteRecord();
     }
+  },
+
+  actions: {
+    save: function(model) {
+      var promise = model.save();
+
+      var success = function() {
+        this.transitionTo("servers");
+      }.bind(this);
+
+      var failure = function() {
+        this.set('controller.saveFailed', true);
+      }.bind(this);
+
+      promise.then(success, failure);
+    }
   }
 });
