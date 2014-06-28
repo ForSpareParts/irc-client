@@ -1,20 +1,37 @@
-<h4>New Server</h4>
-
+<h4>
+  {{#if name}}
+    {{name}}
+  {{else}}
+    <em>server name</em>
+  {{/if}}
+</h4>
 <ul>
 
 <li>
   <label for="server-name">Name:</label>
-  {{input type="text" id="server-name" placeholder="server name"}}
+  {{input
+      type="text"
+      id="server-name"
+      placeholder="server name"
+      value=name}}
 </li>
 
 <li>
   <label for="host">Host:</label>
-  {{input type="text" id="host" placeholder="irc.someserver.net"}}
+  {{input
+      type="text"
+      id="host"
+      placeholder="irc.someserver.net"
+      value=host}}
 </li>
 
 <li>
   <label for="name">Port:</label>
-  {{input type="text" id="name" placeholder="6667"}}
+  {{input
+      type="text"
+      id="name"
+      placeholder="6667"
+      value=port}}
 </li>
 
 
