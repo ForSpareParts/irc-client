@@ -21,6 +21,6 @@ Server.reopenClass({
       port: '6667'
     }
   ]
-})
+});
 
 export default Server;

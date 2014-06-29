@@ -11,53 +11,5 @@ a {
   text-decoration: none;
 }
 
-@menu-background-color: #CCCCCC;
-@menu-border: 1px solid #AAAAAA;
-
-.menu {
-  display: inline-block;
-
-  width: 15%;
-
-  vertical-align: top;
-
-  ul.nav-items {
-    border: @menu-border;
-    border-radius: 4px;
-    list-style-type: none;
-    padding: 0;
-
-    li {
-      background-color: @menu-background-color;
-      border-bottom: @menu-border;
-
-      a {
-        display: block;
-        height: 100%;
-        padding: 15px 10px;
-        width: 100%;
-      }
-
-      &:last-child {
-        border-bottom: none;
-      }
-
-    }
-
-    .new {
-      background-color: grey;
-      font-weight: bold;
-    }
-  }
-
-}
-
-.save-failed {
-  margin-bottom: 20px;
-  color: red;
-}
-
-.server-panel {
-  display: inline-block;
-  padding-left: 60px;
-}
+@import "list-menu-view";
+@import "edit-form";
