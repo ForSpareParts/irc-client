@@ -61,9 +61,7 @@ test('edit server', function() {
     equal(
       serverRecord.get('name'),
       'TestServer');
-    equal(
-      serverMenuItem.html().indexOf('TestServer') > -1,
-      true);
+    ok(serverMenuItem.html().indexOf('TestServer') > -1);
     equal(
       currentRouteName(),
       'servers.index');
