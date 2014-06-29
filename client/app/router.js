@@ -8,7 +8,9 @@ Router.map(function() {
   this.resource('servers', function() {
     this.route('new', { path: 'new' });
   });
-  this.resource('channels');
+  this.resource('channels', function() {
+    this.route('new', { path: 'new' });
+  });
 });
 
 export default Router;
