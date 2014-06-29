@@ -18,14 +18,15 @@ export default Ember.Route.extend({
   actions: {
     save: function(model) {
       var promise = model.save();
+      var self = this;
 
       var success = function() {
-        this.transitionTo("channels");
-      }.bind(this);
+        self.transitionTo("channels");
+      };
 
       var failure = function() {
-        this.set('controller.saveFailed', true);
-      }.bind(this);
+        self.set('controller.saveFailed', true);
+      };
 
       promise.then(success, failure);
     }
