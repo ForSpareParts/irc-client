@@ -1,4 +1,4 @@
-import startApp from '../helpers/start-app'; // change this due to your folder hierarchy
+import startApp from '../helpers/start-app';
 
 var App;
 var store;
@@ -43,6 +43,30 @@ test('add new server', function() {
         'servers.index');
     });
 
+
+  });
+});
+
+test('edit server', function() {
+  visit('/servers');
+  click('#server-1 a');
+
+  fillIn('#server-name', 'TestServer');
+  click('button');
+
+  andThen(function() {
+    var serverRecord = store.getById('server', 1);
+    var serverMenuItem = find('#server-1');
+
+    equal(
+      serverRecord.get('name'),
+      'TestServer');
+    equal(
+      serverMenuItem.html().indexOf('TestServer') > -1,
+      true);
+    equal(
+      currentRouteName(),
+      'servers.index');
 
   });
 });

@@ -1,9 +1,9 @@
 <div class="menu">
   <h3>Servers</h3>
   <ul class="servers nav-items">
-  {{#each server in model}}
-    <li>
-      {{#link-to "index"}}{{server.name}}{{/link-to}}
+  {{#each server in controller}}
+    <li {{bind-attr id=server.menuItemId}}>
+      {{#link-to "server" server}}{{server.name}}{{/link-to}}
     </li>
   {{/each}}
 

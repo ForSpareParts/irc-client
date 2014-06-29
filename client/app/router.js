@@ -6,6 +6,7 @@ var Router = Ember.Router.extend({
 
 Router.map(function() {
   this.resource('servers', function() {
+    this.resource('server', { path: ':server_id'});
     this.route('new', { path: 'new' });
   });
   this.resource('channels', function() {
