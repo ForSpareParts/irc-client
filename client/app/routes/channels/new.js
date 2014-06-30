@@ -21,7 +21,7 @@ export default Ember.Route.extend({
       var self = this;
 
       var success = function() {
-        self.transitionTo("channels");
+        self.transitionTo("channel", model);
       };
 
       var failure = function() {

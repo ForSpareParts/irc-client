@@ -14,7 +14,7 @@ module('Channels', {
   }
 });
 
-test('join new server', function() {
+test('join new channel', function() {
   visit('/channels');
 
   andThen(function() {
@@ -39,9 +39,25 @@ test('join new server', function() {
 
       equal(
         currentRouteName(),
-        'channels.index');
+        'channel');
     });
 
+  });
+});
+
+test('channel view', function() {
+  expect(1);
+  visit('/channels/1');
+
+  andThen(function() {
+    var uiMessages = find('ul.messages li');
+    
+    //get the channel's messages, and make sure we're showing all of them
+    store.find('channel', 1).then(function(channel){
+      equal(
+        uiMessages.length,
+        channel.get('messages').get('length'));
+    });
 
   });
 });

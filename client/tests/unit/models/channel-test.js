@@ -2,7 +2,10 @@ import { test, moduleForModel } from 'ember-qunit';
 
 moduleForModel('channel', 'Channel', {
   // Specify the other units that are required for this test.
-  needs: ['model:server']
+  needs: [
+    'model:message',
+    'model:server',
+    'model:user']
 });
 
 test('it exists', function() {
