@@ -4,7 +4,8 @@ var Channel = DS.Model.extend({
   name: DS.attr('string'),
   server: DS.belongsTo('server'),
 
-  users: DS.hasMany('user')
+  users: DS.hasMany('user', {async: true}),
+  messages: DS.hasMany('message', {async: true})
 });
 
 Channel.reopenClass({
@@ -12,7 +13,10 @@ Channel.reopenClass({
     {
       id: 1,
       name: "#somechannel",
-      server: 1
+      server: 1,
+
+      users: [1, 2],
+      messages: [1, 2]
     }
   ]
 });

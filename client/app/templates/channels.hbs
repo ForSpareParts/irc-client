@@ -3,7 +3,7 @@
   <ul class="channels nav-items">
   {{#each channel in model}}
     <li>
-      {{#link-to "index"}}{{channel.name}}{{/link-to}}
+      {{#link-to "channel" channel}}{{channel.name}}{{/link-to}}
     </li>
   {{/each}}
 

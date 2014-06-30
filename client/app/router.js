@@ -10,6 +10,7 @@ Router.map(function() {
     this.route('new', { path: 'new' });
   });
   this.resource('channels', function() {
+    this.resource('channel', { path: ':channel_id'});
     this.route('new', { path: 'new' });
   });
 });

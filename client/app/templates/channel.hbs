@@ -1,0 +1,12 @@
+<ul class="messages">
+  {{#each message in model.messages}}
+  <li>
+    <span class="time">{{message.time}}</span>
+    <span class="user">{{message.user.nickname}}:</span>
+    <span class="message">{{message.message}}</span>
+  </li>
+  {{/each}}
+</ul>
+
+{{input id="message-input" value=messageInput}}
+<button {{action "send" messageInput}}>Send</button>
