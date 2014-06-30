@@ -4,6 +4,8 @@ var Server = DS.Model.extend({
   name: DS.attr('string'),
   host: DS.attr('string'),
   port: DS.attr('string'),
+
+  users: DS.hasMany('user')
 });
 
 Server.reopenClass({

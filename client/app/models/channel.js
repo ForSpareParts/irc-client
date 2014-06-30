@@ -2,7 +2,9 @@ import DS from 'ember-data';
 
 var Channel = DS.Model.extend({
   name: DS.attr('string'),
-  server: DS.belongsTo('server')
+  server: DS.belongsTo('server'),
+
+  users: DS.hasMany('user')
 });
 
 Channel.reopenClass({
