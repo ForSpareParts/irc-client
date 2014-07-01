@@ -9,4 +9,10 @@
 </ul>
 
 {{input id="message-input" value=messageInput}}
-<button {{action "send" messageInput}}>Send</button>
+<button 
+  id="message-submit"
+  {{action
+    "sendMessage"
+    messageInput
+    model
+  }}>Send</button>

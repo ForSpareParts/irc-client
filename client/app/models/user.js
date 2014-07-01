@@ -2,7 +2,7 @@ import DS from 'ember-data';
 
 var User = DS.Model.extend({
   nickname: DS.attr('string'),
-  server: DS.belongsTo('server'),
+  server: DS.belongsTo('server', {inverse: null}),
   channels: DS.hasMany('channel')
 });
 
@@ -17,6 +17,12 @@ User.reopenClass({
     {
       id: 2,
       nickname: "othernick",
+      server: 1,
+      channels: [1]
+    },
+    {
+      id: 3,
+      nickname: "myUserNick",
       server: 1,
       channels: [1]
     }

@@ -61,3 +61,22 @@ test('channel view', function() {
 
   });
 });
+
+test('send message', function() {
+  expect(2);
+  visit('/channels/1');
+
+  andThen(function() {
+    //the test message shouldn't exist before submitting...
+    var messagesHtml = find('ul.messages').html();
+    equal(messagesHtml.indexOf('test message!'), -1);
+  });
+  fillIn('#message-input', "test message!");
+  click('#message-submit');
+
+  andThen(function() {
+    //...but should exist afterward
+    var messagesAfterHtml = find('ul.messages').html();
+    ok(messagesAfterHtml.indexOf('test message!') > -1);
+  });
+});
