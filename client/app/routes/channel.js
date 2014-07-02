@@ -11,9 +11,12 @@ export default Ember.Route.extend({
   actions: {
     sendMessage: function(messageText) {
       var channel = this.modelFor(this.routeName);
-      var promise = channel.get('server.connectionUser');
+      var promise = channel.get('server');
       var store = channel.get('store');
 
+      promise = promise.then(function(server) {
+        return server.get('connectionUser');
+      });
       promise = promise.then(function(user) {
         var message = store.createRecord('message', {
           user: user,
