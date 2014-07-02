@@ -63,7 +63,7 @@ test('channel view', function() {
 });
 
 test('send message', function() {
-  expect(2);
+  expect(3);
   visit('/channels/1');
 
   andThen(function() {
@@ -71,12 +71,19 @@ test('send message', function() {
     var messagesHtml = find('ul.messages').html();
     equal(messagesHtml.indexOf('test message!'), -1);
   });
+
+
   fillIn('#message-input', "test message!");
-  click('#message-submit');
+  keyEvent('#message-input', 'keyup', 13); //13 is the code for the enter key
 
   andThen(function() {
     //...but should exist afterward
     var messagesAfterHtml = find('ul.messages').html();
     ok(messagesAfterHtml.indexOf('test message!') > -1);
+
+    //the input should be cleared
+    equal(
+      find('#message-input').val(),
+      '');
   });
 });

@@ -9,11 +9,7 @@
   {{/each}}
 </ul>
 
-{{input id="message-input" value=messageInput}}
-<button 
-  id="message-submit"
-  {{action
-    "sendMessage"
-    messageInput
-    model
-  }}>Send</button>
+{{input
+  id='message-input'
+  value=messageInput
+  action='sendMessage'}}

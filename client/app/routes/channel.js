@@ -9,7 +9,8 @@ export default Ember.Route.extend({
   },
 
   actions: {
-    sendMessage: function(messageText, channel) {
+    sendMessage: function(messageText) {
+      var channel = this.modelFor(this.routeName);
       var promise = channel.get('server.connectionUser');
       var store = channel.get('store');
 
@@ -24,6 +25,7 @@ export default Ember.Route.extend({
 
         var success = function(savedMessage) {
           channel.get('messages').addObject(savedMessage);
+          channel.set('messageInput', '');
         };
 
         var failure = function(reason) {
