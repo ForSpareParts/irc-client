@@ -1,9 +1,10 @@
 var express = require('express');
-var router = express.Router();
 
-var Server = require('../models').Server;
+var models = require('./models');
 
 var modelRestRouter = function(model) {
+  var router = express.Router();
+
   var getAll = function(req, res) {
     var promise = model.all();
 
@@ -64,4 +65,7 @@ var modelRestRouter = function(model) {
   return router;
 };
 
-module.exports = modelRestRouter(Server);
+module.exports.Server = modelRestRouter(models.Server);
+module.exports.Channel = modelRestRouter(models.Channel);
+module.exports.User = modelRestRouter(models.User);
+module.exports.Message = modelRestRouter(models.Message);
