@@ -1,5 +1,5 @@
 var Sequelize = require('sequelize');
-
+var fixtures = require('./fixtures');
 
 var sequelize = new Sequelize('irc', 'root', 'toor', {
   // sqlite! now!
@@ -59,11 +59,24 @@ Channel.hasMany(Message, { as: 'messages'});
 
 Message.belongsTo(User, { as: 'user'});
 
-sequelize.sync();
+var syncPromise = sequelize.sync();
+
+var loadAllFixtures = function() {
+  return Server.bulkCreate(fixtures.servers).then(function() {
+    return Channel.bulkCreate(fixtures.channels);
+  }).then(function() {
+    return User.bulkCreate(fixtures.users);
+  }).then(function() {
+    return Message.bulkCreate(fixtures.messages);
+  });
+};
 
 module.exports = {
   Server: Server,
   User: User,
   Channel: Channel,
-  Message: Message
+  Message: Message,
+
+  loadAllFixtures: loadAllFixtures,
+  syncPromise: syncPromise
 };
