@@ -1,4 +1,7 @@
+var bluebird = require('bluebird');
 var Sequelize = require('sequelize');
+var sequelize_fixtures = require('sequelize-fixtures');
+
 var fixtures = require('./fixtures');
 
 var sequelize = new Sequelize('irc', 'root', 'toor', {
@@ -49,26 +52,31 @@ var Message = sequelize.define('Message', {
 });
 
 Server.hasMany(Channel, { as: 'channels'});
-Server.hasOne(User, { as: 'connectionUser'});
 Server.hasMany(User, { as: 'users'});
 
-User.hasMany(Channel, { as: 'channels' });
+User.belongsTo(Server, { as: 'server'});
+User.hasMany(Channel, { as: 'channels', through: 'UserChannels' });
 
-Channel.hasMany(User, { as: 'users'});
+Channel.belongsTo(Server, { as: 'server'});
+Channel.hasMany(User, { as: 'users', through: 'UserChannels'});
 Channel.hasMany(Message, { as: 'messages'});
 
+Message.belongsTo(Channel, { as: 'channel'});
 Message.belongsTo(User, { as: 'user'});
 
 var syncPromise = sequelize.sync();
 
 var loadAllFixtures = function() {
-  return Server.bulkCreate(fixtures.servers).then(function() {
-    return Channel.bulkCreate(fixtures.channels);
-  }).then(function() {
-    return User.bulkCreate(fixtures.users);
-  }).then(function() {
-    return Message.bulkCreate(fixtures.messages);
-  });
+  var models = {
+    Server: Server,
+    User: User,
+    Channel: Channel,
+    Message: Message
+  };
+
+  var loadFixtures = bluebird.promisify(sequelize_fixtures.loadFixtures);
+
+  return loadFixtures(fixtures, models);
 };
 
 module.exports = {
