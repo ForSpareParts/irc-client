@@ -7,7 +7,7 @@ module.exports = [
       host: 'irc.foo.net',
       port: '6667',
 
-      connectionUser: 3
+      ConnectionUserId: 3
     }
   },
   {

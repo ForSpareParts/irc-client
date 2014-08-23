@@ -3,15 +3,13 @@ var Sequelize = require('sequelize');
 var sequelize_fixtures = require('sequelize-fixtures');
 
 var fixtures = require('./fixtures');
+var settings = require('../settings');
 
-var sequelize = new Sequelize('irc', 'root', 'toor', {
-  // sqlite! now!
-  dialect: 'sqlite',
- 
-  // the storage engine for sqlite
-  // - default ':memory:'
-  storage: './database.sqlite'
-});
+var sequelize = new Sequelize(
+  settings.database.name,
+  settings.database.user,
+  settings.database.password,
+  settings.database.options);
 
 //in Sequelize, we have to define relationships after declaring the tables
 //for readability, I've made commented notes about the relationships in each
@@ -53,6 +51,10 @@ var Message = sequelize.define('Message', {
 
 Server.hasMany(Channel, { as: 'channels'});
 Server.hasMany(User, { as: 'users'});
+Server.belongsTo(User, {
+  as: 'connectionUser',
+  foreignKey: 'ConnectionUserId',
+  constraint: false });
 
 User.belongsTo(Server, { as: 'server'});
 User.hasMany(Channel, { as: 'channels', through: 'UserChannels' });
@@ -74,9 +76,18 @@ var loadAllFixtures = function() {
     Message: Message
   };
 
-  var loadFixtures = bluebird.promisify(sequelize_fixtures.loadFixtures);
+  // build an array of all fixture-loading promises...
+  promises = [];
 
-  return loadFixtures(fixtures, models);
+  fixtures.forEach(function (fixture) {
+    var model = models[fixture.model];
+    var promise = model.create(fixture.data);
+
+    promises.push(promise);
+  });
+
+  //...then return a promise that's fulfilled when they're all done
+  return bluebird.all(promises);
 };
 
 module.exports = {
