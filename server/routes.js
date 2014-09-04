@@ -6,7 +6,7 @@ var modelRestRouter = function(model) {
   var router = express.Router();
 
   var getAll = function(req, res) {
-    var promise = model.all();
+    var promise = model.fetchAll();
 
     promise.then(function (servers) {
       res.send(servers);
@@ -14,41 +14,46 @@ var modelRestRouter = function(model) {
   };
 
   var getId = function(req, res) {
-    var promise = model.find(req.params.id);
+    model.get(req.params.id)
 
-    promise.then(function(server) {
-      res.send(server);
-    })
+    .then(function(record) {
+      res.send(record);
+    });
   };
 
   var create = function(req, res) {
-    var promise = model.create(req.body);
+    model.create(req.body)
 
-    promise.then(function(created) {
+    .then(function(created) {
       res.send(created);
     });
   };
 
   var update = function(req, res) {
-    var promise = model.find(req.params.id);
+    //delete any id in the request body -- otherwise, it could override the id
+    //in the path
+    delete req.body['id'];
 
-    promise.then(function(server) {
+    var promise = new model({
+      id: req.params.id
+    }).save(req.body, {
+      patch: true
+    });
 
-      return server.updateAttributes(req.body);
-
-    }).then(function(server) {
-
-      res.send(server);
-
+    promise.then(function(updated) {
+      res.send(updated);
     });
   };
 
   var destroy = function(req, res) {
-    var promise = model.find(req.params.id);
+    //null out any id in the request body -- otherwise, it could override the id
+    //in the path
 
-    promise.then(function(server) {
-      return server.destroy();
-    }).then(function() {
+    var promise = new model({
+      id: req.params.id
+    }).destroy();
+
+    promise.then(function() {
       res.send(
         {success: true}
       );

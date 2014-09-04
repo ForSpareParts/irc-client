@@ -1,101 +1,181 @@
 var bluebird = require('bluebird');
-var Sequelize = require('sequelize');
-var sequelize_fixtures = require('sequelize-fixtures');
 
-var fixtures = require('./fixtures');
 var settings = require('../settings');
+var knexfile = require('../knexfile');
 
-var sequelize = new Sequelize(
-  settings.database.name,
-  settings.database.user,
-  settings.database.password,
-  settings.database.options);
+var knexSettings = knexfile[settings.databaseConfig];
 
-//in Sequelize, we have to define relationships after declaring the tables
-//for readability, I've made commented notes about the relationships in each
-//table declaration.
+//knex and bookshelf are initialized here
+//to override database settings for testing, modify settings before loading
+//this file
+var knex = require('knex')(knexSettings);
+var bookshelf = require('bookshelf')(knex);
 
+/** A base class providing added functionality on top of bookshelf.Model. All
+application models extend this class. */
+var BaseModel = bookshelf.Model.extend({},
+{
 
-var Server = sequelize.define('Server', {
-  name: Sequelize.STRING,
-  host: Sequelize.STRING,
-  port: Sequelize.STRING
+  /** Retrieve all records in the table. */
+  all: function() {
+    return this.collection().fetch();
+  },
 
-  //channels: all known Channels on the Server
-  //connectionUser: the User representing 'us' on the server
-  //users: all known Users on the server
+  /** Create a new record in the database, with props as properties. */
+  create: function(props) {
+    return this.forge(props).save(null, {method: 'insert'});
+  },
+
+  /** Destroy a single record, identified by id. */
+  destroy: function(id) {
+    if (typeof(search) === 'number') {
+      //search is an id
+      var id = search;
+      return this.forge({id: id}).destroy();
+    }
+    else {
+      //search is assumed to be a dictionary
+      return this.forge(search).destroy();
+    }
+  },
+
+  /** Retrieve a single record. search can be either an id or a dictionary of
+  properties. */
+  get: function(search) {
+    if (typeof search === 'object') {
+      //search is a dictionary
+      return this.forge(search).fetch();
+    }
+    else {
+      //search is assumed to be an id
+      var id = search;
+      return this.forge({id: id}).fetch();
+    }
+  },
+
 });
 
-var User = sequelize.define('User', {
-  nickname: Sequelize.STRING,
+/** Represents an IRC server. */
+var Server = BaseModel.extend({
+  tableName: 'server',
 
-  //server: the Server on which this User exists
-  //channels: the Channels to which this User belongs
+  //name (string)
+  //host (string)
+  //port (string)
+
+  /** All known Channels on the Server. */
+  channels: function() {
+    return this.hasMany(Channel);
+  },
+
+  /** The User representing 'us' on the server. */
+  connectionUser: function() {
+    return this.belongsTo(User, 'connection_user_id');
+  },
+
+  /** All known Users on the server. */
+  users: function() {
+    return this.hasMany(User);
+  }
 });
 
-var Channel = sequelize.define('Channel', {
-  name: Sequelize.STRING,
 
-  //server: the Server on which this Channel exists
-  //users: all Users currently in this Channel
-  //messages: all Messages sent in this channel
+/** Represents a user on a Server. The User representing us on a particular
+Server is stored on the Server model as the connectionUser.*/
+var User = BaseModel.extend({
+
+  tableName: 'user',
+
+  //nickname (string)
+
+  /** The Server on which this User exists. */
+  server: function() {
+    return this.belongsTo(Server);
+  },
+
+  /** The Channels to which this User belongs. */
+  channels: function () {
+    return this.belongsToMany(Channel);
+  }
 });
 
-var Message = sequelize.define('Message', {
-  message: Sequelize.STRING,
-  time: Sequelize.DATE
+/** Represents an IRC channel or direct-message conversation. */
+var Channel = BaseModel.extend({
+  tableName: 'channel',
 
-  //user: the User who sent this Message
-  //channel: the Channel in which this Message was sent
+  //name (string)
+
+ /** The Server on which this Channel exists. */
+  server: function() {
+    return this.belongsTo(Server);
+  },
+
+  /** All Users currently in this Channel. */
+  users: function () {
+    return this.belongsToMany(User);
+  },
+  
+  /** All Messages sent in this Channel. */
+  messages: function() {
+    return this.hasMany(Message);
+  }
 });
 
-Server.hasMany(Channel, { as: 'channels'});
-Server.hasMany(User, { as: 'users'});
-Server.belongsTo(User, {
-  as: 'connectionUser',
-  foreignKey: 'ConnectionUserId',
-  constraint: false });
+/** Represents records in the Channel<->User many-to-many relationship. Real
+code will rarely use this model, but it's useful for fixture creation.*/
+var ChannelUser = BaseModel.extend({
+  tableName: 'channel_user',
 
-User.belongsTo(Server, { as: 'server'});
-User.hasMany(Channel, { as: 'channels', through: 'UserChannels' });
+  channel: function() {
+    this.belongsTo(Channel);
+  },
 
-Channel.belongsTo(Server, { as: 'server'});
-Channel.hasMany(User, { as: 'users', through: 'UserChannels'});
-Channel.hasMany(Message, { as: 'messages'});
+  user: function() {
+    this.belongsTo(User);
+  }
+});
 
-Message.belongsTo(Channel, { as: 'channel'});
-Message.belongsTo(User, { as: 'user'});
+/** Represents a message in a Channel */
+var Message = BaseModel.extend({
 
-var syncPromise = sequelize.sync();
+  tableName: 'message',
 
-var loadAllFixtures = function() {
-  var models = {
-    Server: Server,
-    User: User,
-    Channel: Channel,
-    Message: Message
-  };
+  // contents (string)
+  // time (string, ISO-formatted -- SQLite doesn't have native DATETIME columns)
 
-  // build an array of all fixture-loading promises...
-  promises = [];
+  /** The User who sent this Message. */
+  user: function() {
+    return this.belongsTo(User);
+  },
 
-  fixtures.forEach(function (fixture) {
-    var model = models[fixture.model];
-    var promise = model.create(fixture.data);
+  /** The Channel in which this Message was sent. */
+  channel: function() {
+    return this.belongsTo(Channel);
+  }
+});
 
-    promises.push(promise);
-  });
+/** Update the current database to the most recent migration. */
+var migrateLatest = function() {
+  return knex.migrate.latest();
+}
 
-  //...then return a promise that's fulfilled when they're all done
-  return bluebird.all(promises);
+/** Drop all data from the current database. */
+var truncateAll = function() {
+  return bluebird.all([
+    Channel.query().truncate(),
+    ChannelUser.query().truncate(),
+    Message.query().truncate(),
+    Server.query().truncate(),
+    User.query().truncate()
+  ]);
 };
-
 module.exports = {
+  Channel: Channel,
+  ChannelUser: ChannelUser,
+  Message: Message,
   Server: Server,
   User: User,
-  Channel: Channel,
-  Message: Message,
 
-  loadAllFixtures: loadAllFixtures,
-  syncPromise: syncPromise
+  migrateLatest: migrateLatest,
+  truncateAll: truncateAll
 };

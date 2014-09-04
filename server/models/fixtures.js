@@ -1,4 +1,8 @@
-module.exports = [
+var bluebird = require('bluebird');
+
+var models = require('../models')
+
+var fixtureData = [
   {
     "model": "Server",
     "data": {
@@ -7,7 +11,7 @@ module.exports = [
       host: 'irc.foo.net',
       port: '6667',
 
-      ConnectionUserId: 3
+      connection_user_id: 3
     }
   },
   {
@@ -25,7 +29,8 @@ module.exports = [
     "data":{
       id: 1,
       name: "#somechannel",
-      server: 1
+      
+      server_id: 1
     }
   },
 
@@ -34,8 +39,8 @@ module.exports = [
     "data": {
       id: 1,
       nickname: "somenick",
-      server: 1,
-      channels: [1]
+      
+      server_id: 1,
     }
   },
   {
@@ -43,8 +48,8 @@ module.exports = [
     "data": {
       id: 2,
       nickname: "othernick",
-      server: 1,
-      channels: [1]
+      
+      server_id: 1,
     }
   },
   {
@@ -52,8 +57,8 @@ module.exports = [
     "data": {
       id: 3,
       nickname: "myUserNick",
-      server: 1,
-      channels: [1]
+      
+      server_id: 1,
     }
   },
 
@@ -61,22 +66,65 @@ module.exports = [
     "model": "Message",
     "data": {
       id: 1,
-      user: 1,
-      channel: 1,
+
+      user_id: 1,
+      channel_id: 1,
       time: Date('2000-01-01T00:00:00'),
 
-      message: 'Hi!'
+      contents: 'Hi!'
     }
   },
   {
     "model": "Message",
     "data": {
       id: 2,
-      user: 2,
-      channel: 1,
+
+      user_id: 2,
+      channel_id: 1,
       time: Date('2000-01-01T00:01:00'),
 
-      message: 'Hi, yourself!'
+      contents: 'Hi, yourself!'
     }
   },
+  {
+    "model": "ChannelUser",
+    "data": {
+      id: 1,
+
+      user_id: 1,
+      channel_id: 1
+    }
+  },
+  {
+    "model": "ChannelUser",
+    "data": {
+      id: 2,
+
+      user_id: 2,
+      channel_id: 1
+    }
+  },
+  {
+    "model": "ChannelUser",
+    "data": {
+      id: 3,
+
+      user_id: 3,
+      channel_id: 1
+    }
+  }
 ];
+
+/** Populate tables with fixture data. */
+var loadAll = function() {
+  promises = fixtureData.map(function(fixture){
+    Model = models[fixture.model];
+    return Model.create(fixture.data);
+  });
+
+  return bluebird.all(promises);
+};
+
+module.exports = {
+  loadAll: loadAll
+};
