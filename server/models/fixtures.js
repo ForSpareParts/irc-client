@@ -1,6 +1,6 @@
 var bluebird = require('bluebird');
 
-var models = require('../models')
+var models = require('../models');
 
 var fixtureData = [
   {

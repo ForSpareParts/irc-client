@@ -10,11 +10,6 @@ var common = require('./common')
   , User = require('./user');
 
 
-/** Update the current database to the most recent migration. */
-var migrateLatest = function() {
-  return knex.migrate.latest();
-}
-
 /** Drop all data from the current database. */
 var truncateAll = function() {
   return bluebird.all([
@@ -33,7 +28,6 @@ module.exports = {
   Server: require('./server'),
   User: require('./user'),
 
-  migrateLatest: migrateLatest,
+  migrateLatest: common.migrateLatest,
   truncateAll: truncateAll
 };
-
