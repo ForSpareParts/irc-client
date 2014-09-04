@@ -10,17 +10,17 @@ var Server = BaseModel.extend({
 
   /** All known Channels on the Server. */
   channels: function() {
-    return this.hasMany(Channel);
+    return this.hasMany('Channel');
   },
 
   /** The User representing 'us' on the server. */
   connectionUser: function() {
-    return this.belongsTo(User, 'connection_user_id');
+    return this.belongsTo('User', 'connection_user_id');
   },
 
   /** All known Users on the server. */
   users: function() {
-    return this.hasMany(User);
+    return this.hasMany('User');
   }
 });
 

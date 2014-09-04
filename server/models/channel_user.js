@@ -6,11 +6,11 @@ var ChannelUser = BaseModel.extend({
   tableName: 'channel_user',
 
   channel: function() {
-    this.belongsTo(Channel);
+    this.belongsTo('Channel');
   },
 
   user: function() {
-    this.belongsTo(User);
+    this.belongsTo('User');
   }
 });
 

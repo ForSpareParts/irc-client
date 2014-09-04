@@ -10,12 +10,12 @@ var Message = BaseModel.extend({
 
   /** The User who sent this Message. */
   user: function() {
-    return this.belongsTo(User);
+    return this.belongsTo('User');
   },
 
   /** The Channel in which this Message was sent. */
   channel: function() {
-    return this.belongsTo(Channel);
+    return this.belongsTo('Channel');
   }
 });
 

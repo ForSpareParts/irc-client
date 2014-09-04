@@ -1,6 +1,7 @@
 var bluebird = require('bluebird');
 
 var common = require('./common')
+  , Bookshelf = common.Bookshelf
   , knex = common.knex
 
   , Channel = require('./channel')
@@ -20,6 +21,13 @@ var truncateAll = function() {
     User.query().truncate()
   ]);
 };
+
+//register all models with bookshelf so they can be referred to by name
+Bookshelf.model('Channel', Channel);
+Bookshelf.model('ChannelUser', ChannelUser);
+Bookshelf.model('Message', Message);
+Bookshelf.model('Server', Server);
+Bookshelf.model('User', User);
 
 module.exports = {
   Channel: require('./channel'),
