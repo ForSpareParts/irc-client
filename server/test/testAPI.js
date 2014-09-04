@@ -23,12 +23,16 @@ var HOST = 'http://localhost:' + PORT;
 
 
 before(function() {
-  //set up the database, along with test data
+  //create/update the test database
   return models.migrateLatest()
-    .then(function() {
-      //start the server
-      server = app.listen(PORT);
-    });
+
+  //clear any existing data
+  .then(models.truncateAll)
+
+  //start the server
+  .then(function() {
+    server = app.listen(PORT);
+  });
 });
 
 beforeEach(function() {

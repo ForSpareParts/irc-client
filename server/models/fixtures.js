@@ -29,7 +29,7 @@ var fixtureData = [
     "data":{
       id: 1,
       name: "#somechannel",
-      
+
       server_id: 1
     }
   },
@@ -39,7 +39,7 @@ var fixtureData = [
     "data": {
       id: 1,
       nickname: "somenick",
-      
+
       server_id: 1,
     }
   },
@@ -48,7 +48,7 @@ var fixtureData = [
     "data": {
       id: 2,
       nickname: "othernick",
-      
+
       server_id: 1,
     }
   },
@@ -57,7 +57,7 @@ var fixtureData = [
     "data": {
       id: 3,
       nickname: "myUserNick",
-      
+
       server_id: 1,
     }
   },
