@@ -98,4 +98,14 @@ describe('The basic CRUD API', function() {
       assert.strictEqual(message.contents, 'test message');
     });
   });
+
+  it('should 404 for missing models', function() {
+
+    //this model does not exist, and should 404
+    return request.getAsync(HOST + '/users/42')
+    
+    .spread(function (response, body) {
+      assert.strictEqual(response.statusCode, 404);
+    });
+  });
 });

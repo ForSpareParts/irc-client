@@ -11,6 +11,12 @@ var modelRestRouter = function(model) {
     promise.then(function (servers) {
       res.send(servers);
     })
+
+    .catch(function(error) {
+      res.status(500).send({
+        error: error
+      });
+    });
   };
 
   var getId = function(req, res) {
@@ -18,6 +24,12 @@ var modelRestRouter = function(model) {
 
     .then(function(record) {
       res.send(record);
+    })
+
+    .catch(function(error) {
+      res.status(404).send({
+        error: error
+      });
     });
   };
 
@@ -26,6 +38,12 @@ var modelRestRouter = function(model) {
 
     .then(function(created) {
       res.send(created);
+    })
+
+    .catch(function(error) {
+      res.status(500).send({
+        error: error
+      });
     });
   };
 
@@ -42,6 +60,12 @@ var modelRestRouter = function(model) {
 
     promise.then(function(updated) {
       res.send(updated);
+    })
+
+    .catch(function(error) {
+      res.status(404).send({
+        error: error
+      });
     });
   };
 
@@ -57,6 +81,12 @@ var modelRestRouter = function(model) {
       res.send(
         {success: true}
       );
+    })
+
+    .catch(function(error) {
+      res.status(404).send({
+        error: error
+      });
     });
   };
 

@@ -48,12 +48,12 @@ var BaseModel = Bookshelf.Model.extend({},
   get: function(search) {
     if (typeof search === 'object') {
       //search is a dictionary
-      return this.forge(search).fetch();
+      return this.forge(search).fetch({require: true});
     }
     else {
       //search is assumed to be an id
       var id = search;
-      return this.forge({id: id}).fetch();
+      return this.forge({id: id}).fetch({require: true});
     }
   },
 
