@@ -8,8 +8,8 @@ var modelRestRouter = function(model) {
   var getAll = function(req, res) {
     var promise = model.fetchAll();
 
-    promise.then(function (servers) {
-      res.send(servers);
+    promise.then(function (records) {
+      res.send(records);
     })
 
     .catch(function(error) {
