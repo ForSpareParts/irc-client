@@ -47,7 +47,35 @@ test('add new server', function() {
   });
 });
 
-test('edit server', function() {
+test('edit server and discard', function() {
+  visit('/servers');
+  click('#server-1 a');
+
+  fillIn('#server-name', 'TestServer');
+  
+  //leaving without clicking save should discard the changes
+  click('#server-2 a');
+
+  andThen(function() {
+    var serverRecord = store.getById('server', 1);
+    var serverMenuItem = find('#server-1');
+
+    //the record hasn't changed
+    equal(
+      serverRecord.get('name'),
+      'FooServer');
+
+    //the changes weren't saved, so 'TestServer' shouldn't be in the HTML
+    equal(serverMenuItem.html().indexOf('TestServer'), -1);
+    equal(
+      currentRouteName(),
+      'server');
+
+  });
+
+});
+
+test('edit server and save', function() {
   visit('/servers');
   click('#server-1 a');
 
@@ -58,13 +86,17 @@ test('edit server', function() {
     var serverRecord = store.getById('server', 1);
     var serverMenuItem = find('#server-1');
 
+    //the record was successfully changed
     equal(
       serverRecord.get('name'),
       'TestServer');
-    ok(serverMenuItem.html().indexOf('TestServer') > -1);
+
+    //the changes were saved, so we should be able to find the new title
+    notEqual(serverMenuItem.html().indexOf('TestServer'), -1);
     equal(
       currentRouteName(),
       'servers.index');
 
   });
+
 });

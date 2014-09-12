@@ -5,14 +5,6 @@ export default Ember.Route.extend({
     return this.get('store').find('server', params.server_id);
   },
 
-  deactivate: function() {
-    var model = this.get('controller.model');
-    model.rollback();
-    if (model.get('isNew')) {
-      model.deleteRecord();
-    }
-  },
-
   actions: {
     save: function(model) {
       var promise = model.save();
@@ -27,6 +19,14 @@ export default Ember.Route.extend({
       };
 
       promise.then(success, failure);
+    },
+
+    willTransition: function() {
+      var model = this.get('controller.model');
+      model.rollback();
+      if (model.get('isNew')) {
+        model.deleteRecord();
+      }
     }
   },
 
