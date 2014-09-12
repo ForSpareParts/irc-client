@@ -9,7 +9,8 @@ var modelRestRouter = function(model) {
     var promise = model.fetchAll();
 
     promise.then(function (records) {
-      res.send(records);
+      res.send(
+        model.toEmberArray(records));
     })
 
     .catch(function(error) {
@@ -23,7 +24,7 @@ var modelRestRouter = function(model) {
     model.get(req.params.id)
 
     .then(function(record) {
-      res.send(record);
+      res.send(record.toEmber());
     })
 
     .catch(function(error) {
@@ -37,7 +38,7 @@ var modelRestRouter = function(model) {
     model.create(req.body)
 
     .then(function(created) {
-      res.send(created);
+      res.send(created.toEmber());
     })
 
     .catch(function(error) {
@@ -50,7 +51,7 @@ var modelRestRouter = function(model) {
   var update = function(req, res) {
     //delete any id in the request body -- otherwise, it could override the id
     //in the path
-    delete req.body['id'];
+    delete req.body.id;
 
     var promise = new model({
       id: req.params.id
@@ -59,7 +60,7 @@ var modelRestRouter = function(model) {
     });
 
     promise.then(function(updated) {
-      res.send(updated);
+      res.send(updated.toEmber());
     })
 
     .catch(function(error) {

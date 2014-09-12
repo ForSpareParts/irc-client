@@ -1,3 +1,5 @@
+var inflection = require('inflection');
+
 //this module provides core functionality for models -- exposing, among other
 //things, the application's bookshelf and knex instances
 
@@ -17,47 +19,75 @@ Bookshelf.plugin('registry');
 
 /** A base class providing added functionality on top of Bookshelf.Model. All
 application models extend this class. */
-var BaseModel = Bookshelf.Model.extend({},
-{
+var BaseModel = Bookshelf.Model.extend(
 
-  /** Retrieve all records in the table. */
-  all: function() {
-    return this.collection().fetch();
-  },
+  //instance methods
+  {
+    /** Returns Ember-compatible JSON representing the instance. */
+    toEmber: function() {
+      json = {};
+      json[this.tableName] = this.toJSON();
 
-  /** Create a new record in the database, with props as properties. */
-  create: function(props) {
-    return this.forge(props).save(null, {method: 'insert'});
-  },
-
-  /** Destroy a single record, identified by id. */
-  destroy: function(id) {
-    if (typeof(search) === 'number') {
-      //search is an id
-      var id = search;
-      return this.forge({id: id}).destroy();
-    }
-    else {
-      //search is assumed to be a dictionary
-      return this.forge(search).destroy();
+      return json;
     }
   },
 
-  /** Retrieve a single record. search can be either an id or a dictionary of
-  properties. */
-  get: function(search) {
-    if (typeof search === 'object') {
-      //search is a dictionary
-      return this.forge(search).fetch({require: true});
-    }
-    else {
-      //search is assumed to be an id
-      var id = search;
-      return this.forge({id: id}).fetch({require: true});
-    }
-  },
+  //class methods
+  {
 
-});
+    /** Returns Ember-compatible JSON representing this array of records. */
+    toEmberArray: function(recordArray) {
+      json = {};
+      pluralName = inflection.pluralize(this.forge().tableName);
+
+      json[pluralName] = []
+
+      recordArray.each(function(record) {
+        json[pluralName].push(record.toJSON());
+      });
+
+      return json;
+    },
+
+    /** Retrieve all records in the table. */
+    all: function() {
+      return this.collection().fetch();
+    },
+
+    /** Create a new record in the database, with props as properties. */
+    create: function(props) {
+      return this.forge(props).save(null, {method: 'insert'});
+    },
+
+    /** Destroy a single record, identified by id. */
+    destroy: function(id) {
+      if (typeof(search) === 'number') {
+        //search is an id
+        var id = search;
+        return this.forge({id: id}).destroy();
+      }
+      else {
+        //search is assumed to be a dictionary
+        return this.forge(search).destroy();
+      }
+    },
+
+    /** Retrieve a single record. search can be either an id or a dictionary of
+    properties. */
+    get: function(search) {
+      if (typeof search === 'object') {
+        //search is a dictionary
+        return this.forge(search).fetch({require: true});
+      }
+      else {
+        //search is assumed to be an id
+        var id = search;
+        return this.forge({id: id}).fetch({require: true});
+      }
+    },
+
+  }
+);
 
 /** Update the current database to the most recent migration. */
 var migrateLatest = function() {

@@ -52,7 +52,7 @@ describe('The basic CRUD API', function() {
     return request.getAsync(HOST + '/servers')
 
     .spread(function(response, body) {
-      servers = JSON.parse(body);
+      servers = JSON.parse(body).servers;
 
       assert.strictEqual(servers.length, 2);
       assert.strictEqual(servers[0].name, "FooServer");
@@ -63,7 +63,7 @@ describe('The basic CRUD API', function() {
     return request.getAsync(HOST + '/channels/1')
     
     .spread(function(response, body) {
-      channel = JSON.parse(body);
+      channel = JSON.parse(body).channel;
       assert.strictEqual(channel.name, "#somechannel");
     });
   });
@@ -75,7 +75,7 @@ describe('The basic CRUD API', function() {
 
     .spread(function(response, body) {
       //because we sent json in the request, body is already parsed
-      user = body;
+      user = body.user;
 
       assert.strictEqual(user.id, '3');
       assert.strictEqual(user.nickname, 'aDifferentUserNick');
@@ -94,7 +94,7 @@ describe('The basic CRUD API', function() {
 
     .spread(function(response, body) {
       //because we sent json in the request, body is already parsed
-      message = body;
+      message = body.message;
       assert.strictEqual(message.contents, 'test message');
     });
   });
