@@ -1,3 +1,4 @@
+import Ember from 'ember';
 import startApp from '../helpers/start-app'; // change this due to your folder hierarchy
 
 var App;
