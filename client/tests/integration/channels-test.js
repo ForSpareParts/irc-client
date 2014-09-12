@@ -63,13 +63,13 @@ test('channel view', function() {
 });
 
 test('send message', function() {
-  expect(3);
+  expect(4);
   visit('/channels/1');
 
   andThen(function() {
     //the test message shouldn't exist before submitting...
-    var messagesHtml = find('ul.messages').html();
-    equal(messagesHtml.indexOf('test message!'), -1);
+    var message = find('ul.messages li').last();
+    equal(message.html().indexOf('test message!'), -1);
   });
 
 
@@ -78,8 +78,12 @@ test('send message', function() {
 
   andThen(function() {
     //...but should exist afterward
-    var messagesAfterHtml = find('ul.messages').html();
-    ok(messagesAfterHtml.indexOf('test message!') > -1);
+    var messageAfter = find('ul.messages li').last();
+    ok(messageAfter.html().indexOf('test message!') > -1);
+
+    //the timestamp should also be populated
+    //(this can get screwed up if the time input to the model is bad)
+    notStrictEqual(messageAfter.find('.time').text(), '');
 
     //the input should be cleared
     equal(

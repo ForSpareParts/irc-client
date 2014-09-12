@@ -21,7 +21,7 @@ export default Ember.Route.extend({
         var message = store.createRecord('message', {
           user: user,
           channel: channel,
-          time: Date(Date.now()),
+          time: new Date(Date.now()),
 
           message: messageText
         });
