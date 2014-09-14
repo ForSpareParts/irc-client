@@ -70,7 +70,9 @@ describe('The basic CRUD API', function() {
 
   it('should update models by id', function() {
     return request.putAsync(HOST + '/users/3', {
-      json: {nickname: 'aDifferentUserNick'}
+      json: {
+       user: {nickname: 'aDifferentUserNick'}
+      }
     })
 
     .spread(function(response, body) {
@@ -85,10 +87,12 @@ describe('The basic CRUD API', function() {
   it('should create new models', function() {
     return request.postAsync(HOST + '/messages/', {
       json: {
-        user_id: 1,
-        channel_id: 1,
-        time: Date('2000-01-01T00:02:00'),
-        contents: 'test message'
+        message: {
+              user_id: 1,
+              channel_id: 1,
+              time: Date('2000-01-01T00:02:00'),
+              contents: 'test message'
+        }
       }
     })
 

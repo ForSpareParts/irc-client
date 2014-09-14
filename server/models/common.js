@@ -23,19 +23,33 @@ var BaseModel = Bookshelf.Model.extend(
 
   //instance methods
   {
-    /** Returns Ember-compatible JSON representing the instance. */
+    /** Return Ember-compatible object representing the instance. */
     toEmber: function() {
-      json = {};
-      json[this.tableName] = this.toJSON();
+      emberObject = {};
+      emberObject[this.tableName] = this.toJSON();
 
-      return json;
+      return emberObject;
     }
   },
 
   //class methods
   {
 
-    /** Returns Ember-compatible JSON representing this array of records. */
+    /** Take Ember-compatible object and return a record. */
+    fromEmber: function(emberObject) {
+      return this.forge(emberObject[this.tableName]);
+    },
+
+    /** Take Ember-compatible object containing an array and return an array of
+    records. */
+    fromEmberArray: function(emberObject) {
+      pluralName = inflection.pluralize(this.forge().tableName);
+      return emberObject[pluralName].map(function (serialized) {
+        return this.forge(serialized);
+      });
+    },
+
+    /** Return Ember-compatible object representing this array of records. */
     toEmberArray: function(recordArray) {
       json = {};
       pluralName = inflection.pluralize(this.forge().tableName);

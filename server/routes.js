@@ -35,7 +35,8 @@ var modelRestRouter = function(model) {
   };
 
   var create = function(req, res) {
-    model.create(req.body)
+    tableName = model.forge().tableName;
+    model.create(req.body[tableName])
 
     .then(function(created) {
       res.send(created.toEmber());
@@ -51,11 +52,12 @@ var modelRestRouter = function(model) {
   var update = function(req, res) {
     //delete any id in the request body -- otherwise, it could override the id
     //in the path
-    delete req.body.id;
+    tableName = model.forge().tableName;
+    delete req.body[tableName].id;
 
     var promise = new model({
       id: req.params.id
-    }).save(req.body, {
+    }).save(req.body[tableName], {
       patch: true
     });
 
