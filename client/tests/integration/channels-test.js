@@ -75,7 +75,7 @@ test('send message', function() {
 
 
   fillIn('#message-input', "test message!");
-  keyEvent('#message-input', 'keyup', 13); //13 is the code for the enter key
+  keyEvent('#message-input', 'keypress', 13); //13 is the code for the enter key
 
   andThen(function() {
     //...but should exist afterward
@@ -90,5 +90,25 @@ test('send message', function() {
     equal(
       find('#message-input').val(),
       '');
+  });
+});
+
+test('no message sent if message box is empty', function() {
+  expect(1);
+  visit('/channels/1');
+  var expectedMessageCount = null;
+
+  andThen(function() {
+    //get the current number of messages
+    expectedMessageCount = find('ul.messages li').length;
+  });
+
+  //make the message box empty, and focus it...
+  fillIn('#message-input', '');
+  keyEvent('#message-input', 'keypress', 13); //13 is the code for the enter key
+
+  andThen(function() {
+    //make sure that the number of messages hasn't changed
+    equal(find('ul.messages li').length, expectedMessageCount);
   });
 });

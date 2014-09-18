@@ -8,8 +8,7 @@
   {{/each}}
 </ul>
 
-{{input
+{{view "message-input"
   id='message-input'
   value=messageInput
-  action='sendMessage'
-  on='keyPress'}}
+  send='sendMessage'}}

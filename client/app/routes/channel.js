@@ -9,6 +9,8 @@ export default Ember.Route.extend({
   },
 
   actions: {
+
+    /** Send messageText to the Channel. */
     sendMessage: function(messageText) {
       var channel = this.modelFor(this.routeName);
       var promise = channel.get('server');
