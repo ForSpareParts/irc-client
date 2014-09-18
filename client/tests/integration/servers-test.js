@@ -16,6 +16,8 @@ module('Servers', {
 });
 
 test('add new server', function() {
+  expect(3);
+
   visit('/servers');
 
   andThen(function() {
@@ -49,6 +51,8 @@ test('add new server', function() {
 });
 
 test('edit server and discard', function() {
+  expect(3);
+
   visit('/servers');
   click('#server-1 a');
 
@@ -77,6 +81,8 @@ test('edit server and discard', function() {
 });
 
 test('edit server and save', function() {
+  expect(3);
+
   visit('/servers');
   click('#server-1 a');
 
