@@ -1,8 +1,11 @@
 import DS from 'ember-data';
 
 var Message = DS.Model.extend({
-  user: DS.belongsTo('user'),
-  channel: DS.belongsTo('channel', {inverse: 'messages'}),
+  user: DS.belongsTo('user', {async: true}),
+  channel: DS.belongsTo('channel', {
+    async: true,
+    inverse: 'messages'
+  }),
   time: DS.attr('date'),
 
   message: DS.attr('string')
