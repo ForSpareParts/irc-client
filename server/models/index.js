@@ -1,4 +1,4 @@
-var bluebird = require('bluebird');
+var Promise = require('bluebird');
 
 var common = require('./common')
   , Bookshelf = common.Bookshelf
@@ -13,7 +13,7 @@ var common = require('./common')
 
 /** Drop all data from the current database. */
 var truncateAll = function() {
-  return bluebird.all([
+  return Promise.all([
     Channel.query().truncate(),
     ChannelUser.query().truncate(),
     Message.query().truncate(),

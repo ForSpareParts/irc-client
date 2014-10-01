@@ -6,6 +6,7 @@ exports.up = function(knex, Promise) {
     table.string('name', 100);
     table.string('host');
     table.string('port', 10);
+    table.boolean('connected');
 
     table.integer('connection_user_id').references('user.id');
   })

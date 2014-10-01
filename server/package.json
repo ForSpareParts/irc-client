@@ -22,7 +22,8 @@
     "mocha": "^1.21.4",
     "bookshelf": "^0.7.7",
     "knex": "^0.6.22",
-    "inflection": "^1.4.2"
+    "inflection": "^1.4.2",
+    "underscore": "^1.7.0"
   },
   "devDependencies": {
     "request": "^2.40.0",
