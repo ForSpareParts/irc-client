@@ -1,8 +1,9 @@
-var chai = require('chai')
+var Promise = require('bluebird')
+  , chai = require('chai')
   , chaiAsPromised = require('chai-as-promised')
-  , Promise = require('bluebird')
-  , request = Promise.promisifyAll(require('request'))
-  , knex = require('knex');
+  , fs = require('fs')
+  , knex = require('knex')
+  , request = Promise.promisifyAll(require('request'));
 
 //load the promise extensions for Chai
 chai.use(chaiAsPromised);
@@ -15,6 +16,7 @@ settings.databaseConfig = 'test';
 
 var app = require('../app')
   , fixtures = require('../models/fixtures')
+  , knexfile = require('../knexfile')
   , models = require('../models')
   , server = null;
 
@@ -46,6 +48,16 @@ afterEach(function() {
   return models.truncateAll();
 });
 
+after(function () {
+  //wipe out the database itself after all tests
+
+  //this is important in case we're editing migrations: the migration history
+  //may still show those migrations as run, preventing the database from being
+  //updated to the new schema.
+  var dbFilePath = knexfile.test.connection.filename;
+  fs.unlinkSync(dbFilePath);
+
+});
 
 describe('The basic CRUD API', function() {
   it('should get data for all models of a type', function() {

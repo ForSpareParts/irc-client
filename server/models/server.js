@@ -42,11 +42,9 @@ var Server = BaseModel.extend({
     var self = this;
 
     return new Promise(function(resolve, reject) {
-      console.log('ping');
 
       //just call connect...
       self.client.connect(function(connectInfo) {
-        console.log('ping');
 
         //...and resolve in the callback
         resolve(connectInfo);
@@ -61,19 +59,20 @@ var Server = BaseModel.extend({
    * @return {Promise}
    */
   save: function(params, options) {
-    if (this.changed.connected) {
-      var self = this;
-      var saveArguments = arguments;
+    var self = this;
+    var saveArguments = arguments;
+
+    //if the model is new or just trying to connect, connect before saving
+    if (this.changed.connected && this.get('connected')) {
       return this._connect()
 
       .then(function(connectInfo) {
         return Bookshelf.Model.prototype.save.apply(self, saveArguments);
-      })
-
-      .catch(function(error) {
-        lastError = error;
       });
     }
+
+    //otherwise, just save
+    return Bookshelf.Model.prototype.save.apply(self, saveArguments);
   }
 
 }, {
@@ -119,7 +118,7 @@ var Server = BaseModel.extend({
       server.get('host'),
       server.get('port'));
 
-    return server.save()
+    return server.save(null, {method: 'insert'});
   }
 });
 

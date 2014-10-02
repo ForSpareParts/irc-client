@@ -4,7 +4,6 @@
 
 
 var Client = function(server, nick, opt) {
-  console.log('INIT');
   this.server = server;
   this.nick = nick;
 
