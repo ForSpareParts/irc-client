@@ -15,7 +15,7 @@ if (settings.ircLib === 'mock') {
   module.exports = Promise.promisifyAll(
     require('./mock'));
 }
-else if (settings.ircLib === 'node-irc') {
+else if (settings.ircLib === 'irc') {
   module.exports = Promise.promisifyAll(
-    require('node-irc'));
+    require('irc'));
 }

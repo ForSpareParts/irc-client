@@ -34,6 +34,10 @@ var Client = function(server, nick, opt) {
  * @param  {Function} callback
  */
 Client.prototype.connect = function(retryCount, callback) {
+  //you can pass callback as the only argument instead
+  if (!callback && typeof retryCount == 'function') {
+    callback = retryCount;
+  }
   callback();
 };
 

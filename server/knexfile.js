@@ -10,7 +10,7 @@ module.exports = {
 
     migrations: {
       tableName: 'sqlite3'
-    }
+    },
   },
 
   test: {

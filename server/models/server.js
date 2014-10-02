@@ -1,3 +1,5 @@
+var Promise = require('bluebird');
+
 var modelsCommon = require('./common');
 var irc = require('../node-irc');
 
@@ -12,6 +14,8 @@ var Server = BaseModel.extend({
   //host (string)
   //port (string)
   //connected (boolean)
+
+  //unqiue together: host, port
 
   /** All known Channels on the Server. */
   channels: function() {
@@ -28,6 +32,27 @@ var Server = BaseModel.extend({
     return this.hasMany('User');
   },
 
+  /**
+   * Promise-enabled wrapper for the connect() method of this.client. Does *not*
+   * change the value of connected
+   * @return {Promise}
+   */
+  _connect: function() {
+    //TODO: find a way to add proper error-handling.
+    var self = this;
+
+    return new Promise(function(resolve, reject) {
+      console.log('ping');
+
+      //just call connect...
+      self.client.connect(function(connectInfo) {
+        console.log('ping');
+
+        //...and resolve in the callback
+        resolve(connectInfo);
+      });
+    });
+  },
 
   /**
    * Save the Server. If the server is new or the connected property has changed
@@ -35,13 +60,18 @@ var Server = BaseModel.extend({
    * error and do not persist the model.
    * @return {Promise}
    */
-  save: function() {
+  save: function(params, options) {
     if (this.changed.connected) {
       var self = this;
-      return this.connection.connectAsync(0)
+      var saveArguments = arguments;
+      return this._connect()
 
-      .then(function() {
-        return Bookshelf.Model.prototype.save.apply(self, arguments);
+      .then(function(connectInfo) {
+        return Bookshelf.Model.prototype.save.apply(self, saveArguments);
+      })
+
+      .catch(function(error) {
+        lastError = error;
       });
     }
   }
@@ -79,13 +109,13 @@ var Server = BaseModel.extend({
 
   /**
    * Create a new Server. Creates an instance of irc.Client to manage the
-   * connection. Will connect if connection == true, as per Server#save.
+   * connection. Will connect if connected == true, as per Server#save.
    * @param  {Object} initialData
    * @return {Promise}
    */
   create: function(initialData) {
     var server = Server.forge(initialData);
-    server.connection = Server.getClient(
+    server.client = Server.getClient(
       server.get('host'),
       server.get('port'));
 
