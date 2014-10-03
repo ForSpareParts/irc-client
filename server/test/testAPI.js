@@ -1,63 +1,6 @@
 var Promise = require('bluebird')
-  , chai = require('chai')
-  , chaiAsPromised = require('chai-as-promised')
-  , fs = require('fs')
-  , knex = require('knex')
   , request = Promise.promisifyAll(require('request'));
 
-//load the promise extensions for Chai
-chai.use(chaiAsPromised);
-var assert = chai.assert;
-
-var settings = require('../settings');
-
-//use the test database
-settings.databaseConfig = 'test';
-
-var app = require('../app')
-  , fixtures = require('../models/fixtures')
-  , knexfile = require('../knexfile')
-  , models = require('../models')
-  , server = null;
-
-var PORT = 3000;
-var HOST = 'http://localhost:' + PORT;
-
-
-before(function() {
-  //create/update the test database
-  return models.migrateLatest()
-
-  //clear any existing data
-  .then(models.truncateAll)
-
-  //start the server
-  .then(function() {
-    server = app.listen(PORT);
-  });
-});
-
-beforeEach(function() {
-  //TODO: would prefer to do this as a transaction, rather than loading/dropping
-  //data every time
-  return fixtures.loadAll();
-});
-
-afterEach(function() {
-  //wipe out the data before the next test
-  return models.truncateAll();
-});
-
-after(function () {
-  //wipe out the database itself after all tests
-
-  //this is important in case we're editing migrations: the migration history
-  //may still show those migrations as run, preventing the database from being
-  //updated to the new schema.
-  var dbFilePath = knexfile.test.connection.filename;
-  fs.unlinkSync(dbFilePath);
-
-});
 
 describe('The basic CRUD API', function() {
   it('should get data for all models of a type', function() {

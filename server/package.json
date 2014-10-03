@@ -29,6 +29,7 @@
     "request": "^2.40.0",
     "chai-as-promised": "^4.1.1",
     "chai": "^1.9.1",
-    "blanket": "^1.1.6"
+    "blanket": "^1.1.6",
+    "travis-cov": "^0.2.5"
   }
 }
