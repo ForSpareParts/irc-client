@@ -44,7 +44,7 @@ var Server = BaseModel.extend({
     return new Promise(function(resolve, reject) {
 
       //just call connect...
-      self.client.connect(function(connectInfo) {
+      self.client().connect(function(connectInfo) {
 
         //...and resolve in the callback
         resolve(connectInfo);
@@ -73,6 +73,16 @@ var Server = BaseModel.extend({
 
     //otherwise, just save
     return Bookshelf.Model.prototype.save.apply(self, saveArguments);
+  },
+
+  /**
+   * Return the instance of irc.Client that represents this Server.
+   * @return {irc.Client}
+   */
+  client: function() {
+    return Server.getClient(
+      this.get('host'),
+      this.get('port'));
   }
 
 }, {
@@ -114,9 +124,6 @@ var Server = BaseModel.extend({
    */
   create: function(initialData) {
     var server = Server.forge(initialData);
-    server.client = Server.getClient(
-      server.get('host'),
-      server.get('port'));
 
     return server.save(null, {method: 'insert'});
   }
