@@ -58,6 +58,25 @@ describe('The basic CRUD API', function() {
     });
   });
 
+  it('should destroy models by id', function() {
+    return request.delAsync(HOST + '/servers/1')
+
+    .spread(function(response, body) {
+      console.log(body);
+      body = JSON.parse(body);
+
+      //make sure the request says it was successful
+      assert.deepEqual(body, {success: true});
+
+      return request.getAsync(HOST + '/servers/1');
+    })
+
+    .spread(function(response, body) {
+      assert.strictEqual(response.statusCode, 404);
+    });
+
+  });
+
   it('should 404 for missing models', function() {
 
     //this model does not exist, and should 404

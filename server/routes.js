@@ -6,11 +6,13 @@ var modelRestRouter = function(model) {
   var router = express.Router();
 
   var getAll = function(req, res) {
-    var promise = model.fetchAll();
+    var promise = model.all();
 
     promise.then(function (records) {
+      //records is a Bookshelf collection, .models is the actia; array of
+      //records
       res.send(
-        model.toEmberArray(records));
+        model.toEmberArray(records.models));
     })
 
     .catch(function(error) {
@@ -76,9 +78,7 @@ var modelRestRouter = function(model) {
     //null out any id in the request body -- otherwise, it could override the id
     //in the path
 
-    var promise = new model({
-      id: req.params.id
-    }).destroy();
+    var promise = model.destroy(req.params.id);
 
     promise.then(function() {
       res.send(

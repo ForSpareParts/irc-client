@@ -1,4 +1,5 @@
 var inflection = require('inflection');
+var _ = require('underscore');
 
 //this module provides core functionality for models -- exposing, among other
 //things, the application's bookshelf and knex instances
@@ -34,33 +35,42 @@ var BaseModel = Bookshelf.Model.extend(
 
   //class methods
   {
+    /**
+     * Return the name of the database table this model represents.
+     *
+     * This is really just a proxy for the tableName property on the instance,
+     * which for some reason is not available on the class.
+     * @type {string}
+     */
+    tableName: function() {
+      return this.forge().tableName;
+    },
 
     /** Take Ember-compatible object and return a record. */
     fromEmber: function(emberObject) {
-      return this.forge(emberObject[this.tableName]);
+      return this.forge(emberObject[this.tableName()]);
     },
 
     /** Take Ember-compatible object containing an array and return an array of
     records. */
     fromEmberArray: function(emberObject) {
-      pluralName = inflection.pluralize(this.forge().tableName);
+      var self = this;
+      var pluralName = inflection.pluralize(self.forge().tableName);
       return emberObject[pluralName].map(function (serialized) {
-        return this.forge(serialized);
+        return self.forge(serialized);
       });
     },
 
     /** Return Ember-compatible object representing this array of records. */
     toEmberArray: function(recordArray) {
-      json = {};
-      pluralName = inflection.pluralize(this.forge().tableName);
+      var emberObject = {};
+      var pluralName = inflection.pluralize(this.forge().tableName);
 
-      json[pluralName] = []
-
-      recordArray.each(function(record) {
-        json[pluralName].push(record.toJSON());
+      emberObject[pluralName] = _.map(recordArray, function(record) {
+        return record.toJSON();
       });
 
-      return json;
+      return emberObject;
     },
 
     /** Retrieve all records in the table. */
@@ -75,15 +85,7 @@ var BaseModel = Bookshelf.Model.extend(
 
     /** Destroy a single record, identified by id. */
     destroy: function(id) {
-      if (typeof(search) === 'number') {
-        //search is an id
-        var id = search;
-        return this.forge({id: id}).destroy();
-      }
-      else {
-        //search is assumed to be a dictionary
-        return this.forge(search).destroy();
-      }
+      return this.forge({id: id}).destroy();
     },
 
     /** Retrieve a single record. search can be either an id or a dictionary of
