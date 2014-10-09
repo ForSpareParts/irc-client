@@ -9,13 +9,14 @@ var modelRestRouter = function(model) {
     var promise = model.all();
 
     promise.then(function (records) {
-      //records is a Bookshelf collection, .models is the actia; array of
+      //records is a Bookshelf collection, .models is the actual array of
       //records
       res.send(
         model.toEmberArray(records.models));
     })
 
     .catch(function(error) {
+      console.log(error);
       res.status(500).send({
         error: error
       });
@@ -29,8 +30,14 @@ var modelRestRouter = function(model) {
       res.send(record.toEmber());
     })
 
-    .catch(function(error) {
+    .catch(model.NotFoundError, function(error) {
       res.status(404).send({
+        error: error
+      });
+    })
+
+    .catch(function(error) {
+      res.status(500).send({
         error: error
       });
     });
@@ -67,8 +74,14 @@ var modelRestRouter = function(model) {
       res.send(updated.toEmber());
     })
 
-    .catch(function(error) {
+    .catch(model.NotFoundError, function(error) {
       res.status(404).send({
+        error: error
+      });
+    })
+
+    .catch(function(error) {
+      res.status(500).send({
         error: error
       });
     });
@@ -81,13 +94,20 @@ var modelRestRouter = function(model) {
     var promise = model.destroy(req.params.id);
 
     promise.then(function() {
+
       res.send(
         {success: true}
       );
     })
 
-    .catch(function(error) {
+    .catch(model.NotFoundError, function(error) {
       res.status(404).send({
+        error: error
+      });
+    })
+
+    .catch(function(error) {
+      res.status(500).send({
         error: error
       });
     });
@@ -104,6 +124,11 @@ var modelRestRouter = function(model) {
 };
 
 module.exports.Server = modelRestRouter(models.Server);
+module.exports.Server.get('/:id/connected', function(req, res) {
+  
+});
+
+
 module.exports.Channel = modelRestRouter(models.Channel);
 module.exports.User = modelRestRouter(models.User);
 module.exports.Message = modelRestRouter(models.Message);

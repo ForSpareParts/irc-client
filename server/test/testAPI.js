@@ -62,7 +62,6 @@ describe('The basic CRUD API', function() {
     return request.delAsync(HOST + '/servers/1')
 
     .spread(function(response, body) {
-      console.log(body);
       body = JSON.parse(body);
 
       //make sure the request says it was successful

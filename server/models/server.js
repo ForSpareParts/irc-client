@@ -6,14 +6,22 @@ var irc = require('../node-irc');
 var BaseModel = modelsCommon.BaseModel;
 var Bookshelf = modelsCommon.Bookshelf;
 
-/** Represents an IRC server. */
+/**
+Represents an IRC server.
+
+In addition to its standard, database-derived properties, the Server class
+exposes a 'connected' property, which indicates whether we are currently
+connected to this server. this.connected can be set as other database properties
+-- the actual connection or disconnection attempt occurs on save(). If an
+attempt to connect or disconnect fails, the save() promise will be rejected and
+the model will not be updated.
+*/
 var Server = BaseModel.extend({
   tableName: 'server',
 
   //name (string)
   //host (string)
   //port (string)
-  //connected (boolean)
 
   //unqiue together: host, port
 
@@ -33,8 +41,7 @@ var Server = BaseModel.extend({
   },
 
   /**
-   * Promise-enabled wrapper for the connect() method of this.client. Does *not*
-   * change the value of connected
+   * Promise-enabled wrapper for the connect() method of this.client().
    * @return {Promise}
    */
   _connect: function() {
@@ -53,6 +60,53 @@ var Server = BaseModel.extend({
   },
 
   /**
+   * Promise-enabled wrapper for the disconnect() method of this.client().
+   * @return {Promise}
+   */
+  _disconnect: function() {
+    var self = this;
+
+    return new Promise(function(resolve, reject) {
+      self.client().disconnect(function(disconnectInfo) {
+        resolve(disconnectInfo);
+      });
+    });
+  },
+
+  /**
+   * If we've cached the state of the server's connection, return whether the
+   * cache still matches the real state. Otherwise, return true.
+   * @return {boolean}
+   */
+  _connectedCachedValid: function() {
+    if (this._connectedCached !== undefined) {
+      return this._connectedCached === this.isConnected();
+    }
+
+    return true;
+  },
+
+  /**
+   * Populate the Server with information from the database. Before resolving,
+   * add a 'connected' property with the current value of this.isConnected().
+   * @param  {Object} options
+   * @return {Promise}
+   */
+  fetch: function(options) {
+    return Bookshelf.Model.prototype.fetch.apply(this, arguments)
+
+    .then(function(fetched) {
+      fetched.connected = fetched.isConnected();
+
+      //Used to make sure that the connection hasn't changed without our
+      //knowledge (see Server#save).
+      fetched._connectedCached = fetched.connected;
+
+      return fetched;
+    });
+  },
+
+  /**
    * Save the Server. If the server is new or the connected property has changed
    * to true, attempt to connect the server. If the connection fails, throw an
    * error and do not persist the model.
@@ -62,11 +116,30 @@ var Server = BaseModel.extend({
     var self = this;
     var saveArguments = arguments;
 
-    //if the model is new or just trying to connect, connect before saving
-    if (this.changed.connected && this.get('connected')) {
-      return this._connect()
+    if (!this._connectedCachedValid()) {
+      //the Server's in an invalid state -- don't save it
+      var exc = new Error(
+        "Server experienced an unexpected connection or disconnection");
+      exc.server = this;
+      throw exc;
+    }
+
+    //check our desired connection state against the current connection state
+    if (this.connected !== undefined &&
+          this.connection !== this.isConnected()) {
+      var connectionPromise = null;
+
+      if (this.connected){
+        connectionPromise = this._connect();
+      }
+      else {
+        connectionPromise = this._disconnect();
+      }
+
+      return connectionPromise
 
       .then(function(connectInfo) {
+        this._connectedCached = this.connected;
         return Bookshelf.Model.prototype.save.apply(self, saveArguments);
       });
     }
@@ -83,6 +156,27 @@ var Server = BaseModel.extend({
     return Server.getClient(
       this.get('host'),
       this.get('port'));
+  },
+
+  /**
+   * Return whether we're currently connected to this server. Not exposed
+   * directly via the irc library, so we have to infer it based on other
+   * properties.
+   * @return {boolean}
+   */
+  isConnected: function() {
+    var client = this.client();
+
+
+    return (
+      client.conn &&
+      client.conn.readable &&
+      client.conn.writable &&
+      (
+        client.conn.requestedDisconnect === null ||
+        !client.conn.requestedDisconnect
+      )
+    );
   }
 
 }, {
@@ -114,6 +208,26 @@ var Server = BaseModel.extend({
     this.clientCache[hostString] = created;
 
     return created;
+  },
+
+  /**
+   * Fetch a collection of all Servers. Performs connection caching as in
+   * Server#fetch().
+   * @param  {Object} options
+   * @return {Promise}
+   */
+  all: function() {
+    return BaseModel.all.apply(this, arguments)
+
+    .then(function(fetchedCollection) {
+      fetchedCollection.each(function(server) {
+        server.connected = server.isConnected();
+        server._connectedCached = server.connected;
+      });
+
+      return fetchedCollection;
+    });
+
   },
 
   /**

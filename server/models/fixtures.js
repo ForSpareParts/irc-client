@@ -10,7 +10,6 @@ var fixtureData = [
       name: 'FooServer',
       host: 'irc.foo.net',
       port: '6667',
-      connected: true,
 
       connection_user_id: 3
     }
@@ -22,7 +21,6 @@ var fixtureData = [
       name: 'BarServer',
       host: 'irc.bar.net',
       port: '6667',
-      connected: false
     }
   },
 

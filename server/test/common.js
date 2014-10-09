@@ -36,6 +36,9 @@ var settings = require('../settings');
 //use the test database
 settings.databaseConfig = 'test';
 
+//use the mock irc library
+settings.ircLib = 'mock';
+
 var app = require('../app')
   , fixtures = require('../models/fixtures')
   , knexfile = require('../knexfile')
