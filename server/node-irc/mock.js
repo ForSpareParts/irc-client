@@ -1,6 +1,14 @@
 /**
  * Mock of the node-irc library implementing all functionality used by our app.
+ *
+ * Like the actual library, acts as an EventEmitter. Wherever possible/sensible,
+ * emits the same events as node-irc.
+ *
+ * Available events:
+ *
+ * - 'registered' (successfully connected)
  */
+var EventEmitter = require('events').EventEmitter;
 
 
 var Client = function(server, nick, opt) {
@@ -27,6 +35,9 @@ var Client = function(server, nick, opt) {
 
 };
 
+//make client inherit from EventEmitter
+Client.prototype.__proto__ = EventEmitter.prototype;
+
 /**
  * Pretend to connect to the IRC server.
  * @param  {number}   retryCount
@@ -37,7 +48,9 @@ Client.prototype.connect = function(retryCount, callback) {
   if (!callback && typeof retryCount == 'function') {
     callback = retryCount;
   }
-  callback();
+
+  this.once('registered', callback);
+  this.emit('registered', 'Registration message from server: ' + this.server);
 };
 
 /**
@@ -46,7 +59,10 @@ Client.prototype.connect = function(retryCount, callback) {
  * @param  {Function} callback
  */
 Client.prototype.join = function(channel, callback) {
-  callback();
+  this.once('join#' + channel, callback);
+
+  this.emit('join', channel, this.nick, {});
+  this.emit('join#' + channel, this.nick, {});
 };
 
 /**
