@@ -138,4 +138,17 @@ describe('The Server model', function() {
         return assert.isRejected(server.save());
       });
     });
+
+    it('should populate connection state after a .fetch()', function() {
+      return createConnectedServer()
+
+      .then(function(created) {
+        freshServer = Server.forge({name: sampleData.name});
+        return freshServer.fetch();
+      })
+
+      .then(function(fetched) {
+        assert(freshServer.get('connected'), 'connection state was fetched');
+      });
+    });
 });
