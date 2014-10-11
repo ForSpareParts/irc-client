@@ -12,6 +12,15 @@ var Server = models.Server;
 //load mocha integration for sinon
 require('mocha-sinon');
 
+
+var sampleData = {
+  name: 'An IRC Server',
+  host: 'irc.somedummyserver.net',
+  nick: 'placeholderNick',
+  port: 6667
+}
+
+
 beforeEach(function() {
   //clear the Server class' cache of irc Clients
   Server.clientCache = {}
@@ -25,17 +34,18 @@ describe('The Server model', function() {
       //we have to create the Client object beforehand so we can register
       //calls to it
       var client = new irc.Client(
-        'irc.somedummyserver.net', 'placeholderNick', {
-          port: 6667,
+        sampleData.host, sampleData.nick, {
+          port: sampleData.port,
           autoConnect: false
         });
-      Server.clientCache['irc.somedummyserver.net:6667'] = client;
+      Server.clientCache[
+        sampleData.host + ':' + sampleData.port] = client;
       client.on('registered', callback);
 
       return Server.create({
-        name: 'Don\'t Connect',
-        host: 'irc.somedummyserver.net',
-        port: 6667,
+        name: sampleData.name,
+        host: sampleData.host,
+        port: sampleData.port,
         connected: false})
 
       .then(function(server) {
@@ -50,17 +60,18 @@ describe('The Server model', function() {
       //we have to create the Client object beforehand so we can register
       //calls to it
       var client = new irc.Client(
-        'irc.somedummyserver.net', 'placeholderNick', {
-          port: 6667,
+        sampleData.host, sampleData.nick, {
+          port: sampleData.port,
           autoConnect: false
         });
-      Server.clientCache['irc.somedummyserver.net:6667'] = client;
+      Server.clientCache[
+        sampleData.host + ':' + sampleData.port] = client;
       client.on('registered', callback);
 
       return Server.create({
-        name: 'Do Connect',
-        host: 'irc.somedummyserver.net',
-        port: 6667,
+        name: sampleData.name,
+        host: sampleData.host,
+        port: sampleData.port,
         connected: true})
 
       .then(function(server) {
