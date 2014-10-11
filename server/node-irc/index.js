@@ -10,12 +10,9 @@ var Promise = require('bluebird');
 
 var settings = require('../settings');
 
+var libs = {
+  irc: require('irc'),
+  mock: require('./mock')
+}
 
-if (settings.ircLib === 'mock') {
-  module.exports = Promise.promisifyAll(
-    require('./mock'));
-}
-else if (settings.ircLib === 'irc') {
-  module.exports = Promise.promisifyAll(
-    require('irc'));
-}
+module.exports = libs[settings.ircLib];
