@@ -53,6 +53,9 @@ Client.prototype.connect = function(retryCount, callback) {
     this.once('registered', callback);
   }
 
+  this.conn = {};
+  this.conn.readable = true;
+  this.conn.writable = true;
   this.emit('registered', 'Registration message from server: ' + this.server);
 };
 
@@ -70,6 +73,7 @@ Client.prototype.disconnect = function(message, callback) {
     this.once('quit', callback);
   }
 
+  delete this.conn;
   this.emit('quit',
     this.nick,
     'Quit reason for server: ' + this.server,

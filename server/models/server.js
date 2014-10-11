@@ -78,21 +78,27 @@ var Server = BaseModel.extend({
    * cache still matches the real state. Otherwise, return true.
    * @return {boolean}
    */
-  _connectedCachedValid: function() {
-    if (this._connectedCached !== undefined) {
-      return this._connectedCached === this.isConnected();
+  _isConnectedCachedValid: function() {
+    if (this._isConnectedCached !== undefined) {
+      return this._isConnectedCached === this.isConnected();
     }
 
     return true;
   },
 
   /**
-   * Proxy of this.get('connected') for readability. Especially in save(), it's
-   * hard to tell the difference between 'connected' and isConnected()
+   * Proxy of this.get('connected') for readability.
    * @return {boolean}
    */
   _wantsToBeConnected: function() {
     return this.get('connected');
+  },
+
+  /**
+   * Proxy of this.set('connected') for readability.
+   */
+  _setWantsToBeConnected: function(value) {
+    return this.set('connected', value);
   },
 
   /**
@@ -112,7 +118,7 @@ var Server = BaseModel.extend({
    */
   _needsConnectOrDisconnect: function() {
     return this._wantsToBeConnected() !== undefined &&
-          this._wantsToBeConnected() !== this.isConnected()
+          this._wantsToBeConnected() !== this.isConnected();
   },
 
   /**
@@ -134,7 +140,7 @@ var Server = BaseModel.extend({
 
         //Used to make sure that the connection hasn't changed without our
         //knowledge (see Server#save).
-        fetched._connectedCached = fetched.get('connected');
+        fetched._isConnectedCached = fetched.get('connected');
 
         return fetched;
       }
@@ -151,12 +157,19 @@ var Server = BaseModel.extend({
     var self = this;
     var saveArguments = arguments;
 
-    if (!this._connectedCachedValid()) {
+    //we have to take 'connected' out of params and put it on the model itself,
+    //or it'll get passed on to Bookshelf's save()
+    if (params && params.connected !== undefined) {
+      this._setWantsToBeConnected(params.connected);
+      delete params.connected;
+    }
+
+    if (!this._isConnectedCachedValid()) {
       //the Server's in an invalid state -- don't save it
-      var exc = new Error(
+      var err = new Error(
         "Server experienced an unexpected connection or disconnection");
-      exc.server = this;
-      throw exc;
+      err.server = this;
+      return Promise.reject(err);
     }
 
     //check our desired connection state against the current connection state
@@ -176,15 +189,28 @@ var Server = BaseModel.extend({
       return connectionPromise
 
       .then(function(connectInfo) {
-        self._connectedCached = self.get('connected');
         return Bookshelf.Model.prototype.save.apply(self, saveArguments);
+      })
+
+      .then(function(saved) {
+        self._isConnectedCached = self.isConnected();
+        self._setWantsToBeConnected(self.isConnected());
+
+        return saved;
       });
     }
 
     //strip off the 'connected' property before we move on to the base save()
     this._clearWantsToBeConnected();
 
-    return Bookshelf.Model.prototype.save.apply(self, saveArguments);
+    return Bookshelf.Model.prototype.save.apply(self, saveArguments)
+
+    .then(function(saved) {
+      self._isConnectedCached = self.isConnected();
+      self._setWantsToBeConnected(self.isConnected());
+
+      return saved;
+    });
   },
 
   /**
@@ -268,7 +294,7 @@ var Server = BaseModel.extend({
     .then(function(fetchedCollection) {
       fetchedCollection.each(function(server) {
         server.set('connected', server.isConnected());
-        server._connectedCached = server.connected;
+        server._isConnectedCached = server.connected;
       });
 
       return fetchedCollection;
