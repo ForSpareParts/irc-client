@@ -49,9 +49,33 @@ Client.prototype.connect = function(retryCount, callback) {
     callback = retryCount;
   }
 
-  this.once('registered', callback);
+  if (callback) {
+    this.once('registered', callback);
+  }
+
   this.emit('registered', 'Registration message from server: ' + this.server);
 };
+
+/**
+ * Pretend to disconnect from the server.
+ * @param  {string}   message
+ * @param  {Function} callback
+ */
+Client.prototype.disconnect = function(message, callback) {
+  if (!callback && typeof message == 'function') {
+    callback = message;
+  }
+
+  if (callback) {
+    this.once('quit', callback);
+  }
+
+  this.emit('quit',
+    this.nick,
+    'Quit reason for server: ' + this.server,
+    [],
+    {});
+}
 
 /**
  * Pretend to join a channel.
