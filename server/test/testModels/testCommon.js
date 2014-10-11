@@ -1,8 +1,8 @@
 /**
- * Test the application's data models.
+ * Test the base data model.
  */
 
-var models = require('../models');
+var models = require('../../models');
 
 describe('The base model', function() {
   it('should convert to and from the Ember JSON format', function() {

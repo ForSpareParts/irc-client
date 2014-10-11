@@ -93,6 +93,11 @@ var Server = BaseModel.extend({
    * @return {Promise}
    */
   fetch: function(options) {
+    //you can't actually fetch with connected in there. it'll crash. it sucks.
+    //(this is because connected is NOT actually a database field)
+    delete this.connected;
+    delete this.attributes.connected;
+
     return Bookshelf.Model.prototype.fetch.apply(this, arguments)
 
     .then(function(fetched) {
@@ -126,8 +131,11 @@ var Server = BaseModel.extend({
 
     //check our desired connection state against the current connection state
     if (this.connected !== undefined &&
-          this.connection !== this.isConnected()) {
+          this.connected !== this.isConnected()) {
       var connectionPromise = null;
+
+      delete this.connected;
+      delete this.attributes.connected;
 
       if (this.connected){
         connectionPromise = this._connect();
@@ -144,7 +152,10 @@ var Server = BaseModel.extend({
       });
     }
 
-    //otherwise, just save
+    //strip off the .connected property before we move on to the base save()
+    delete this.connected;
+    delete this.attributes.connected;
+
     return Bookshelf.Model.prototype.save.apply(self, saveArguments);
   },
 

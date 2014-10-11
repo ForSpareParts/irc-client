@@ -30,6 +30,8 @@
     "chai-as-promised": "^4.1.1",
     "chai": "^1.9.1",
     "blanket": "^1.1.6",
-    "travis-cov": "^0.2.5"
+    "travis-cov": "^0.2.5",
+    "mocha-sinon": "^1.1.3",
+    "sinon": "^1.10.3"
   }
 }

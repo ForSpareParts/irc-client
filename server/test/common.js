@@ -26,7 +26,6 @@ chai.use(chaiAsPromised);
 assert = chai.assert;
 
 
-
 /**
  * project dependencies
  */
