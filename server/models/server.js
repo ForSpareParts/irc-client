@@ -87,6 +87,35 @@ var Server = BaseModel.extend({
   },
 
   /**
+   * Proxy of this.get('connected') for readability. Especially in save(), it's
+   * hard to tell the difference between 'connected' and isConnected()
+   * @return {boolean}
+   */
+  _wantsToBeConnected: function() {
+    return this.get('connected');
+  },
+
+  /**
+   * Wipes out the 'connected' property and attribute so that we can safely send
+   * this object back to the database.
+   */
+  _clearWantsToBeConnected: function() {
+    delete this.connected;
+    delete this.attributes.connected;
+  },
+
+  /**
+   * Returns whether we need to change our connection to the server -- i.e.,
+   * whether 'connected' (what we want) is out of sync with .isConnected() (what
+   * we currently have).
+   * @return {boolean}
+   */
+  _needsConnectOrDisconnect: function() {
+    return this._wantsToBeConnected() !== undefined &&
+          this._wantsToBeConnected() !== this.isConnected()
+  },
+
+  /**
    * Populate the Server with information from the database. Before resolving,
    * add a 'connected' property with the current value of this.isConnected().
    * @param  {Object} options
@@ -95,8 +124,7 @@ var Server = BaseModel.extend({
   fetch: function(options) {
     //you can't actually fetch with connected in there. it'll crash. it sucks.
     //(this is because connected is NOT actually a database field)
-    delete this.connected;
-    delete this.attributes.connected;
+    this._clearWantsToBeConnected();
 
     return Bookshelf.Model.prototype.fetch.apply(this, arguments)
 
@@ -132,15 +160,13 @@ var Server = BaseModel.extend({
     }
 
     //check our desired connection state against the current connection state
-    if (this.get('connected') !== undefined &&
-          this.get('connected') !== this.isConnected()) {
+    if (this._needsConnectOrDisconnect()) {
       var connectionPromise = null;
-      var currentConnected = this.get('connected');
+      var wantsToBeConnected = this._wantsToBeConnected();
 
-      delete this.connected;
-      delete this.attributes.connected;
+      this._clearWantsToBeConnected();
 
-      if (currentConnected){
+      if (wantsToBeConnected){
         connectionPromise = this._connect();
       }
       else {
@@ -156,8 +182,7 @@ var Server = BaseModel.extend({
     }
 
     //strip off the 'connected' property before we move on to the base save()
-    delete this.connected;
-    delete this.attributes.connected;
+    this._clearWantsToBeConnected();
 
     return Bookshelf.Model.prototype.save.apply(self, saveArguments);
   },
@@ -198,7 +223,7 @@ var Server = BaseModel.extend({
     }
 
     return false;
-  }
+  },
 
 }, {
   clientCache: {},
@@ -253,7 +278,7 @@ var Server = BaseModel.extend({
 
   /**
    * Create a new Server. Creates an instance of irc.Client to manage the
-   * connection. Will connect if this.get('connected') == true, as per
+   * connection. Will connect if this._wantsToBeConnected() == true, as per
    * Server#save.
    * @param  {Object} initialData
    * @return {Promise}
