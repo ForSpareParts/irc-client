@@ -85,4 +85,13 @@ describe('The basic CRUD API', function() {
       assert.strictEqual(response.statusCode, 404);
     });
   });
+
+  it('should 404 for invalid paths', function() {
+
+    return request.getAsync(HOST + '/foobar')
+    
+    .spread(function (response, body) {
+      assert.strictEqual(response.statusCode, 404);
+    });
+  });
 });
