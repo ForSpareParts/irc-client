@@ -38,8 +38,7 @@ settings.databaseConfig = 'test';
 //use the mock irc library
 settings.ircLib = 'mock';
 
-var app = require('../app')
-  , fixtures = require('../models/fixtures')
+var fixtures = require('../models/fixtures')
   , knexfile = require('../knexfile')
   , models = require('../models')
   , server = null;
@@ -59,11 +58,6 @@ before(function() {
 
   //clear any existing data
   .then(models.truncateAll)
-
-  //start the server
-  .then(function() {
-    server = app.listen(PORT);
-  });
 });
 
 beforeEach(function() {
