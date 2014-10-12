@@ -196,7 +196,7 @@ var Server = BaseModel.extend({
         self._isConnectedCached = self.isConnected();
         self._setWantsToBeConnected(self.isConnected());
 
-        return saved;
+        return self;
       });
     }
 
@@ -209,7 +209,7 @@ var Server = BaseModel.extend({
       self._isConnectedCached = self.isConnected();
       self._setWantsToBeConnected(self.isConnected());
 
-      return saved;
+      return self;
     });
   },
 
@@ -300,19 +300,6 @@ var Server = BaseModel.extend({
       return fetchedCollection;
     });
 
-  },
-
-  /**
-   * Create a new Server. Creates an instance of irc.Client to manage the
-   * connection. Will connect if this._wantsToBeConnected() == true, as per
-   * Server#save.
-   * @param  {Object} initialData
-   * @return {Promise}
-   */
-  create: function(initialData) {
-    var server = Server.forge(initialData);
-
-    return server.save(null, {method: 'insert'});
   }
 });
 

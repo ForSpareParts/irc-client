@@ -122,17 +122,29 @@ var Channel = BaseModel.extend({
    */
   fetch: function(options) {
     var self = this;
+    var fetchSuccessful = false;
     this._clearWantsToBeJoined();
 
     return Bookshelf.Model.prototype.fetch.apply(this, arguments)
 
     .then(function(fetched) {
+      if (fetched) {
+        fetchSuccessful = true;
+      }
       return self.load(['server']);
     })
 
     .then(function(loaded) {
-      self._setWantsToBeJoined(self.isJoined());
-      self._isJoinedCached = self._wantsToBeJoined();
+      var server = self.related('server');
+
+      if (fetchSuccessful && server) {
+        self._setWantsToBeJoined(self.isJoined());
+        self._isJoinedCached = self._wantsToBeJoined();        
+      }
+
+      if (!fetchSuccessful) {
+        return null;
+      }
 
       return self;
     })
