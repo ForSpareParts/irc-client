@@ -35,7 +35,7 @@ var Channel = BaseModel.extend({
     var self = this;
 
     return new Promise(function(resolve, reject) {
-      self.client().join(function(joinInfo) {
+      self.client().join(self.get('name'), function(joinInfo) {
         resolve(joinInfo);
       });
     });
@@ -50,7 +50,7 @@ var Channel = BaseModel.extend({
     var self = this;
 
     return new Promise(function(resolve, reject) {
-      self.client().part(function(partInfo) {
+      self.client().part(self.get('name'), function(partInfo) {
         resolve(partInfo);
       });
     });
@@ -108,7 +108,7 @@ var Channel = BaseModel.extend({
     var client = this.client();
 
     if (client && client.chans) {
-      return chans.hasOwnProperty(this.get('name'));
+      return client.chans.hasOwnProperty(this.get('name'));
     }
 
     return false;
@@ -122,28 +122,20 @@ var Channel = BaseModel.extend({
    */
   fetch: function(options) {
     var self = this;
-    var fetchSuccessful = false;
     this._clearWantsToBeJoined();
 
     return Bookshelf.Model.prototype.fetch.apply(this, arguments)
 
     .then(function(fetched) {
-      if (fetched) {
-        fetchSuccessful = true;
-      }
-      return self.load(['server']);
+      return fetched.related('server').fetch();
     })
 
-    .then(function(loaded) {
+    .then(function(fetchedServer) {
       var server = self.related('server');
 
-      if (fetchSuccessful && server) {
+      if (server) {
         self._setWantsToBeJoined(self.isJoined());
         self._isJoinedCached = self._wantsToBeJoined();        
-      }
-
-      if (!fetchSuccessful) {
-        return null;
       }
 
       return self;
@@ -167,52 +159,43 @@ var Channel = BaseModel.extend({
       delete params.joined;
     }
 
-    if (!this._isJoinedCachedValid()) {
-      //as with Server#save, we check that our cahce is up-to-date
-      var err = new Error("Channel was joined or parted unexpectedly");
-      err.channel = this;
-      return Promise.reject(err);
-    }
+    return this.related('server').fetch()
 
-    if (!this.related('server').isConnected() && this.get('joined')) {
-      //we can't join (or be joined) if the server isn't connected
-      var err = new Error("Cannot join channel while server is disconnected");
-      err.channel = this;
-      return Promise.reject(err);
-    }
-
-    //check our desired join/part state against the current real join/part state
-    if (this._needsJoinOrPart()) {
-      var joinPartPromise = null;
-      var wantsToBeJoined = this._wantsToBeJoined();
-
-      this._clearWantsToBeJoined();
-
-      if (wantsToBeJoined) {
-        joinPartPromise = this._join();
-      }
-      else {
-        joinPartPromise = this._part();
+    .then(function() {
+      if (!self._isJoinedCachedValid()) {
+        //as with Server#save, we check that our cahce is up-to-date
+        var err = new Error("Channel was joined or parted unexpectedly");
+        err.channel = self;
+        throw err;
       }
 
-      return joinPartPromise
+      if (!self.related('server').isConnected() && self.get('joined')) {
+        //we can't join (or be joined) if the server isn't connected
+        var err = new Error("Cannot join channel while server is disconnected");
+        err.channel = self;
+        throw err;
+      }
 
-      .then(function(joinPartInfo) {
-        return Bookshelf.Model.prototype.save.apply(self, saveArguments);
-      })
+      //check our desired join/part state against the current real join/part
+      //state
+      if (self._needsJoinOrPart()) {
+        if (self._wantsToBeJoined()) {
+          return self._join();
+        }
 
-      .then(function(saved) {
-        self._isJoinedCached = self.isJoined();
-        self._setWantsToBeJoined(self.isJoined());
+        return self._part();
+      }
 
-        return self;
-      });
-    }
+      //if we don't need to join or part the channel, we can just return a
+      //resolve and skip on to the next step
+      return Promise.resolve();
+    })
 
-    //strip off the 'joined' property before we move on to the base save()
-    this._clearWantsToBeJoined();
-
-    return Bookshelf.Model.prototype.save.apply(self, saveArguments)
+    .then(function() {
+      //strip off the 'joined' property before we move on to the base save()
+      self._clearWantsToBeJoined();
+      return Bookshelf.Model.prototype.save.apply(self, saveArguments);
+    })
 
     .then(function(saved) {
       self._isJoinedCached = self.isJoined();

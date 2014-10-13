@@ -36,12 +36,12 @@ var createConnectedServer = function() {
     connected: true});
 }
 
-beforeEach(function() {
-  //clear the Server class' cache of irc Clients
-  Server.clientCache = {}
-});
-
 describe('The Server model', function() {
+  beforeEach(function() {
+    //clear the Server class' cache of irc Clients
+    Server.clientCache = {}
+  });
+
   it('should not connect to the server on creation if {connected: false}',
     function() {
       var callback = sinon.spy();
@@ -105,7 +105,7 @@ describe('The Server model', function() {
     });
 
     it('should disconnect on save if requested', function() {
-      //i.e., if we pass {connected: true} and we're not already connected
+      //i.e., if we pass {connected: false} and we're currently connected
 
       var callback = sinon.spy();
 
@@ -140,6 +140,7 @@ describe('The Server model', function() {
     });
 
     it('should populate connection state after a .fetch()', function() {
+      var freshServer = null;
       return createConnectedServer()
 
       .then(function(created) {

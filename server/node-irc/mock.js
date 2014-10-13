@@ -33,6 +33,9 @@ var Client = function(server, nick, opt) {
     this.connect();
   }
 
+  //connected channels are stored here
+  this.chans = {};
+
 };
 
 //make client inherit from EventEmitter
@@ -87,10 +90,31 @@ Client.prototype.disconnect = function(message, callback) {
  * @param  {Function} callback
  */
 Client.prototype.join = function(channel, callback) {
-  this.once('join#' + channel, callback);
+  this.once('join' + channel, callback);
 
+  this.chans[channel] = {};
   this.emit('join', channel, this.nick, {});
-  this.emit('join#' + channel, this.nick, {});
+  this.emit('join' + channel, this.nick, {});
+};
+
+/**
+ * Pretend to part a channel.
+ * @param  {string}   channel
+ * @param  {Function} callback
+ */
+Client.prototype.part = function(channel, callback) {
+  this.once('part' + channel, callback);
+
+  delete this.chans[channel];
+  this.emit('part',
+    channel,
+    this.nick,
+    "Part message for channel " + channel + " on server " + this.server,
+    {});
+  this.emit('part' + channel,
+    this.nick,
+    "Part message for channel " + channel + " on server " + this.server,
+    {});
 };
 
 /**
