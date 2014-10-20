@@ -211,7 +211,8 @@ var Server = BaseModel.extend({
   client: function() {
     return Server.getClient(
       this.get('host'),
-      this.get('port'));
+      this.get('port'),
+      this.get('nick'));
   },
 
   /**
@@ -246,14 +247,15 @@ var Server = BaseModel.extend({
   clientCache: {},
 
   /**
-   * Return an instance of irc.Client for the given host and port. Allows us to
-   * cache client instances so that we don't inadvertantly connect twice.
+   * Return an instance of irc.Client for the given host, port, and nick. Allows
+   * us to cache client instances so that we don't inadvertantly connect twice.
    * @param  {string} host
    * @param  {string} port
+   * @param {string} nick
    * @return {irc.Client}
    */
-  getClient: function(host, port) {
-    var hostString = host + ':' + port;
+  getClient: function(host, port, nick) {
+    var hostString = nick + '@' + host + ':' + port;
 
     //the existing client, if any
     var cached = this.clientCache[hostString];
@@ -263,7 +265,7 @@ var Server = BaseModel.extend({
     }
 
     //there's no cached client, create one:
-    var created = new irc.Client(host, 'placeholderNick', {
+    var created = new irc.Client(host, nick, {
       port: port,
       autoConnect: false
     });

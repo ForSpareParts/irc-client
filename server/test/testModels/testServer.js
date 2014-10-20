@@ -16,7 +16,7 @@ require('mocha-sinon');
 var sampleData = {
   name: 'An IRC Server',
   host: 'irc.somedummyserver.net',
-  nick: 'placeholderNick',
+  nick: 'someUserNick',
   port: 6667
 }
 
@@ -25,6 +25,7 @@ var createDisconnectedServer = function() {
     name: sampleData.name,
     host: sampleData.host,
     port: sampleData.port,
+    nick: sampleData.nick,
     connected: false});
 }
 
@@ -33,6 +34,7 @@ var createConnectedServer = function() {
     name: sampleData.name,
     host: sampleData.host,
     port: sampleData.port,
+    nick: sampleData.nick,
     connected: true});
 }
 
@@ -53,8 +55,9 @@ describe('The Server model', function() {
           port: sampleData.port,
           autoConnect: false
         });
-      Server.clientCache[
-        sampleData.host + ':' + sampleData.port] = client;
+      var hostString = (sampleData.nick + '@' + sampleData.host + ':' +
+        sampleData.port);
+      Server.clientCache[hostString] = client;
       client.on('registered', callback);
 
       return createDisconnectedServer()
@@ -75,8 +78,9 @@ describe('The Server model', function() {
           port: sampleData.port,
           autoConnect: false
         });
-      Server.clientCache[
-        sampleData.host + ':' + sampleData.port] = client;
+      var hostString = (sampleData.nick + '@' + sampleData.host + ':' +
+        sampleData.port);
+      Server.clientCache[hostString] = client;
       client.on('registered', callback);
 
       return createConnectedServer()
