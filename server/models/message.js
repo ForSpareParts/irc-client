@@ -7,11 +7,7 @@ var Message = BaseModel.extend({
 
   // contents (string)
   // time (string, ISO-formatted -- SQLite doesn't have native DATETIME columns)
-
-  /** The User who sent this Message. */
-  user: function() {
-    return this.belongsTo('User');
-  },
+  // nick (string)
 
   /** The Channel in which this Message was sent. */
   channel: function() {

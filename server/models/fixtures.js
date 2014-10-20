@@ -11,7 +11,7 @@ var fixtureData = [
       host: 'irc.foo.net',
       port: '6667',
 
-      connection_user_id: 3
+      nick: "myUserNick"
     }
   },
   {
@@ -35,39 +35,11 @@ var fixtureData = [
   },
 
   {
-    "model": "User",
-    "data": {
-      id: 1,
-      nickname: "somenick",
-
-      server_id: 1,
-    }
-  },
-  {
-    "model": "User",
-    "data": {
-      id: 2,
-      nickname: "othernick",
-
-      server_id: 1,
-    }
-  },
-  {
-    "model": "User",
-    "data": {
-      id: 3,
-      nickname: "myUserNick",
-
-      server_id: 1,
-    }
-  },
-
-  {
     "model": "Message",
     "data": {
       id: 1,
 
-      user_id: 1,
+      nick: "somenick",
       channel_id: 1,
       time: Date('2000-01-01T00:00:00'),
 
@@ -79,40 +51,13 @@ var fixtureData = [
     "data": {
       id: 2,
 
-      user_id: 2,
+      nick: "othernick",
       channel_id: 1,
       time: Date('2000-01-01T00:01:00'),
 
       contents: 'Hi, yourself!'
     }
   },
-  {
-    "model": "ChannelUser",
-    "data": {
-      id: 1,
-
-      user_id: 1,
-      channel_id: 1
-    }
-  },
-  {
-    "model": "ChannelUser",
-    "data": {
-      id: 2,
-
-      user_id: 2,
-      channel_id: 1
-    }
-  },
-  {
-    "model": "ChannelUser",
-    "data": {
-      id: 3,
-
-      user_id: 3,
-      channel_id: 1
-    }
-  }
 ];
 
 /** Populate tables with fixture data. */

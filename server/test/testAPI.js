@@ -26,17 +26,17 @@ describe('The basic CRUD API', function() {
   });
 
   it('should update models by id', function() {
-    return request.put('/users/3')
+    return request.put('/channels/1')
     .send({
-       user: {nickname: 'aDifferentUserNick'}
+       channel: {name: '#newchannelname'}
     })
 
     .expect(200)
     .then(function(res) {
-      user = res.body.user;
+      channel = res.body.channel;
 
-      assert.strictEqual(user.id, '3');
-      assert.strictEqual(user.nickname, 'aDifferentUserNick');
+      assert.strictEqual(channel.id, '1');
+      assert.strictEqual(channel.name, '#newchannelname');
     });
   });
 
@@ -44,7 +44,7 @@ describe('The basic CRUD API', function() {
     return request.post('/messages/')
     .send({
       message: {
-        user_id: 1,
+        nick: 'somenick',
         channel_id: 1,
         time: Date('2000-01-01T00:02:00'),
         contents: 'test message'
@@ -73,7 +73,7 @@ describe('The basic CRUD API', function() {
 
   it('should 404 for missing models', function() {
     //this model does not exist, and should 404
-    return request.get('/users/42').expect(404);
+    return request.get('/channels/42').expect(404);
   });
 
   it('should 404 for invalid paths', function() {

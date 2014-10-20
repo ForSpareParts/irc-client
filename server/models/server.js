@@ -22,22 +22,13 @@ var Server = BaseModel.extend({
   //name (string)
   //host (string)
   //port (string)
+  //nick (string)
 
   //unqiue together: host, port
 
   /** All known Channels on the Server. */
   channels: function() {
     return this.hasMany('Channel');
-  },
-
-  /** The User representing 'us' on the server. */
-  connectionUser: function() {
-    return this.belongsTo('User', 'connection_user_id');
-  },
-
-  /** All known Users on the server. */
-  users: function() {
-    return this.hasMany('User');
   },
 
   /**
