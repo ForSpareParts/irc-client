@@ -1,8 +1,6 @@
 var express = require('express');
 
-var models = require('./models');
-
-var modelRestRouter = function(model) {
+module.exports.modelRestRouter = function(model) {
   var router = express.Router();
 
   var getAll = function(req, res) {
@@ -121,13 +119,3 @@ var modelRestRouter = function(model) {
 
   return router;
 };
-
-module.exports.Server = modelRestRouter(models.Server);
-module.exports.Server.get('/:id/connected', function(req, res) {
-  
-});
-
-
-module.exports.Channel = modelRestRouter(models.Channel);
-module.exports.User = modelRestRouter(models.User);
-module.exports.Message = modelRestRouter(models.Message);
