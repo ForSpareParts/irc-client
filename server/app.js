@@ -23,6 +23,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/servers', routes.Server);
 app.use('/channels', routes.Channel);
+app.use('/connections', routes.Connection);
 app.use('/users', routes.User);
 app.use('/messages', routes.Message);
 
