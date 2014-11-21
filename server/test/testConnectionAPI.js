@@ -54,7 +54,39 @@ describe('The connection API', function() {
       return request.get('/connections/1/connected')
       .expect(200)
       .expect({connected: true});
+    });
+
+  });
+
+  it('should disconnect when requested', function() {
+    var callback = sinon.spy();
+
+    return Server.get(1)
+
+    .then(function(server) {
+      var connection = server.connection();
+
+      //set a test spy so we know that the IRC client is asked to connect
+      connection.client.on('quit', callback);
+
+      //connect the server
+      return connection.client.connect()
     })
+
+    .then(function() {
+      return request.post('/connections/1/connected')
+      .send({connected: false})
+      .expect(200)
+    })
+
+    .then(function() {
+      //check on the test spy!
+      assert.isTrue(callback.calledOnce);
+
+      return request.get('/connections/1/connected')
+      .expect(200)
+      .expect({connected: false});
+    });
 
   });
 });

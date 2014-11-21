@@ -59,10 +59,6 @@ var Connection = function(host, port, nick) {
     autoConnect: false
   });
 
-  //set this when we connect or disconnect so that we know if the connection
-  //state ever changes when it shouldn't
-  this.shouldBeConnected = false;
-
   this.id = idCounter;
   idCounter += 1;
 };
@@ -74,23 +70,11 @@ var Connection = function(host, port, nick) {
 Connection.prototype.connect = function() {
   //TODO: find a way to add proper error-handling.
   var self = this;
-
-  if (this.shouldBeConnected !== this.isConnected()) {
-    Promise.reject(
-      new Error("Server connected or dsiconnected unexpectedly."));
-  }
-
-  if (this.shouldBeConnected) {
-    Promise.reject(
-      new Error("Server is already connected"));
-  }
-
   return new Promise(function(resolve, reject) {
 
     //just call connect...
     self.client.connect(function(connectInfo) {
 
-      this.shouldBeConnected = true;
       //...and resolve in the callback
       resolve(connectInfo);
     });
@@ -104,19 +88,8 @@ Connection.prototype.connect = function() {
 Connection.prototype.disconnect = function() {
   var self = this;
 
-  if (this.shouldBeConnected !== this.isConnected()) {
-    Promise.reject(
-      new Error("Server connected or dsiconnected unexpectedly."));
-  }
-
-  if (!this.shouldBeConnected) {
-    Promise.reject(
-      new Error("Server is already disconnected"));
-  }
-
   return new Promise(function(resolve, reject) {
     self.client.disconnect(function(disconnectInfo) {
-      this.shouldBeConnected = false;
       resolve(disconnectInfo);
     });
   });
