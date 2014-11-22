@@ -71,7 +71,6 @@ Connection.prototype.connect = function() {
   //TODO: find a way to add proper error-handling.
   var self = this;
   return new Promise(function(resolve, reject) {
-
     //just call connect...
     self.client.connect(function(connectInfo) {
 
@@ -92,6 +91,36 @@ Connection.prototype.disconnect = function() {
     self.client.disconnect(function(disconnectInfo) {
       resolve(disconnectInfo);
     });
+  });
+};
+
+/**
+ * Promise-enabled wrapper for the join() method of this.client.
+ * @param  {string} channel
+ * @return {Promise}
+ */
+Connection.prototype.join = function(channel) {
+  var self = this;
+
+  return new Promise(function(resolve, reject) {
+    self.client.join(channel, function(joinInfo) {
+      resolve(joinInfo);
+    })
+  });
+};
+
+/**
+ * Promise-enabled wrapper for the part() method of this.client.
+ * @param  {string} channel
+ * @return {Promise}
+ */
+Connection.prototype.part = function(channel) {
+  var self = this;
+
+  return new Promise(function(resolve, reject) {
+    self.client.part(channel, function(partInfo) {
+      resolve(partInfo);
+    })
   });
 };
 
@@ -126,6 +155,74 @@ Connection.prototype.isConnected = function() {
  * Return a list of all the channels this connection is currently in.
  * @return {[String]} channel names
  */
-Connection.prototype.getCurrentChannels = function() {
+Connection.prototype.getJoinedChannels = function() {
   return Object.keys(this.client.chans);
+};
+
+/**
+ * Replace the entire set of joined channels with newChannels.
+ *
+ * If a currently joined channel is in newChannels, it will not be parted and
+ * rejoined -- from the server's perspective, nothing will happen. Currently
+ * joined channels that are *not* in newChannels will be parted.
+ * 
+ * @param {[string]} newChannels
+ */
+Connection.prototype.setJoinedChannels = function(newChannels) {
+  var self = this;
+
+  var channelsToJoin = [];
+  var channelsToPart = [];
+
+
+  newChannels.forEach(function(channel) {
+    if (!(channel in self.client.chans)) {
+      //we need to join this channel
+      channelsToJoin.push(channel);
+    }
+  });
+
+  this.getJoinedChannels().forEach(function(channel) {
+    if (newChannels.indexOf(channel) === -1) {
+      channelsToPart.push(channel);
+    }
+  });
+
+  promises = [];
+
+  channelsToJoin.forEach(function(channel) {
+    promises.push(self.join(channel));
+  });
+
+  channelsToPart.forEach(function(channel) {
+    promises.push(self.part(channel));
+  });
+
+  return Promise.all(promises);
+};
+
+
+/**
+ * Join any channels in newChannels you are not already joined to.
+ * 
+ * @param {[string]} newChannels
+ */
+Connection.prototype.addJoinedChannels = function(newChannels) {
+  var self = this;
+  var channelsToJoin = [];
+
+  newChannels.forEach(function(channel) {
+    if (!(channel in self.client.chans)) {
+      //we need to join this channel
+      channelsToJoin.push(channel);
+    }
+  });
+
+  promises = [];
+
+  channelsToJoin.forEach(function() {
+    promises.push(self.join(channel));
+  });
+
+  return Promise.all(promises);
 };

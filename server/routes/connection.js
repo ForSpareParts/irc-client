@@ -36,7 +36,7 @@ router.get('/:id', function(req, res) {
   res.send({
     connected: req.connectionInstance.isConnected(),
     server: req.server.id,
-    channels: req.connectionInstance.getCurrentChannels()
+    channels: req.connectionInstance.getJoinedChannels()
   });
 });
 
@@ -62,6 +62,28 @@ router.route('/:id/connected')
         res.send({connected: false});
       });
     }
+  });
+
+
+router.route('/:id/channels')
+
+  .get(function(req, res) {
+    res.send({
+      channels: req.connectionInstance.getJoinedChannels()});
+  })
+
+  .post(function(req, res) {
+    req.connectionInstance.setJoinedChannels(req.body.channels);
+
+    res.send({
+      channels: req.connectionInstance.getJoinedChannels()});
+  })
+
+  .put(function(req, res) {
+    req.connectionInstance.addJoinedChannels(req.body.channels);
+
+    res.send({
+      channels: req.connectionInstance.getJoinedChannels()});
   });
 
 module.exports = router;
