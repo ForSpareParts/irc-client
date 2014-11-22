@@ -1,18 +1,10 @@
 /**
  * Test accessing IRC server connections through the API.
  */
-
-var sinon = require('sinon');
-
 var app = require('../app')
   , request = require('supertest-as-promised')(app);
 
 var connectionLib = require('../connection');
-
-require('mocha-sinon');
-
-
-var server = null;
 
 describe('The connection API', function() {
 
