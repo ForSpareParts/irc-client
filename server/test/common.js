@@ -38,6 +38,9 @@ settings.databaseConfig = 'test';
 //use the mock irc library
 settings.ircLib = 'mock';
 
+//disable http logging
+settings.logRequests = false;
+
 var fixtures = require('../models/fixtures')
   , knexfile = require('../knexfile')
   , models = require('../models')

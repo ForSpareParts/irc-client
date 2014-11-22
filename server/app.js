@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 
 var routes = require('./routes');
 var models = require('./models');
+var settings = require('./settings');
 
 var app = express();
 
@@ -15,7 +16,11 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 app.use(favicon());
-app.use(logger('dev'));
+
+if (settings.logRequests) {
+  app.use(logger('dev'));
+}
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());

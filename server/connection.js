@@ -220,7 +220,7 @@ Connection.prototype.addJoinedChannels = function(newChannels) {
 
   promises = [];
 
-  channelsToJoin.forEach(function() {
+  channelsToJoin.forEach(function(channel) {
     promises.push(self.join(channel));
   });
 
