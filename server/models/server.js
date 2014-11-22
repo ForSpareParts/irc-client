@@ -1,5 +1,5 @@
-var connectionLib = require('./connection');
-var modelsCommon = require('../common');
+var connectionLib = require('../connection');
+var modelsCommon = require('./common');
 
 var BaseModel = modelsCommon.BaseModel;
 

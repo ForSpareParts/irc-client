@@ -7,7 +7,7 @@ var sinon = require('sinon');
 var app = require('../app')
   , request = require('supertest-as-promised')(app);
 
-var connectionLib = require('../models/server/connection');
+var connectionLib = require('../connection');
 
 require('mocha-sinon');
 

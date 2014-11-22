@@ -1,8 +1,13 @@
+/**
+ * Test the database REST API, which provides access to database models (Server,
+ * Channel, and Message).
+ */
+
 var app = require('../app')
   , request = require('supertest-as-promised')(app);
 
 
-describe('The basic CRUD API', function() {
+describe('The database access API', function() {
   it('should get data for all models of a type', function() {
     return request.get('/servers')
 

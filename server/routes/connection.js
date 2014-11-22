@@ -1,6 +1,6 @@
 var express = require('express');
 
-var connection = require('../models/server/connection');
+var connection = require('../connection');
 var models = require('../models');
 
 

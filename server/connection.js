@@ -1,7 +1,7 @@
 var Promise = require('bluebird');
 
 var _ = require('underscore');
-var irc = require('../../node-irc');
+var irc = require('./node-irc');
 
 var connectionCache = {};
 
