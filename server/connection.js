@@ -1,3 +1,4 @@
+var events = require('events');
 var Promise = require('bluebird');
 
 var _ = require('underscore');
@@ -45,6 +46,25 @@ module.exports.clearConnections = function() {
 }
 
 /**
+ * Emits events related to connections so that we can respond to events from IRC
+ * servers elsewhere in the code.
+ * 
+ * The convention is that any event emitted from connectionEmitter will have the
+ * host, port, and nick of the IRC connection as its first three arguments,
+ * followed by any other arguments used by the event.
+ *
+ * Emits on:
+ * -  connected
+ * -  disconnected
+ * -  joined (channel)
+ * -  parted (channel)
+ * 
+ * @type {events.EventEmitter}
+ */
+var connectionEmitter = new events.EventEmitter();
+module.exports.connectionEmitter = connectionEmitter;
+
+/**
  * Represents a connection to an IRC server. Creates an irc.Client object for
  * the connection if one doesn't already exist.
  * 
@@ -53,9 +73,12 @@ module.exports.clearConnections = function() {
  * @param {string} nick
  */
 var Connection = function(host, port, nick) {
-  //there's no cached client, create one:
-  this.client = new irc.Client(host, nick, {
-    port: port,
+  this.host = host;
+  this.port = port;
+  this.nick = nick;
+
+  this.client = new irc.Client(this.host, this.nick, {
+    port: this.port,
     autoConnect: false
   });
 
@@ -74,6 +97,8 @@ Connection.prototype.connect = function() {
     //just call connect...
     self.client.connect(function(connectInfo) {
 
+      connectionEmitter.emit('connected', self.host, self.port, self.nick);
+
       //...and resolve in the callback
       resolve(connectInfo);
     });
@@ -89,6 +114,8 @@ Connection.prototype.disconnect = function() {
 
   return new Promise(function(resolve, reject) {
     self.client.disconnect(function(disconnectInfo) {
+
+      connectionEmitter.emit('disconnected', self.host, self.port, self.nick);
       resolve(disconnectInfo);
     });
   });
@@ -104,6 +131,8 @@ Connection.prototype.join = function(channel) {
 
   return new Promise(function(resolve, reject) {
     self.client.join(channel, function(joinInfo) {
+      connectionEmitter.emit(
+        'joined', self.host, self.port, self.nick, channel);
       resolve(joinInfo);
     })
   });
@@ -119,6 +148,8 @@ Connection.prototype.part = function(channel) {
 
   return new Promise(function(resolve, reject) {
     self.client.part(channel, function(partInfo) {
+      connectionEmitter.emit(
+        'parted', self.host, self.port, self.nick, channel);
       resolve(partInfo);
     })
   });
