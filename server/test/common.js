@@ -1,5 +1,5 @@
 /**
- * Common setup for all tests. Loaded 
+ * Common setup for all tests.
  */
 
 //load blanket for coverage. must happen first.
@@ -7,7 +7,6 @@ var blanket = require("blanket")({
    /* options are passed as an argument object to the require statement */
    "pattern": /^((?!(\/node_modules\/|\/test\/)).)*$/
  });
-
 
 
 /**
@@ -41,6 +40,9 @@ settings.ircLib = 'mock';
 //disable http logging
 settings.logRequests = false;
 
+//disable IRC event handling
+settings.listenToIRC = false;
+
 var fixtures = require('../models/fixtures')
   , knexfile = require('../knexfile')
   , models = require('../models')
@@ -60,7 +62,7 @@ before(function() {
   return models.migrateLatest()
 
   //clear any existing data
-  .then(models.truncateAll)
+  .then(models.truncateAll);
 });
 
 beforeEach(function() {

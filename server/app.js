@@ -11,6 +11,10 @@ var settings = require('./settings');
 
 var app = express();
 
+if (settings.listenToIRC) {
+  require('./listener');
+}
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');

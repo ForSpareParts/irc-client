@@ -15,11 +15,6 @@ var Channel = BaseModel.extend({
   server: function() {
     return this.belongsTo('Server');
   },
-
-  /** All Users currently in this Channel. */
-  users: function () {
-    return this.belongsToMany('User');
-  },
   
   /** All Messages sent in this Channel. */
   messages: function() {

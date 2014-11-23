@@ -29,7 +29,7 @@ module.exports.getConnection = function(host, port, nick) {
   }
 
   //there's no cached client, create one:
-  var created = new Connection(host, nick, port);
+  var created = new Connection(host, port, nick);
 
   connectionCache[hostString] = created;
 

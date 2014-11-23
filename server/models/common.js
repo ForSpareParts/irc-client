@@ -102,6 +102,18 @@ var BaseModel = Bookshelf.Model.extend(
       }
     },
 
+    /** Retrieves a record with the properties in search if one exists; if not,
+    creates such a record. */
+    getOrCreate: function(search) {
+      var self = this;
+
+      return this.get(search)
+
+      .catch(this.NotFoundError, function() {
+        return self.create(search);
+      });
+    }
+
   }
 );
 
