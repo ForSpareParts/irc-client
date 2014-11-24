@@ -17,7 +17,7 @@ describe('The connection API', function() {
     return request.get('/connections/1')
 
     .expect(200)
-    .expect({connected: false, server: 1, channels: []});
+    .expect({connected: false, server: 1, joined: []});
   });
 
   it('should show connection state at /connected', function() {
@@ -45,8 +45,8 @@ describe('The connection API', function() {
     beforeEach(function() {
 
       //start with a couple joined channels
-      return request.post('/connections/1/channels')
-      .send({channels: ['#channelA', '#channelB']});
+      return request.post('/connections/1/joined')
+      .send({joined: ['#channelA', '#channelB']});
 
     });
 
@@ -58,25 +58,25 @@ describe('The connection API', function() {
       .expect({connected: false});
     });
 
-    it('should list joined channels at /channels', function() {
-      return request.get('/connections/1/channels')
+    it('should list joined channels at /joined', function() {
+      return request.get('/connections/1/joined')
 
       .expect(200)
-      .expect({channels: ['#channelA', '#channelB']});
+      .expect({joined: ['#channelA', '#channelB']});
     });
 
-    it('should replace all joined channels on a POST to /channels', function() {
-      return request.post('/connections/1/channels')
-      .send({channels: ['#channelB', '#channelC']})
+    it('should replace all joined channels on a POST to /joined', function() {
+      return request.post('/connections/1/joined')
+      .send({joined: ['#channelB', '#channelC']})
       .expect(200)
-      .expect({channels: ['#channelB', '#channelC']});
+      .expect({joined: ['#channelB', '#channelC']});
     });
 
-    it('should add joined channels on a PUT to /channels', function() {
-      return request.put('/connections/1/channels')
-      .send({channels: ['#channelB', '#channelC']})
+    it('should add joined channels on a PUT to /joined', function() {
+      return request.put('/connections/1/joined')
+      .send({joined: ['#channelB', '#channelC']})
       .expect(200)
-      .expect({channels: ['#channelA', '#channelB', '#channelC']});
+      .expect({joined: ['#channelA', '#channelB', '#channelC']});
     });
 
   });
