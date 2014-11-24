@@ -36,80 +36,58 @@ module.exports.modelRestRouter = function(model) {
       });
     });
 
+  //grab the model instance and store it in req.record so that we have it when
+  //we get to the next step
+  router.use('/:id', function(req, res, next) {
+    model.get(req.params.id)
+
+    .then(function(record) {
+      req.record = record;
+      next();
+    })
+
+    .catch(model.NotFoundError, function(error) {
+      res.status(404).send({
+        error: error
+      });
+    })
+
+    .catch(function(error) {
+      res.status(500).send({
+        error: error
+      });
+    });
+  });
+
   router.route('/:id')
 
     .get(function(req, res) {
-      model.get(req.params.id)
-
-      .then(function(record) {
-        res.send(record.toEmber());
-      })
-
-      .catch(model.NotFoundError, function(error) {
-        res.status(404).send({
-          error: error
-        });
-      })
-
-      .catch(function(error) {
-        res.status(500).send({
-          error: error
-        });
-      });
+      res.send(req.record.toEmber());
     })
 
     .put(function(req, res) {
       //delete any id in the request body -- otherwise, it could override the id
       //in the path
-      tableName = model.forge().tableName;
+      tableName = model.tableName();
       delete req.body[tableName].id;
 
-      var promise = new model({
-        id: req.params.id
-      }).save(req.body[tableName], {
-        patch: true
-      });
+      //use the request body to overwrite the contents of the fetched model
+      req.record.set(req.body[tableName]);
 
-      promise.then(function(updated) {
+      return req.record.save()
+
+      .then(function(updated) {
         res.send(updated.toEmber());
-      })
-
-      .catch(model.NotFoundError, function(error) {
-        res.status(404).send({
-          error: error
-        });
-      })
-
-      .catch(function(error) {
-        res.status(500).send({
-          error: error
-        });
       });
     })
 
     .delete(function(req, res) {
-      //null out any id in the request body -- otherwise, it could override the
-      //id in the path
+      return req.record.destroy()
 
-      var promise = model.destroy(req.params.id);
-
-      promise.then(function() {
-
+      .then(function() {
         res.send(
           {success: true}
         );
-      })
-
-      .catch(model.NotFoundError, function(error) {
-        res.status(404).send({
-          error: error
-        });
-      })
-
-      .catch(function(error) {
-        res.status(500).send({
-          error: error
-        });
       });
     });
 

@@ -40,7 +40,7 @@ describe('The database access API', function() {
     .then(function(res) {
       channel = res.body.channel;
 
-      assert.strictEqual(channel.id, '1');
+      assert.strictEqual(channel.id, 1);
       assert.strictEqual(channel.name, '#newchannelname');
     });
   });

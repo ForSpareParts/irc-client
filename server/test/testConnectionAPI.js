@@ -6,6 +6,8 @@ var app = require('../app')
 
 var connectionLib = require('../connection');
 
+var CONNECTION_PATH = '/servers/1/connection';
+
 describe('The connection API', function() {
 
   beforeEach(function() {
@@ -14,44 +16,38 @@ describe('The connection API', function() {
   });
 
   it('should show a summary of a connection', function() {
-    return request.get('/connections/1')
+    return request.get(CONNECTION_PATH)
 
     .expect(200)
     .expect({connected: false, server: 1, joined: []});
   });
 
   it('should show connection state at /connected', function() {
-    return request.get('/connections/1/connected')
+    return request.get(CONNECTION_PATH + '/connected')
 
     .expect(200)
     .expect({connected: false});
   });
 
   it('should connect when we set /connected to true', function() {
-    return request.post('/connections/1/connected')
+    return request.post(CONNECTION_PATH + '/connected')
     .send({connected: true})
     .expect(200)
     .expect({connected: true})
   });
-
-  it('should 404 if we request a connection without a matching server',
-    function() {
-      return request.get('/connections/42/connected')
-      .expect(404);
-    })
 
   //when already connected
   describe('when servers are already connected,', function() {
     beforeEach(function() {
 
       //start with a couple joined channels
-      return request.post('/connections/1/joined')
+      return request.post(CONNECTION_PATH + '/joined')
       .send({joined: ['#channelA', '#channelB']});
 
     });
 
     it('should disconnect when we set /connected to false', function() {
-      return request.post('/connections/1/connected')
+      return request.post(CONNECTION_PATH + '/connected')
       .send({connected: false})
 
       .expect(200)
@@ -59,21 +55,21 @@ describe('The connection API', function() {
     });
 
     it('should list joined channels at /joined', function() {
-      return request.get('/connections/1/joined')
+      return request.get(CONNECTION_PATH + '/joined')
 
       .expect(200)
       .expect({joined: ['#channelA', '#channelB']});
     });
 
     it('should replace all joined channels on a POST to /joined', function() {
-      return request.post('/connections/1/joined')
+      return request.post(CONNECTION_PATH + '/joined')
       .send({joined: ['#channelB', '#channelC']})
       .expect(200)
       .expect({joined: ['#channelB', '#channelC']});
     });
 
     it('should add joined channels on a PUT to /joined', function() {
-      return request.put('/connections/1/joined')
+      return request.put(CONNECTION_PATH + '/joined')
       .send({joined: ['#channelB', '#channelC']})
       .expect(200)
       .expect({joined: ['#channelA', '#channelB', '#channelC']});
