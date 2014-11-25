@@ -1,3 +1,7 @@
+//set our working directory to the server's root, making it easier to run the
+//server from other directories/build scripts/etc.
+process.chdir(__dirname);
+
 var express = require('express');
 var path = require('path');
 var favicon = require('static-favicon');
@@ -28,6 +32,10 @@ if (settings.logRequests) {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
+
+//'build' is a directory ignored by git -- ember-cli can put compiled files
+//there, while 'public' is reserved for any static files specific to the server
+app.use(express.static(path.join(__dirname, 'build')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/servers', routes.Server);

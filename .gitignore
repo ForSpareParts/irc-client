@@ -1,3 +1,4 @@
 node_modules
 *.sqlite
+server/build
 server/coverage.html
