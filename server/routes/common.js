@@ -5,7 +5,7 @@ module.exports.modelRestRouter = function(model) {
 
   router.route('/')
     .get(function(req, res, next) {
-      return router.getCollection().fetch()
+      return router.getCollection(req).fetch()
 
       .then(function (records) {
         //records is a Bookshelf collection, .models is the actual array of
@@ -21,7 +21,7 @@ module.exports.modelRestRouter = function(model) {
 
     .post(function(req, res, next) {
       tableName = model.forge().tableName;
-      router.getCollection().create(req.body[tableName])
+      router.getCollection(req).create(req.body[tableName])
 
       .then(function(created) {
         res.send(created.toEmber());
@@ -35,7 +35,7 @@ module.exports.modelRestRouter = function(model) {
   //grab the model instance and store it in req[model.tableName()] so that we
   //have it when we get to the next step
   router.use('/:id', function(req, res, next) {
-    router.getCollection().query(function(qb) {
+    router.getCollection(req).query(function(qb) {
       qb.where({id: req.params.id});
     }).fetchOne()
 
@@ -103,10 +103,12 @@ module.exports.modelRestRouter = function(model) {
    * path.
    *
    * By default, retrieves all records in model.
-   * 
+   *
+   * @param  {[express.Request]} req
+   * @param  {models.BaseModel} model
    * @return {Promise}
    */
-  router.getCollection = function() {
+  router.getCollection = function(req) {
     return model.collection();
   };
 
