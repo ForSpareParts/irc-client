@@ -33,6 +33,15 @@ var fixtureData = [
       server_id: 1
     }
   },
+  {
+    "model": "Channel",
+    "data":{
+      id: 2,
+      name: "#otherserverchannel",
+
+      server_id: 2
+    }
+  },
 
   {
     "model": "Message",
@@ -56,6 +65,18 @@ var fixtureData = [
       time: Date('2000-01-01T00:01:00'),
 
       contents: 'Hi, yourself!'
+    }
+  },
+  {
+    "model": "Message",
+    "data": {
+      id: 3,
+
+      nick: "PersonOnOtherServer",
+      channel_id: 2,
+      time: Date('2000-01-01T00:01:00'),
+
+      contents: 'No one can hear me!'
     }
   },
 ];

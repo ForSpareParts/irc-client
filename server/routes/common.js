@@ -57,12 +57,7 @@ module.exports.modelRestRouter = function(model) {
 
     .catch(function(error) {
       next(error);
-    })
-
-    .catch(model.NotFoundError, function(error) {
-      next(error);
-    })
-
+    });
   });
 
   router.route('/:id')
