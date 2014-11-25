@@ -4,10 +4,10 @@ module.exports.modelRestRouter = function(model) {
   var router = express.Router();
 
   router.route('/')
-    .get(function(req, res) {
-      var promise = model.all();
+    .get(function(req, res, next) {
+      return router.getCollection().fetch()
 
-      promise.then(function (records) {
+      .then(function (records) {
         //records is a Bookshelf collection, .models is the actual array of
         //records
         res.send(
@@ -15,54 +15,60 @@ module.exports.modelRestRouter = function(model) {
       })
 
       .catch(function(error) {
-        res.status(500).send({
-          error: error
-        });
+        next(error);
       });
     })
 
-    .post(function(req, res) {
+    .post(function(req, res, next) {
       tableName = model.forge().tableName;
-      model.create(req.body[tableName])
+      router.getCollection().create(req.body[tableName])
 
       .then(function(created) {
         res.send(created.toEmber());
       })
 
       .catch(function(error) {
-        res.status(500).send({
-          error: error
-        });
+        next(error);
       });
     });
 
-  //grab the model instance and store it in req.record so that we have it when
-  //we get to the next step
+  //grab the model instance and store it in req[model.tableName()] so that we
+  //have it when we get to the next step
   router.use('/:id', function(req, res, next) {
-    model.get(req.params.id)
+    router.getCollection().query(function(qb) {
+      qb.where({id: req.params.id});
+    }).fetchOne()
 
     .then(function(record) {
-      req.record = record;
-      next();
-    })
+      if (record === null) {
+        var error = new Error("No record found in table " + model.tableName() +
+          " for id " + req.params.id);
+        error.status = 404;
 
-    .catch(model.NotFoundError, function(error) {
-      res.status(404).send({
-        error: error
-      });
+        next(error);
+      }
+
+      else {
+        req[model.tableName()] = record;
+        
+        next();        
+      }
     })
 
     .catch(function(error) {
-      res.status(500).send({
-        error: error
-      });
-    });
+      next(error);
+    })
+
+    .catch(model.NotFoundError, function(error) {
+      next(error);
+    })
+
   });
 
   router.route('/:id')
 
     .get(function(req, res) {
-      res.send(req.record.toEmber());
+      res.send(req[model.tableName()].toEmber());
     })
 
     .put(function(req, res) {
@@ -72,9 +78,9 @@ module.exports.modelRestRouter = function(model) {
       delete req.body[tableName].id;
 
       //use the request body to overwrite the contents of the fetched model
-      req.record.set(req.body[tableName]);
+      req[model.tableName()].set(req.body[tableName]);
 
-      return req.record.save()
+      return req[model.tableName()].save()
 
       .then(function(updated) {
         res.send(updated.toEmber());
@@ -82,7 +88,7 @@ module.exports.modelRestRouter = function(model) {
     })
 
     .delete(function(req, res) {
-      return req.record.destroy()
+      return req[model.tableName()].destroy()
 
       .then(function() {
         res.send(
@@ -90,6 +96,19 @@ module.exports.modelRestRouter = function(model) {
         );
       });
     });
+
+
+  /**
+   * Gets all the records available to this route. This is the data for the root
+   * path.
+   *
+   * By default, retrieves all records in model.
+   * 
+   * @return {Promise}
+   */
+  router.getCollection = function() {
+    return model.collection();
+  };
 
   return router;
 };

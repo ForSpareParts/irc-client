@@ -14,6 +14,7 @@ describe('The database access API', function() {
     .expect(200)
     .then(function(res) {
       var servers = res.body.servers;
+      debugger;
 
       assert.strictEqual(servers.length, 2);
       assert.strictEqual(servers[0].name, "FooServer");

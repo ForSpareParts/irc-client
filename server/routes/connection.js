@@ -6,16 +6,16 @@ var models = require('../models');
 
 var router = express.Router();
 
-//we can access the connection's Server at req.record
+//we can access the connection's Server at req.server
 
 /**
  * Send a quick summary of the connection.
  */
 router.get('/', function(req, res) {
   res.send({
-    connected: req.record.connection().isConnected(),
-    server: req.record.id,
-    joined: req.record.connection().getJoinedChannels()
+    connected: req.server.connection().isConnected(),
+    server: req.server.id,
+    joined: req.server.connection().getJoinedChannels()
   });
 });
 
@@ -24,20 +24,20 @@ router.route('/connected')
   /** Get connection state. */
   .get(function(req, res) {
     res.send({
-      connected: req.record.connection().isConnected()
+      connected: req.server.connection().isConnected()
     });
   })
 
   /** Update connection state (connect/disconnect). */
   .post(function(req, res) {
     if (req.body.connected == true) {
-      req.record.connection().connect().then(function() {
+      req.server.connection().connect().then(function() {
         res.send({connected: true});
       });
     }
 
     else if (req.body.connected == false) {
-      req.record.connection().disconnect().then(function() {
+      req.server.connection().disconnect().then(function() {
         res.send({connected: false});
       });
     }
@@ -48,21 +48,21 @@ router.route('/joined')
 
   .get(function(req, res) {
     res.send({
-      joined: req.record.connection().getJoinedChannels()});
+      joined: req.server.connection().getJoinedChannels()});
   })
 
   .post(function(req, res) {
-    req.record.connection().setJoinedChannels(req.body.joined);
+    req.server.connection().setJoinedChannels(req.body.joined);
 
     res.send({
-      joined: req.record.connection().getJoinedChannels()});
+      joined: req.server.connection().getJoinedChannels()});
   })
 
   .put(function(req, res) {
-    req.record.connection().addJoinedChannels(req.body.joined);
+    req.server.connection().addJoinedChannels(req.body.joined);
 
     res.send({
-      joined: req.record.connection().getJoinedChannels()});
+      joined: req.server.connection().getJoinedChannels()});
   });
 
 module.exports = router;
