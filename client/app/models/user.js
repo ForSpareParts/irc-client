@@ -1,7 +1,7 @@
 import DS from 'ember-data';
 
 var User = DS.Model.extend({
-  nickname: DS.attr('string'),
+  nick: DS.attr('string'),
   server: DS.belongsTo('server', {inverse: null}),
   channels: DS.hasMany('channel')
 });

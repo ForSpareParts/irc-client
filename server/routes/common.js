@@ -10,6 +10,7 @@ module.exports.modelRestRouter = function(model) {
       .then(function (records) {
         //records is a Bookshelf collection, .models is the actual array of
         //records
+        debugger;
         res.send(
           model.toEmberArray(records.models));
       })

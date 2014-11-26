@@ -1,9 +1,9 @@
 <ul class="messages">
   {{#each message in model.messages}}
   <li>
-    <span class="time">{{message.time}}</span>
-    <span class="user">{{message.user.nickname}}:</span>
-    <span class="contents">{{message.message}}</span>
+    <span class="time">{{message.shortTime}}</span>
+    <span class="nick">{{message.nick}}:</span>
+    <span class="contents">{{message.contents}}</span>
   </li>
   {{/each}}
 </ul>

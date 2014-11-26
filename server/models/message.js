@@ -12,6 +12,14 @@ var Message = BaseModel.extend({
   /** The Channel in which this Message was sent. */
   channel: function() {
     return this.belongsTo('Channel');
+  },
+
+  toJSON: function() {
+    var jsonObj = BaseModel.prototype.toJSON.apply(this);
+
+    jsonObj.time = new Date(jsonObj.time).toISOString();
+
+    return jsonObj;
   }
 });
 

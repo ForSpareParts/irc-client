@@ -6,10 +6,10 @@ import Ember from 'ember';
 var Message = DS.Model.extend({
   channel: DS.belongsTo('channel', {async: true}),
   time: DS.attr('isodate'),
-  message: DS.attr('string'),
+  nick: DS.attr('string'),
+  contents: DS.attr('string'),
 
   shortTime: function() {
-    Ember.debug(this.get('time'));
     return this.get('time').format('hh:mm A');
   }.property('time')
 });

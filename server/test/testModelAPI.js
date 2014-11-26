@@ -51,7 +51,7 @@ describe('The database access API', function() {
       message: {
         nick: 'somenick',
         channel_id: 1,
-        time: Date('2000-01-01T00:02:00'),
+        time: new Date('2000-01-01T00:02:00').toISOString(),
         contents: 'test message'
       }
     })
