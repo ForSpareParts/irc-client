@@ -5,29 +5,10 @@ var Server = DS.Model.extend({
   host: DS.attr('string'),
   port: DS.attr('string'),
 
-  users: DS.hasMany('user', {async: true}),
-
   //the user representing "us" on this server; i.e., our own connection
-  connectionUser: DS.belongsTo('user', {async: true})
-});
+  nick: DS.attr('string'),
 
-Server.reopenClass({
-  FIXTURES: [
-    {
-      id: 1,
-      name: 'FooServer',
-      host: 'irc.foo.net',
-      port: '6667',
-
-      connectionUser: 3
-    },
-    {
-      id: 2,
-      name: 'BarServer',
-      host: 'irc.bar.net',
-      port: '6667'
-    }
-  ]
+  channels: DS.hasMany('channel')
 });
 
 export default Server;

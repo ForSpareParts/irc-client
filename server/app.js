@@ -38,10 +38,20 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'build')));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/servers', routes.Server);
-app.use('/channels', routes.Channel);
-app.use('/users', routes.User);
-app.use('/messages', routes.Message);
+app.use(function(req, res, next) {
+  if (req.accepts('html')) {
+    res.sendFile(path.join(__dirname, 'build/index.html'));
+  }
+
+  else {
+    next();
+  }
+});
+
+app.use('/api/servers', routes.Server);
+app.use('/api/channels', routes.Channel);
+app.use('/api/users', routes.User);
+app.use('/api/messages', routes.Message);
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {

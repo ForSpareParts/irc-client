@@ -27,6 +27,13 @@ var Server = BaseModel.extend({
       this.get('host'),
       this.get('port'),
       this.get('nick'));
+  },
+
+  toEmber: function() {
+    var emberObject = BaseModel.prototype.toEmber.apply(this);
+
+    return emberObject.server.channels = '/server/' + this.get('id') +
+      '/channels';
   }
 
 });
