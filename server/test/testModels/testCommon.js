@@ -10,7 +10,10 @@ describe('The base model', function() {
       server: {
         name: 'some name',
         host: 'irc.hostname.net',
-        port: '3000'
+        port: '3000',
+        links: {
+          channels: '/api/servers/undefined/channels'
+        }
       }
     }
 
@@ -34,12 +37,18 @@ describe('The base model', function() {
         {
           name: 'name one',
           host: 'irc.hostone.net',
-          port: '3000'
+          port: '3000',
+          links: {
+            channels: '/api/servers/undefined/channels'
+          }
         },
         {
           name: 'name two',
           host: 'irc.hosttwo.net',
-          port: '3001'
+          port: '3001',
+          links: {
+            channels: '/api/servers/undefined/channels'
+          }
         }
       ]
     };

@@ -8,7 +8,7 @@ var Server = DS.Model.extend({
   //the user representing "us" on this server; i.e., our own connection
   nick: DS.attr('string'),
 
-  channels: DS.hasMany('channel')
+  channels: DS.hasMany('channel', {async: true})
 });
 
 export default Server;

@@ -18,6 +18,10 @@ var Bookshelf = require('bookshelf')(knex);
 //activate the registry plugin to help us resolve circular model dependencies
 Bookshelf.plugin('registry');
 
+//activate the virtuals plugin to create the 'links' property where necessary
+Bookshelf.plugin('virtuals');
+
+
 /** A base class providing added functionality on top of Bookshelf.Model. All
 application models extend this class. */
 var BaseModel = Bookshelf.Model.extend(

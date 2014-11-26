@@ -29,6 +29,14 @@ var Server = BaseModel.extend({
       this.get('nick'));
   },
 
+  virtuals: {
+    links: function() {
+      return {
+        channels: '/api/servers/' + this.get('id') + '/channels'
+      };
+    }
+  }
+
 });
 
 module.exports = Server;

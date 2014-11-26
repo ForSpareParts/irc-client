@@ -41,7 +41,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api', apiRouter);
 
 app.use(function(req, res, next) {
-  console.log(req.accepts('html'));
   if (req.accepts('html')) {
     res.sendFile(path.join(__dirname, 'build/index.html'));
   }

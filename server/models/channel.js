@@ -19,6 +19,14 @@ var Channel = BaseModel.extend({
   /** All Messages sent in this Channel. */
   messages: function() {
     return this.hasMany('Message');
+  },
+
+  virtuals: {
+    links: function() {
+      return {
+        messages: '/api/channels/' + this.get('id') + '/messages'
+      }
+    }
   }
 });
 
