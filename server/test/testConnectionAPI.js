@@ -6,7 +6,7 @@ var app = require('../app')
 
 var connectionLib = require('../connection');
 
-var CONNECTION_PATH = '/servers/1/connection';
+var CONNECTION_PATH = NAMESPACE + '/servers/1/connection';
 
 describe('The connection API', function() {
 

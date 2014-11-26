@@ -9,7 +9,7 @@ var app = require('../app')
 
 describe('The database access API', function() {
   it('should get data for all models of a type', function() {
-    return request.get('/servers')
+    return request.get(NAMESPACE + '/servers')
 
     .expect(200)
     .then(function(res) {
@@ -21,7 +21,7 @@ describe('The database access API', function() {
   });
 
   it('should get data for a specific model by id', function() {
-    return request.get('/channels/1')
+    return request.get(NAMESPACE + '/channels/1')
     
     .expect(200)
     .then(function(res) {
@@ -31,7 +31,7 @@ describe('The database access API', function() {
   });
 
   it('should update models by id', function() {
-    return request.put('/channels/1')
+    return request.put(NAMESPACE + '/channels/1')
     .send({
        channel: {name: '#newchannelname'}
     })
@@ -46,7 +46,7 @@ describe('The database access API', function() {
   });
 
   it('should create new models', function() {
-    return request.post('/messages/')
+    return request.post(NAMESPACE + '/messages/')
     .send({
       message: {
         nick: 'somenick',
@@ -64,7 +64,7 @@ describe('The database access API', function() {
   });
 
   it('should destroy models by id', function() {
-    return request.del('/servers/1')
+    return request.del(NAMESPACE + '/servers/1')
 
     .expect(200)
 
@@ -72,21 +72,21 @@ describe('The database access API', function() {
       //make sure the request says it was successful
       assert.deepEqual(res.body, {success: true});
 
-      return request.get('/servers/1').expect(404);
+      return request.get(NAMESPACE + '/servers/1').expect(404);
     });
   });
 
   it('should 404 for missing models', function() {
     //this model does not exist, and should 404
-    return request.get('/channels/42').expect(404);
+    return request.get(NAMESPACE + '/channels/42').expect(404);
   });
 
   it('should 404 for invalid paths', function() {
-    return request.get('/foobar').expect(404);
+    return request.get(NAMESPACE + '/foobar').expect(404);
   });
 
   it('should get all channels for a server', function() {
-    return request.get('/servers/1/channels')
+    return request.get(NAMESPACE + '/servers/1/channels')
     .expect(200)
     .then(function(res) {
       //there's only one channel for server 1, so we should only get a single
@@ -99,12 +99,12 @@ describe('The database access API', function() {
     function() {
       //channel 1 does exist, but it doesn't belong to server 2 -- so the request
       //should 404
-      return request.get('/servers/2/channels/1')
+      return request.get(NAMESPACE + '/servers/2/channels/1')
       .expect(404);
   });
 
   it('should get all messages for a channel', function() {
-    return request.get('/channels/1/messages')
+    return request.get(NAMESPACE + '/channels/1/messages')
     .expect(200)
     .then(function(res) {
       //we should only get the two messages in channel 1
@@ -114,7 +114,7 @@ describe('The database access API', function() {
 
   it('should 404 for messages that do not belong to the indicated channel',
     function() {
-      return request.get('/channels/2/messages/1')
+      return request.get(NAMESPACE + '/channels/2/messages/1')
       .expect(404);      
   });
 

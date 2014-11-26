@@ -53,6 +53,8 @@ var PORT = 3000;
 //this is useful in other tests, so we also want to make it global
 HOST = 'http://localhost:' + PORT;
 
+NAMESPACE = '/api';
+
 /**
  * root-level testing hooks
  */

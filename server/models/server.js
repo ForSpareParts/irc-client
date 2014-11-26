@@ -29,13 +29,6 @@ var Server = BaseModel.extend({
       this.get('nick'));
   },
 
-  toEmber: function() {
-    var emberObject = BaseModel.prototype.toEmber.apply(this);
-
-    return emberObject.server.channels = '/server/' + this.get('id') +
-      '/channels';
-  }
-
 });
 
 module.exports = Server;
