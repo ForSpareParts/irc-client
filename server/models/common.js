@@ -31,29 +31,10 @@ var BaseModel = Bookshelf.Model.extend(
     /** Return Ember-compatible object representing the instance. */
     toEmber: function() {
       var emberObject = {};
-      emberObject[this.tableName] = this.toJSON();
+      emberObject[this.tableName] = this.constructor.foreignKeysToEmber(
+        this.toJSON());
 
       return emberObject;
-    },
-
-    toJSON: function() {
-      var jsonObject = Bookshelf.Model.prototype.toJSON.apply(this);
-
-
-      if (this.constructor.foreignKeysTo) {
-        //strip _id off of the names of foreign keys so Ember recognizes them,
-        //e.g. convert server_id: 1 to server: 1
-        this.constructor.foreignKeysTo.forEach(function(key) {
-          if (jsonObject[key + "_id"]) {
-            var temp = jsonObject[key + "_id"];
-            delete jsonObject[key + "_id"];
-
-            jsonObject[key] = temp;
-          }
-        });
-      }
-
-      return jsonObject;
     },
 
   },
@@ -62,7 +43,7 @@ var BaseModel = Bookshelf.Model.extend(
   {
     //array of foreign keys on this model -- e.g. ['server', 'channel']
     //OMIT the trailing _id on the database column
-    foreignKeysTo: null,
+    foerignKeys: null,
 
     /**
      * Return the name of the database table this model represents.
@@ -75,23 +56,60 @@ var BaseModel = Bookshelf.Model.extend(
       return this.forge().tableName;
     },
 
-    /** Take Ember-compatible object and return a record. */
-    fromEmber: function(emberObject) {
-      innerObj = emberObject[this.tableName()];
+    /**
+     * Take a JSON-serializable object representing a single record, and
+     * return a copy with any foreign keys converted from Bookshelf (_id) format
+     * to Ember (sans _id) format.
+     * @param {Object} [obj]
+     * @return {Object} [description]
+     */
+    foreignKeysToEmber: function(obj) {
+      var clone = JSON.parse(JSON.stringify(obj));
 
-      //put _id back on foreign keys, so Bookshelf recognizes them
-      if (this.foreignKeysTo) {
-        this.foreignKeysTo.forEach(function(key) {
-          if (innerObj[key]) {
-            var temp = innerObj[key];
-            delete innerObj[key];
+      if (this.foreignKeys) {
+        //strip _id off of the names of foreign keys so Ember recognizes them,
+        //e.g. convert server_id: 1 to server: 1
+        this.foreignKeys.forEach(function(key) {
+          if (clone[key + "_id"]) {
+            var temp = clone[key + "_id"];
+            delete clone[key + "_id"];
 
-            innerObj[key + "_id"] = temp;
+            clone[key] = temp;
           }
         });
       }
 
-      return this.forge(innerObj);
+      return clone;
+    },
+
+    /**
+     * Take a JSON-serializable object representing a single record, and return
+     * a copy with any foreign keys converted from Ember format to Bookshelf
+     * format (the reverse of foreignKeysToEmber()).
+     * @param  {Object} obj [description]
+     * @return {Object}     [description]
+     */
+    foreignKeysToBookshelf: function(obj) {
+      var clone = JSON.parse(JSON.stringify(obj));
+
+      if (this.foreignKeys) {
+        this.foreignKeys.forEach(function(key) {
+          if (clone[key]) {
+            var temp = clone[key];
+            delete clone[key];
+
+            clone[key + "_id"] = temp;
+          }
+        });
+      }
+
+      return clone;
+    },
+
+    /** Take Ember-compatible object and return a record. */
+    fromEmber: function(emberObject) {
+      return this.forge(
+        this.foreignKeysToBookshelf(emberObject[this.tableName()]));
     },
 
     /** Take Ember-compatible object containing an array and return an array of
@@ -100,7 +118,7 @@ var BaseModel = Bookshelf.Model.extend(
       var self = this;
       var pluralName = inflection.pluralize(self.forge().tableName);
       return emberObject[pluralName].map(function (serialized) {
-        return self.forge(serialized);
+        return self.forge(self.foreignKeysToBookshelf(serialized));
       });
     },
 

@@ -50,7 +50,7 @@ var fixtureData = [
 
       nick: "somenick",
       channel_id: 1,
-      time: Date('2000-01-01T00:00:00'),
+      time: new Date('2000-01-01T00:00:00').toISOString(),
 
       contents: 'Hi!'
     }
@@ -62,7 +62,7 @@ var fixtureData = [
 
       nick: "othernick",
       channel_id: 1,
-      time: Date('2000-01-01T00:01:00'),
+      time: new Date('2000-01-01T00:01:00').toISOString(),
 
       contents: 'Hi, yourself!'
     }

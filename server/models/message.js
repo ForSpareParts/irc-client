@@ -23,7 +23,7 @@ var Message = BaseModel.extend({
   }
 },
 { //class methods/properties
-  foreignKeysTo: ['channel']
+  foreignKeys: ['channel']
 });
 
 module.exports = Message;

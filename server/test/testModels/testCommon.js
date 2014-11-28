@@ -72,4 +72,31 @@ describe('The base model', function() {
       sampleEmberArray);
 
   });
+
+  it('should strip "_id" from foreign keys when converting to Ember format',
+    function() {
+      return models.Channel.get(1)
+
+      .then(function(channel) {
+        emberObj = channel.toEmber();
+
+        assert.property(emberObj.channel, "server");
+        assert.notProperty(emberObj.channel, "server_id");
+      });
+  });
+
+  it('should add "_id" back on to foreign keys when converting from Ember '
+    +'format', function() {
+      //this will fail if the JSON processing is wrong, so we don't need an
+      //assert
+      return models.Message.fromEmber({
+        message: {
+          channel: 1,
+
+          contents: "foobar",
+          time: new Date().toISOString(),
+          nick: "someUser"
+        }
+      });
+    });
 });

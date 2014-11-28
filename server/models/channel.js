@@ -30,7 +30,7 @@ var Channel = BaseModel.extend({
   }
 },
 { //class methods/properties
-  foreignKeysTo: ['server']
+  foreignKeys: ['server']
 });
 
 module.exports = Channel;
