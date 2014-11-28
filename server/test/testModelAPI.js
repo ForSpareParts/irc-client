@@ -85,6 +85,19 @@ describe('The database access API', function() {
     return request.get(NAMESPACE + '/foobar').expect(404);
   });
 
+  it('should show related models as modelname, instead of modelname_id',
+    function() {
+      //ember prefers this format; e.g. server: 1, instead of server_id: 1
+      return request.get(NAMESPACE + '/channels/1')
+
+      .expect(200)
+
+      .then(function(res) {
+        assert.strictEqual(res.body.channel.server, 1);
+        assert.notProperty(res.body.channel, 'server_id');
+      })
+    });
+
   it('should get all channels for a server', function() {
     return request.get(NAMESPACE + '/servers/1/channels')
     .expect(200)

@@ -30,11 +30,31 @@ var BaseModel = Bookshelf.Model.extend(
   {
     /** Return Ember-compatible object representing the instance. */
     toEmber: function() {
-      emberObject = {};
+      var emberObject = {};
       emberObject[this.tableName] = this.toJSON();
 
       return emberObject;
+    },
+
+    toJSON: function() {
+      var jsonObject = Bookshelf.Model.prototype.toJSON.apply(this);
+
+      //strip _id off of the names of object properties so Ember recognizes them
+      //e.g. convert server_id: 1 to server: 1
+      Object.keys(jsonObject).forEach(function(key) {
+        if (key.slice(-3) === "_id") {
+          var temp = jsonObject[key];
+          delete jsonObject[key];
+
+          var keyStripped = key.slice(0, -3);
+          jsonObject[keyStripped] = temp;
+        }
+      }, this);
+
+      return jsonObject;
     }
+
+
   },
 
   //class methods
