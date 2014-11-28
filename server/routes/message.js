@@ -7,7 +7,7 @@ var modelRestRouter = require('./common').modelRestRouter;
 var router = modelRestRouter(models.Message);
 router.getCollection = function(req) {
   //if we've already retrieved a server, we filter to get only its channels
-  if (req.channel !== undefined) {
+  if (req.channel) {
     return models.Message.collection().query(function(qb) {
       qb.where({channel_id: req.channel.get('id')});
     });
