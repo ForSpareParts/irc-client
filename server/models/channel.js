@@ -28,6 +28,9 @@ var Channel = BaseModel.extend({
       }
     }
   }
+},
+{ //class methods/properties
+  foreignKeysTo: ['server']
 });
 
 module.exports = Channel;

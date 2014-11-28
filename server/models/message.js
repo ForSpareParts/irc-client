@@ -21,6 +21,9 @@ var Message = BaseModel.extend({
 
     return jsonObj;
   }
+},
+{ //class methods/properties
+  foreignKeysTo: ['channel']
 });
 
 module.exports = Message;

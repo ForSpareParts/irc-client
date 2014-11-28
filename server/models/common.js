@@ -39,26 +39,31 @@ var BaseModel = Bookshelf.Model.extend(
     toJSON: function() {
       var jsonObject = Bookshelf.Model.prototype.toJSON.apply(this);
 
-      //strip _id off of the names of object properties so Ember recognizes them
-      //e.g. convert server_id: 1 to server: 1
-      Object.keys(jsonObject).forEach(function(key) {
-        if (key.slice(-3) === "_id") {
-          var temp = jsonObject[key];
-          delete jsonObject[key];
 
-          var keyStripped = key.slice(0, -3);
-          jsonObject[keyStripped] = temp;
-        }
-      }, this);
+      if (this.constructor.foreignKeysTo) {
+        //strip _id off of the names of foreign keys so Ember recognizes them,
+        //e.g. convert server_id: 1 to server: 1
+        this.constructor.foreignKeysTo.forEach(function(key) {
+          if (jsonObject[key + "_id"]) {
+            var temp = jsonObject[key + "_id"];
+            delete jsonObject[key + "_id"];
+
+            jsonObject[key] = temp;
+          }
+        });
+      }
 
       return jsonObject;
-    }
-
+    },
 
   },
 
   //class methods
   {
+    //array of foreign keys on this model -- e.g. ['server', 'channel']
+    //OMIT the trailing _id on the database column
+    foreignKeysTo: null,
+
     /**
      * Return the name of the database table this model represents.
      *
@@ -72,7 +77,21 @@ var BaseModel = Bookshelf.Model.extend(
 
     /** Take Ember-compatible object and return a record. */
     fromEmber: function(emberObject) {
-      return this.forge(emberObject[this.tableName()]);
+      innerObj = emberObject[this.tableName()];
+
+      //put _id back on foreign keys, so Bookshelf recognizes them
+      if (this.foreignKeysTo) {
+        this.foreignKeysTo.forEach(function(key) {
+          if (innerObj[key]) {
+            var temp = innerObj[key];
+            delete innerObj[key];
+
+            innerObj[key + "_id"] = temp;
+          }
+        });
+      }
+
+      return this.forge(innerObj);
     },
 
     /** Take Ember-compatible object containing an array and return an array of

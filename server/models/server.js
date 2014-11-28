@@ -36,7 +36,6 @@ var Server = BaseModel.extend({
       };
     }
   }
-
 });
 
 module.exports = Server;
