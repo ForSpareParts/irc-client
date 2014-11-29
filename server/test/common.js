@@ -35,7 +35,7 @@ var settings = require('../settings');
 settings.databaseConfig = 'test';
 
 //use the mock irc library
-settings.ircLib = 'mock';
+settings.ircLib = './mock-irc';
 
 //disable http logging
 settings.logRequests = false;

@@ -2,7 +2,9 @@ var events = require('events');
 var Promise = require('bluebird');
 
 var _ = require('underscore');
-var irc = require('./node-irc');
+
+var settings = require('./settings');
+var irc = require(settings.ircLib);
 
 var connectionCache = {};
 

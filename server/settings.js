@@ -3,7 +3,7 @@ module.exports = {
   databaseConfig: 'development',
 
   //used to switch between the real node-irc and the development mock
-  ircLib: 'mock',
+  ircLib: './mock-irc',
 
   //when false, disables logging of HTTP requests
   logRequests: true,
