@@ -1,0 +1,24 @@
+#!/usr/bin/env node
+
+var path = require('path');
+var spawn = require('child_process').spawn;
+
+var serverDir = path.resolve(path.join(__dirname, 'server'));
+var buildDir = path.join(serverDir, 'build');
+var clientDir = path.resolve(path.join(__dirname, 'client'));
+
+console.log('Starting server...');
+var serverProc = spawn('nodemon', ['bin/www'], { cwd: serverDir });
+
+console.log('Starting Ember builder...');
+var clientBuildProc = spawn('ember',
+  ['build', '--watch', '--output-path', buildDir],
+  { cwd: clientDir });
+
+process.on('SIGINT', function() {
+  console.log('exiting');
+  serverProc.kill();
+  clientBuildProc.kill();
+
+  process.exit();
+});
