@@ -10,6 +10,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var apiRouter = require('./routes');
+var devRouter = require('./test_utils').router;
 var models = require('./models');
 var settings = require('./settings');
 
@@ -39,6 +40,7 @@ app.use(express.static(path.join(__dirname, 'build')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api', apiRouter);
+app.use('/dev', devRouter);
 
 app.use(function(req, res, next) {
   if (req.accepts('html')) {
