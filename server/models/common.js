@@ -124,11 +124,12 @@ var BaseModel = Bookshelf.Model.extend(
 
     /** Return Ember-compatible object representing this array of records. */
     toEmberArray: function(recordArray) {
+      var self = this;
       var emberObject = {};
       var pluralName = inflection.pluralize(this.forge().tableName);
 
       emberObject[pluralName] = _.map(recordArray, function(record) {
-        return record.toJSON();
+        return self.foreignKeysToEmber(record.toJSON());
       });
 
       return emberObject;
