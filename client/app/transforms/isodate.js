@@ -1,7 +1,7 @@
 import DS from 'ember-data';
 /* global moment */
-//NOTE: watch ember-cli for better AMD compliance: moment supports AMD and the
-//global is deprecated
+//TODO: figure out how to import moment properly, since the global is deprecated
+//and also lame
 
 //stores date objects as ISO-8601 and retrieves them as moment.js objects
 export default DS.Transform.extend({

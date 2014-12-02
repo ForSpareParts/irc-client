@@ -1,5 +1,4 @@
 import DS from 'ember-data';
-import Ember from 'ember';
 //NOTE: watch ember-cli for better AMD compliance: moment supports AMD and the
 //global is deprecated
 
