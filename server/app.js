@@ -40,7 +40,10 @@ app.use(express.static(path.join(__dirname, 'build')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api', apiRouter);
-app.use('/dev', devRouter);
+
+if (settings.enableDevRoutes){
+  app.use('/dev', devRouter);
+}
 
 app.use(function(req, res, next) {
   if (req.accepts('html')) {

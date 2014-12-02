@@ -1,4 +1,7 @@
-module.exports = {
+var _ = require('underscore');
+var argv = require('yargs').argv;
+
+var defaults = {
   //used to select a database configuration from knexfile.js
   databaseConfig: 'development',
 
@@ -13,5 +16,38 @@ module.exports = {
   //app in a realistic situation -- it's only used in testing so that we can
   //test the HTTP API without worrying cleaning up the non-blocking database
   //calls caused by the listener.
-  listenToIRC: true
+  listenToIRC: true,
+
+  //when true, enable routes at /dev, allowing a client to migrate, truncate,
+  //or wipe the database, or load test fixtures. Allows the Ember tests to reset
+  //the app like the backend tests do.
+  enableDevRoutes: false,
 }
+
+
+var profiles = {
+  dev: {}, //dev is just the default profile,
+  test: {
+    listenToIRC: false,
+    enableDevRoutes: true
+  },
+
+  production: {
+    ircLib: 'irc',
+    enableDevRoutes: false
+  }
+};
+
+
+//Get settings for a given profile name (defaults to 'dev').
+if (argv.settings === undefined) {
+  argv.settings = 'dev';
+}
+
+var settings = _.clone(defaults);
+
+if (profiles[argv.settings]) {
+  _.extend(settings, profiles[argv.settings]);
+}
+
+module.exports = settings;

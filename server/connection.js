@@ -3,6 +3,9 @@ var Promise = require('bluebird');
 
 var _ = require('underscore');
 
+var argv = require('yargs').argv
+argv.settings = 'test';
+
 var settings = require('./settings');
 var irc = require(settings.ircLib);
 

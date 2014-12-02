@@ -1,4 +1,11 @@
 #!/usr/bin/env node
+var argv = require('yargs')
+    .alias('s', 'settings')
+    .describe('s', 'settings profile (test, dev or production)')
+    .default('s', 'dev')
+    .argv
+;
+
 var debug = require('debug')('server');
 var app = require('../app');
 
