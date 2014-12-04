@@ -4,21 +4,20 @@ var path = require('path');
 var spawn = require('child_process').spawn;
 
 var serverDir = path.resolve(path.join(__dirname, 'server'));
-var buildDir = path.join(serverDir, 'build');
 var clientDir = path.resolve(path.join(__dirname, 'client'));
 
-console.log('Starting server...');
+console.log('Starting backend...');
 var serverProc = spawn('nodemon', ['bin/www'], { cwd: serverDir });
 
-console.log('Starting Ember builder...');
-var clientBuildProc = spawn('ember',
-  ['build', '--watch', '--output-path', buildDir],
+console.log('Starting Ember dev server...');
+var emberProc = spawn('ember',
+  ['serve'],
   { cwd: clientDir });
 
 process.on('SIGINT', function() {
   console.log('exiting');
   serverProc.kill();
-  clientBuildProc.kill();
+  emberProc.kill();
 
   process.exit();
 });
