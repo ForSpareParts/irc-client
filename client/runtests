@@ -1,0 +1,29 @@
+#!/usr/bin/env node
+
+var path = require('path');
+var child_process = require('child_process');
+
+var serverDir = path.resolve(path.join(__dirname, '../server'));
+var clientDir = path.resolve(__dirname);
+
+console.log('Initializing backend...');
+var serverProc = child_process.spawn('bin/www',
+  ['--settings', 'test'], {
+    cwd: serverDir,
+    env: {
+      PORT: 3001 //so we don't collide with dev if it's running
+    }
+  });
+
+
+console.log('Running Ember tests...');
+var testProc = child_process.spawn('ember',
+['test'], {
+  cwd: clientDir,
+  stdio: 'inherit'
+});
+
+testProc.on('exit', function(code, signal) {
+  serverProc.kill();
+  process.exit(code);
+});
