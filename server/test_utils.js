@@ -8,7 +8,8 @@ var express = require('express');
 
 var fixtures = require('./models/fixtures')
   , knexfile = require('./knexfile')
-  , models = require('./models');
+  , models = require('./models')
+  , connection = require('./connection');
 
 var router = express.Router();
 
@@ -21,32 +22,33 @@ module.exports.truncateAll = models.truncateAll;
 module.exports.migrateLatest = models.migrateLatest;
 module.exports.loadFixtures = fixtures.loadAll;
 
+router.post('/test/setup', function(req, res) {
+  models.migrateLatest()
 
-router.post('/truncate', function(req, res) {
+  .then(models.truncateAll)
+
+  .then(fixtures.loadAll)
+
+  .then(function() {
+    connection.clearConnections();
+    res.send({success: true});
+  });
+});
+
+router.post('/test/reset', function(req, res) {
   models.truncateAll()
 
+  .then(fixtures.loadAll)
+
   .then(function() {
-    res.send({truncated: true});
+    connection.clearConnections();
+    res.send({success: true});
   });
 });
 
-router.post('/migrate', function(req, res) {
-  models.migrateLatest()
-  .then(function() {
-    res.send({migrated: true});
-  });
-});
-
-router.post('/load_fixtures', function(req, res) {
-  fixtures.loadAll()
-  .then(function() {
-    res.send({loaded: true});
-  });
-});
-
-router.post('/clear_db_file', function(req, res) {
+router.post('/test/teardown', function() {
   module.exports.deleteTestDatabase();
-  res.send({cleared: true});
+  res.send({success: true});
 });
 
 module.exports.router = router;
