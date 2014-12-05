@@ -84,7 +84,10 @@ after(function () {
   //this is important in case we're editing migrations: the migration history
   //may still show those migrations as run, preventing the database from being
   //updated to the new schema.
-  var dbFilePath = knexfile.test.connection.filename;
-  fs.unlinkSync(dbFilePath);
 
+  //if we're using the in-memory database, there's nothing to delete
+  if (knexfile.test.connection.filename != ':memory:') {
+    var dbFilePath = knexfile.test.connection.filename;
+    fs.unlinkSync(dbFilePath);
+  }
 });
