@@ -18,6 +18,7 @@ var chai = require('chai')
   , fs = require('fs')
   , knex = require('knex');
 
+
 //load the promise extensions for Chai
 chai.use(chaiAsPromised);
 
@@ -29,19 +30,9 @@ assert = chai.assert;
  * project dependencies
  */
 
-var settings = require('../settings');
-
-//use the test database
-settings.databaseConfig = 'test';
-
-//use the mock irc library
-settings.ircLib = './mock-irc';
-
-//disable http logging
-settings.logRequests = false;
-
-//disable IRC event handling
-settings.listenToIRC = false;
+//put the project in test mode
+var argv = require('yargs').argv;
+argv.settings = 'test';
 
 var fixtures = require('../models/fixtures')
   , knexfile = require('../knexfile')
