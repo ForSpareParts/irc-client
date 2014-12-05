@@ -20,7 +20,7 @@ apiRouter.use(function(req, res, next) {
 
 // development error handler
 // will print stacktrace
-if (apiRouter.get('env') === 'development') {
+if (apiRouter.get('env') === 'development' || apiRouter.get('env') === 'test') {
   apiRouter.use(function(err, req, res, next) {
     var errorContext = {
       message: err.message,
@@ -44,10 +44,21 @@ if (apiRouter.get('env') === 'development') {
 // no stacktraces leaked to user
 apiRouter.use(function(err, req, res, next) {
   res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {}
-  });
+
+  if (req.accepts('json') === 'json') {
+    //if we can take a json object, send that and save some cycles
+    res.send({
+      message: err.message,
+      error: {},
+    });
+  }
+  else {
+    //otherwise, render an actual error page
+    res.render('error', {
+      message: err.message,
+      error: {}
+    });
+  }
 });
 
 module.exports = apiRouter;
