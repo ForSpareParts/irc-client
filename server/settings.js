@@ -30,7 +30,8 @@ var profiles = {
   test: {
     databaseConfig: 'test',
     listenToIRC: false,
-    enableDevRoutes: true
+    enableDevRoutes: true,
+    logRequests: false
   },
 
   production: {

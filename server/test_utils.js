@@ -10,14 +10,19 @@ var express = require('express');
 var fixtures = require('./models/fixtures')
   , knexfile = require('./knexfile')
   , models = require('./models')
-  , connection = require('./connection');
+  , connection = require('./connection')
+  , settings = require('./settings');
 
 var router = express.Router();
 
-module.exports.deleteTestDatabase = function() {
-  var dbFilePath = knexfile.test.connection.filename;
-  fs.unlinkSync(dbFilePath);
-}
+module.exports.deleteDatabase = function() {
+  var dbFilePath = knexfile[settings.databaseConfig].connection.filename;
+
+  //if we're using the in-memory database, there's nothing to delete
+  if (dbFilePath != ':memory:') {
+    fs.unlinkSync(dbFilePath);
+  }
+};
 
 module.exports.truncateAll = models.truncateAll;
 module.exports.migrateLatest = models.migrateLatest;
@@ -48,7 +53,7 @@ router.post('/test/reset', function(req, res) {
 });
 
 router.post('/test/teardown', function(req, res) {
-  module.exports.deleteTestDatabase();
+  module.exports.deleteDatabase();
   res.send({success: true});
 });
 

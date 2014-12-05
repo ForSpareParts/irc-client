@@ -37,7 +37,7 @@ argv.settings = 'test';
 var fixtures = require('../models/fixtures')
   , knexfile = require('../knexfile')
   , models = require('../models')
-  , server = null;
+  , deleteDatabase = require('../test_utils').deleteDatabase;
 
 var PORT = 3000;
 
@@ -76,9 +76,5 @@ after(function () {
   //may still show those migrations as run, preventing the database from being
   //updated to the new schema.
 
-  //if we're using the in-memory database, there's nothing to delete
-  if (knexfile.test.connection.filename != ':memory:') {
-    var dbFilePath = knexfile.test.connection.filename;
-    fs.unlinkSync(dbFilePath);
-  }
+  deleteDatabase();
 });
