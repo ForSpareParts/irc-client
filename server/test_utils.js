@@ -3,6 +3,7 @@
  * Used in unit tests, but also exposed as routes so that the Ember tests can
  * leverage the same functionality.
  */
+var fs = require('fs');
 var Promise = require('bluebird');
 var express = require('express');
 
@@ -46,7 +47,7 @@ router.post('/test/reset', function(req, res) {
   });
 });
 
-router.post('/test/teardown', function() {
+router.post('/test/teardown', function(req, res) {
   module.exports.deleteTestDatabase();
   res.send({success: true});
 });

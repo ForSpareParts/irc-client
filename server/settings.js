@@ -28,11 +28,13 @@ var defaults = {
 var profiles = {
   dev: {}, //dev is just the default profile,
   test: {
+    databaseConfig: 'test',
     listenToIRC: false,
     enableDevRoutes: true
   },
 
   production: {
+    databaseConfig: 'production',
     ircLib: 'irc',
     enableDevRoutes: false
   }
