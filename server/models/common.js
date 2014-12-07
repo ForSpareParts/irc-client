@@ -70,7 +70,7 @@ var BaseModel = Bookshelf.Model.extend(
         //strip _id off of the names of foreign keys so Ember recognizes them,
         //e.g. convert server_id: 1 to server: 1
         this.foreignKeys.forEach(function(key) {
-          if (clone[key + "_id"]) {
+          if (clone[key + "_id"] !== undefined) {
             var temp = clone[key + "_id"];
             delete clone[key + "_id"];
 
