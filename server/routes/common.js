@@ -63,7 +63,10 @@ module.exports.modelRestRouter = function(model) {
 
   router.createRecord = function(req, res, next) {
     tableName = model.forge().tableName;
-    router.getCollection(req).create(req.body[tableName])
+
+    //NOTE: there's nothing here to prevent you from creating a record that
+    //would NOT appear in the route's Collection
+    model.fromEmber(req.body).save()
 
     .then(function(created) {
       res.send(created.toEmber());
@@ -110,8 +113,10 @@ module.exports.modelRestRouter = function(model) {
     tableName = model.tableName();
     delete req.body[tableName].id;
 
+    var updateRecord = model.fromEmber(req.body);
+
     //use the request body to overwrite the contents of the fetched model
-    req[model.tableName()].set(req.body[tableName]);
+    req[model.tableName()].set(updateRecord.attributes);
 
     return req[model.tableName()].save()
 

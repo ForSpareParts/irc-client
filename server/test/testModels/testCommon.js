@@ -87,9 +87,7 @@ describe('The base model', function() {
 
   it('should add "_id" back on to foreign keys when converting from Ember '
     +'format', function() {
-      //this will fail if the JSON processing is wrong, so we don't need an
-      //assert
-      return models.Message.fromEmber({
+      var record = models.Message.fromEmber({
         message: {
           channel: 1,
 
@@ -98,5 +96,8 @@ describe('The base model', function() {
           nick: "someUser"
         }
       });
+
+      assert.strictEqual(record.attributes.contents, 'foobar');
+      assert.strictEqual(record.attributes.channel_id, 1);
     });
 });
