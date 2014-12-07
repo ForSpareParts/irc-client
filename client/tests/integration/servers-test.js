@@ -1,109 +1,117 @@
 import Ember from 'ember';
 import startApp from '../helpers/start-app';
+import { describeModule, it } from 'ember-mocha';
+/* global assert */
 
 var App;
 var store;
 
-module('Servers', {
-  setup: function(){
+describeModule('route:servers', 'Servers', {}, function() {
+  beforeEach(function(){
     App = startApp();
     store = App.__container__.lookup('store:main');
 
-  },
-  teardown: function(){
+  });
+
+  afterEach(function(){
     Ember.run(App, 'destroy');
-  }
-});
+  });
 
-test('add new server', function() {
-  expect(3);
+  it('should add a new server', function() {
+    var menuItems = null;
+    var serverCountAtStart = null;
 
-  visit('/servers');
+    visit('/servers');
 
-  andThen(function() {
-    var menuItems = find('.nav-items li');
-    var serverCountAtStart = store.all('server').get('length');
+    andThen(function() {
+      menuItems = find('.nav-items li');
+      serverCountAtStart = store.all('server').get('length');
 
-    //there's one menu item for every server, plus one for the 'create' link
-    equal(
-      menuItems.length,
-      serverCountAtStart + 1);
+      //there's one menu item for every server, plus one for the 'create' link
+      assert.strictEqual(
+        menuItems.length,
+        serverCountAtStart + 1);
+    });
 
     click('li.new a');
     fillIn('#server-name', 'TestServer');
     fillIn('#host', 'irc.test.net');
     fillIn('#port', '1234');
-    click('button');
+    click(null, 'button');
 
     andThen(function() {
       menuItems = find('.nav-items li');
-      equal(
+      assert.strictEqual(
         menuItems.length,
         serverCountAtStart + 2);
 
-      equal(
+      assert.strictEqual(
         currentRouteName(),
         'servers.index');
     });
-
-
-  });
-});
-
-test('edit server and discard', function() {
-  expect(3);
-
-  visit('/servers');
-  click('#server-1 a');
-
-  fillIn('#server-name', 'TestServer');
-  
-  //leaving without clicking save should discard the changes
-  click('#server-2 a');
-
-  andThen(function() {
-    var serverRecord = store.getById('server', 1);
-    var serverMenuItem = find('#server-1');
-
-    //the record hasn't changed
-    equal(
-      serverRecord.get('name'),
-      'FooServer');
-
-    //the changes weren't saved, so 'TestServer' shouldn't be in the HTML
-    equal(serverMenuItem.html().indexOf('TestServer'), -1);
-    equal(
-      currentRouteName(),
-      'server');
-
   });
 
-});
+  it('should edit a server and discard', function() {
+    var serverRecord = null;
+    var serverMenuItem = null;
 
-test('edit server and save', function() {
-  expect(3);
+    visit('/servers');
+    click('#server-1 a');
 
-  visit('/servers');
-  click('#server-1 a');
+    fillIn('#server-name', 'TestServer');
+    
+    //leaving without clicking save should discard the changes
+    click('#server-2 a');
 
-  fillIn('#server-name', 'TestServer');
-  click('button');
+    andThen(function() {
+      serverRecord = store.getById('server', 1);
+      serverMenuItem = find('#server-1');
 
-  andThen(function() {
-    var serverRecord = store.getById('server', 1);
-    var serverMenuItem = find('#server-1');
+      //the record hasn't changed
+      assert.strictEqual(
+        serverRecord.get('name'),
+        'FooServer');
 
-    //the record was successfully changed
-    equal(
-      serverRecord.get('name'),
-      'TestServer');
+      //the changes weren't saved, so 'TestServer' shouldn't be in the HTML
+      assert.strictEqual(serverMenuItem.html().indexOf('TestServer'), -1);
+      assert.strictEqual(
+        currentRouteName(),
+        'server');
 
-    //the changes were saved, so we should be able to find the new title
-    notEqual(serverMenuItem.html().indexOf('TestServer'), -1);
-    equal(
-      currentRouteName(),
-      'servers.index');
+    });
 
   });
+
+  it('should edit a server and save', function() {
+    var serverRecord = null;
+    var serverMenuItem = null;
+
+    expect(3);
+
+    visit('/servers');
+    click('#server-1 a');
+
+    fillIn('#server-name', 'TestServer');
+    click('button');
+
+    andThen(function() {
+      serverRecord = store.getById('server', 1);
+      serverMenuItem = find('#server-1');
+
+      //the record was successfully changed
+      assert.strictEqual(
+        serverRecord.get('name'),
+        'TestServer');
+
+      //the changes were saved, so we should be able to find the new title
+      notEqual(serverMenuItem.html().indexOf('TestServer'), -1);
+      assert.strictEqual(
+        currentRouteName(),
+        'servers.index');
+
+    });
+
+  });
+
 
 });

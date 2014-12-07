@@ -25,13 +25,13 @@
 
 <li>
   <label for="server">Server:</label>
-  {{view Ember.Select viewName="select"
+  {{view "select"
     content=allServers
     optionLabelPath="content.name"
     optionValuePath="content.id"
     prompt="Servers:"
     id="server"
-    selection=server}}
+    selection=selectedServer}}
 </li>
 
 </ul>

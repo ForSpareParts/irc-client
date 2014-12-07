@@ -1,15 +1,15 @@
-import { test, moduleForModel } from 'ember-qunit';
+import { describeModel, it } from 'ember-mocha';
 
-moduleForModel('server', 'Server', {
+describeModel('server', 'Server', {
   // Specify the other units that are required for this test.
   needs: [
     'model:channel',
     'model:user'
   ]
-});
-
-test('it exists', function() {
-  var model = this.subject();
-  // var store = this.store();
-  ok(model);
+}, function() {
+  it('should exist', function() {
+    var model = this.subject();
+    // var store = this.store();
+    assert.ok(model);
+  });
 });

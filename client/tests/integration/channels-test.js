@@ -1,31 +1,38 @@
 import Ember from 'ember';
 import startApp from '../helpers/start-app'; // change this due to your folder hierarchy
+import { describeModule, it } from 'ember-mocha';
+/* global assert */
 
 var App;
 var store;
 
-module('Channels', {
-  setup: function(){
+describeModule('route:channels', 'Channels', {}, function() {
+
+  beforeEach(function(){
     App = startApp();
     store = App.__container__.lookup('store:main');
+  });
 
-  },
-  teardown: function(){
+  afterEach(function(){
     Ember.run(App, 'destroy');
-  }
-});
+  });
 
-test('join new channel', function() {
-  visit('/channels');
+  it('should join a new channel', function() {
 
-  andThen(function() {
-    var menuItems = find('.nav-items li');
-    var channelCountAtStart = store.all('channel').get('length');
+    var menuItems = null;
+    var channelCountAtStart = null;
 
-    //there's one menu item for every channel, plus one for the 'create' link
-    equal(
-      menuItems.length,
-      channelCountAtStart + 1);
+    visit('/channels');
+
+    andThen(function() {
+      menuItems = find('.nav-items li');
+      channelCountAtStart = store.all('channel').get('length');
+
+      //there's one menu item for every channel, plus one for the 'create' link
+      assert.strictEqual(
+        menuItems.length,
+        channelCountAtStart + 1);
+    });
 
     click('li.new a');
     fillIn('#channel-name', '#testchannel');
@@ -34,81 +41,87 @@ test('join new channel', function() {
 
     andThen(function() {
       menuItems = find('.nav-items li');
-      equal(
+      assert.strictEqual(
         menuItems.length,
         channelCountAtStart + 2);
 
-      equal(
+      assert.strictEqual(
         currentRouteName(),
         'channel');
     });
 
   });
-});
 
-test('channel view', function() {
-  expect(1);
-  visit('/channels/1');
+  it('should show the channel view', function() {
+    visit('/channels/1');
 
-  andThen(function() {
-    var uiMessages = find('ul.messages li');
-    
     //get the channel's messages, and make sure we're showing all of them
-    store.find('channel', 1).then(function(channel){
-      equal(
+    store.find('channel', 1);
+
+    andThen(function(channel){
+      var uiMessages = find('ul.messages li');
+
+      assert.strictEqual(
         uiMessages.length,
         channel.get('messages').get('length'));
     });
-
-  });
-});
-
-test('send message', function() {
-  expect(4);
-  visit('/channels/1');
-
-  andThen(function() {
-    //the test message shouldn't exist before submitting...
-    var message = find('ul.messages li').last();
-    equal(message.html().indexOf('test message!'), -1);
   });
 
+  it('should send a message', function() {
+    visit('/channels/1');
 
-  fillIn('#message-input', "test message!");
-  keyEvent('#message-input', 'keypress', 13); //13 is the code for the enter key
+    andThen(function() {
+      //the test message shouldn't exist before submitting...
+      var message = find('ul.messages li').last();
+      assert.strictEqual(message.html().indexOf('test message!'), -1);
+    });
 
-  andThen(function() {
-    //...but should exist afterward
-    var messageAfter = find('ul.messages li').last();
-    ok(messageAfter.html().indexOf('test message!') > -1);
+    fillIn('#message-input', "test message!");
+    keyEvent(
+      null,
+      '#message-input',
+      'keypress',
+      13); //13 is the code for the enter key
 
-    //the timestamp should also be populated
-    //(this can get screwed up if the time input to the model is bad)
-    notStrictEqual(messageAfter.find('.time').text(), '');
 
-    //the input should be cleared
-    equal(
-      find('#message-input').val(),
-      '');
+    andThen(function() {
+      //...but should exist afterward
+      var messageAfter = find('ul.messages li').last();
+      assert.ok(messageAfter.html().indexOf('test message!') > -1);
+
+      //the timestamp should also be populated
+      //(this can get screwed up if the time input to the model is bad)
+      notStrictEqual(messageAfter.find('.time').text(), '');
+
+      //the input should be cleared
+      assert.strictEqual(
+        find('#message-input').val(),
+        '');
+    });
   });
-});
 
-test('no message sent if message box is empty', function() {
-  expect(1);
-  visit('/channels/1');
-  var expectedMessageCount = null;
+  it('should not send a nessage if the message box is empty', function() {
+    var expectedMessageCount = null;
 
-  andThen(function() {
-    //get the current number of messages
-    expectedMessageCount = find('ul.messages li').length;
+    visit('/channels/1');
+
+    andThen(function() {
+      //get the current number of messages
+      expectedMessageCount = find('ul.messages li').length;
+    });
+
+    fillIn('#message-input', '');
+    keyEvent(
+      null,
+      '#message-input',
+      'keypress',
+      13); //13 is the code for the enter key
+
+    andThen(function() {
+      //make sure that the number of messages hasn't changed
+      assert.strictEqual(find('ul.messages li').length, expectedMessageCount);
+    });
   });
 
-  //make the message box empty, and focus it...
-  fillIn('#message-input', '');
-  keyEvent('#message-input', 'keypress', 13); //13 is the code for the enter key
 
-  andThen(function() {
-    //make sure that the number of messages hasn't changed
-    equal(find('ul.messages li').length, expectedMessageCount);
-  });
 });

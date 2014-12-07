@@ -1,12 +1,12 @@
 import {
-  moduleFor,
-  test
-} from 'ember-qunit';
+  describeModule,
+  it
+} from 'ember-mocha';
 
-moduleFor('view:message-input', 'MessageInputView');
-
-// Replace this with your real tests.
-test('it exists', function() {
-  var view = this.subject();
-  ok(view);
+describeModule('view:message-input', 'MessageInputView', {}, function() {
+  // Replace this with your real tests.
+  it('should exist', function() {
+    var view = this.subject();
+    assert.ok(view);
+  });
 });

@@ -1,11 +1,11 @@
-import { test, moduleFor } from 'ember-qunit';
+import { describeModule, it } from 'ember-mocha';
 
-moduleFor('route:servers', 'ServersRoute', {
+describeModule('route:servers', 'ServersRoute', {
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
-});
-
-test('it exists', function() {
-  var route = this.subject();
-  ok(route);
+}, function() {
+  it('should exist', function() {
+    var route = this.subject();
+    assert.ok(route);
+  });
 });

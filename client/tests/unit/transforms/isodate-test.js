@@ -1,15 +1,15 @@
 import {
-  moduleFor,
-  test
-} from 'ember-qunit';
+  describeModule,
+  it
+} from 'ember-mocha';
 
-moduleFor('transform:isodate', 'IsodateTransform', {
+describeModule('transform:isodate', 'IsodateTransform', {
   // Specify the other units that are required for this test.
   // needs: ['serializer:foo']
-});
-
-// Replace this with your real tests.
-test('it exists', function() {
-  var transform = this.subject();
-  ok(transform);
+}, function() {
+  // Replace this with your real tests.
+  it('should exist', function() {
+    var transform = this.subject();
+    assert.ok(transform);
+  });
 });
