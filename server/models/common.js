@@ -94,7 +94,7 @@ var BaseModel = Bookshelf.Model.extend(
 
       if (this.foreignKeys) {
         this.foreignKeys.forEach(function(key) {
-          if (clone[key]) {
+          if (clone[key] !== undefined) {
             var temp = clone[key];
             delete clone[key];
 
