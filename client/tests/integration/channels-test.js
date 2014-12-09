@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import startApp from '../helpers/start-app'; // change this due to your folder hierarchy
 import { describeModule, it } from 'ember-mocha';
-/* global assert */
+/* global assert, asyncIt */
 
 var App;
 var store;
@@ -17,7 +17,7 @@ describeModule('route:channels', 'Channels', {}, function() {
     Ember.run(App, 'destroy');
   });
 
-  it('should join a new channel', function() {
+  asyncIt('should join a new channel', function() {
 
     var menuItems = null;
     var channelCountAtStart = null;
@@ -52,22 +52,25 @@ describeModule('route:channels', 'Channels', {}, function() {
 
   });
 
-  it('should show the channel view', function() {
+  asyncIt('should show the channel view', function() {
     visit('/channels/1');
 
     //get the channel's messages, and make sure we're showing all of them
-    store.find('channel', 1);
 
-    andThen(function(channel){
-      var uiMessages = find('ul.messages li');
+    andThen(function() {
+      return store.find('channel', 1)
 
-      assert.strictEqual(
-        uiMessages.length,
-        channel.get('messages').get('length'));
-    });
+      .then(function(channel) {
+        var uiMessages = find('ul.messages li');
+
+        assert.strictEqual(
+          uiMessages.length,
+          channel.get('messages').get('length'));
+        });
+      });
   });
 
-  it('should send a message', function() {
+  asyncIt('should send a message', function() {
     visit('/channels/1');
 
     andThen(function() {
@@ -78,7 +81,6 @@ describeModule('route:channels', 'Channels', {}, function() {
 
     fillIn('#message-input', "test message!");
     keyEvent(
-      null,
       '#message-input',
       'keypress',
       13); //13 is the code for the enter key
@@ -91,7 +93,7 @@ describeModule('route:channels', 'Channels', {}, function() {
 
       //the timestamp should also be populated
       //(this can get screwed up if the time input to the model is bad)
-      notStrictEqual(messageAfter.find('.time').text(), '');
+      assert.notStrictEqual(messageAfter.find('.time').text(), '');
 
       //the input should be cleared
       assert.strictEqual(
@@ -100,7 +102,7 @@ describeModule('route:channels', 'Channels', {}, function() {
     });
   });
 
-  it('should not send a nessage if the message box is empty', function() {
+  asyncIt('should not send a nessage if the message box is empty', function() {
     var expectedMessageCount = null;
 
     visit('/channels/1');
@@ -112,7 +114,6 @@ describeModule('route:channels', 'Channels', {}, function() {
 
     fillIn('#message-input', '');
     keyEvent(
-      null,
       '#message-input',
       'keypress',
       13); //13 is the code for the enter key

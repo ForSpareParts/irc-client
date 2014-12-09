@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import startApp from '../helpers/start-app';
 import { describeModule, it } from 'ember-mocha';
-/* global assert */
+/* global assert, asyncIt */
 
 var App;
 var store;
@@ -17,7 +17,7 @@ describeModule('route:servers', 'Servers', {}, function() {
     Ember.run(App, 'destroy');
   });
 
-  it('should add a new server', function() {
+  asyncIt('should add a new server', function() {
     var menuItems = null;
     var serverCountAtStart = null;
 
@@ -37,7 +37,7 @@ describeModule('route:servers', 'Servers', {}, function() {
     fillIn('#server-name', 'TestServer');
     fillIn('#host', 'irc.test.net');
     fillIn('#port', '1234');
-    click(null, 'button');
+    click('#save-button');
 
     andThen(function() {
       menuItems = find('.nav-items li');
@@ -51,7 +51,7 @@ describeModule('route:servers', 'Servers', {}, function() {
     });
   });
 
-  it('should edit a server and discard', function() {
+  asyncIt('should edit a server and discard', function() {
     var serverRecord = null;
     var serverMenuItem = null;
 
@@ -82,11 +82,9 @@ describeModule('route:servers', 'Servers', {}, function() {
 
   });
 
-  it('should edit a server and save', function() {
+  asyncIt('should edit a server and save', function() {
     var serverRecord = null;
     var serverMenuItem = null;
-
-    expect(3);
 
     visit('/servers');
     click('#server-1 a');
@@ -104,7 +102,7 @@ describeModule('route:servers', 'Servers', {}, function() {
         'TestServer');
 
       //the changes were saved, so we should be able to find the new title
-      notEqual(serverMenuItem.html().indexOf('TestServer'), -1);
+      assert.notEqual(serverMenuItem.html().indexOf('TestServer'), -1);
       assert.strictEqual(
         currentRouteName(),
         'servers.index');

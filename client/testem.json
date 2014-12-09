@@ -10,11 +10,11 @@
   ],
   "proxies": {
     "/api": {
-        "port": 3000,
+        "port": 3001,
         "host": "localhost"
     },
     "/dev": {
-        "port": 3000,
+        "port": 3001,
         "host": "localhost"
     }
   }

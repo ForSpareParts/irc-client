@@ -1,6 +1,19 @@
 /* globals require, mocha */
+import Ember from 'ember';
 import resolver from './helpers/resolver';
 import { setResolver } from 'ember-mocha';
+
+/**
+ * A wrapper for it() that starts the Ember run loop so we can test promises.
+ */
+window.asyncIt = function(message, callback) {
+  return window.it(message, function() {
+    Ember.run(function() {
+      callback();
+    });
+  });
+};
+
 
 setResolver(resolver);
 

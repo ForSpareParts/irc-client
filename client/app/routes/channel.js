@@ -1,4 +1,5 @@
 import Ember from 'ember';
+/* global moment */
 
 export default Ember.Route.extend({
   model: function(params) {
@@ -13,31 +14,29 @@ export default Ember.Route.extend({
     /** Send messageText to the Channel. */
     sendMessage: function(messageText) {
       var channel = this.modelFor(this.routeName);
-      var promise = channel.get('server');
       var store = channel.get('store');
 
-      promise = promise.then(function(server) {
-        return server.get('connectionUser');
-      });
-      promise = promise.then(function(user) {
-        var message = store.createRecord('message', {
-          user: user,
-          channel: channel,
-          time: new Date(Date.now()),
+      channel.get('server')
 
-          message: messageText
+      .then(function(server) {
+        var message = store.createRecord('message', {
+          nick: server.get('nick'),
+          channel: channel,
+          time: moment(new Date(Date.now())),
+
+          contents: messageText
         });
 
-        var success = function(savedMessage) {
-          channel.get('messages').addObject(savedMessage);
-          channel.set('messageInput', '');
-        };
+        return message.save();
+      })
 
-        var failure = function(reason) {
-          console.log(reason);
-        };
+      .then(function(savedMessage) {
+        channel.get('messages').addObject(savedMessage);
+        channel.set('messageInput', '');
+      })
 
-        message.save().then(success).catch(failure);
+      .catch(function(reason) {
+        console.log(reason);
       });
     }
   }
