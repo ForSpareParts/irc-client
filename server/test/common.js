@@ -18,6 +18,7 @@ var chai = require('chai')
   , fs = require('fs')
   , knex = require('knex');
 
+require('mocha-sinon');
 
 //load the promise extensions for Chai
 chai.use(chaiAsPromised);
@@ -35,6 +36,7 @@ var argv = require('yargs').argv;
 argv.settings = 'test';
 
 var fixtures = require('../models/fixtures')
+  , connection = require('../connection')
   , knexfile = require('../knexfile')
   , models = require('../models')
   , deleteDatabase = require('../test_utils').deleteDatabase;
@@ -61,6 +63,7 @@ before(function() {
 beforeEach(function() {
   //TODO: would prefer to do this as a transaction, rather than loading/dropping
   //data every time
+  connection.clearConnections();
   return fixtures.loadAll();
 });
 

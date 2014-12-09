@@ -188,7 +188,7 @@ Connection.prototype.isConnected = function() {
 };
 
 /**
- * Return a list of all the channels this connection is currently in.
+ * Return an array of all the channels this connection is currently in.
  * @return {[String]} channel names
  */
 Connection.prototype.getJoinedChannels = function() {
@@ -261,4 +261,11 @@ Connection.prototype.addJoinedChannels = function(newChannels) {
   });
 
   return Promise.all(promises);
+};
+
+/**
+ * Send messageContents to channel.
+ */
+Connection.prototype.say = function(channel, messageContents) {
+  this.client.say(channel, messageContents);
 };
