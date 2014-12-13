@@ -15,7 +15,9 @@
     "mocha": "~1.17.0",
     "chai": "~1.9.1",
     "ember-mocha": "~0.1.1",
-    "ember-cli-test-loader": "dgeb/ember-cli-test-loader#test-agnostic"
+    "ember-cli-test-loader": "dgeb/ember-cli-test-loader#test-agnostic",
+    "lesshat": "~3.0.2",
+    "jquery-autosize": "~1.18.17"
   },
   "resolutions": {
     "chai": "~1.9.1",

@@ -1,0 +1,55 @@
+@chat-font-size: 12px;
+
+@message-input-height: 15px;
+@message-input-vertical-padding: 3px;
+@message-input-border-thickness: 2px;
+
+@message-input-total-height: (
+  @message-input-height +
+  2 * @message-input-vertical-padding +
+  2 * @message-input-border-thickness);
+
+.main-view {
+  float: left;
+  position: relative;
+  overflow: hidden;
+
+  height: 100%;
+  width: 100%;
+}
+
+.channel {
+  font-size: @chat-font-size;
+  overflow: hidden;
+
+  height: 100%;
+  width: 100%; 
+}
+.messages {
+  list-style-type: none;
+
+  margin: 0;
+  padding: 0 10px;
+
+  height: 100%;
+}
+
+.nick {
+  color: #1019BD;
+  font-weight: bold;
+}
+
+#message-input {
+  bottom: @message-input-total-height;
+  font-size: @chat-font-size;
+  height: @message-input-height;
+  padding: @message-input-vertical-padding;
+
+  position: relative;
+
+  width: 100%;
+
+  &:focus {
+    outline: 0;
+  }
+}

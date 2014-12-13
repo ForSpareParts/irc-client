@@ -4,7 +4,9 @@ var Channel = DS.Model.extend({
   name: DS.attr('string'),
   server: DS.belongsTo('server', {async: true}),
 
-  messages: DS.hasMany('message', {async: true})
+  messages: DS.hasMany('message', {async: true}),
+
+  active: false
 });
 
 export default Channel;

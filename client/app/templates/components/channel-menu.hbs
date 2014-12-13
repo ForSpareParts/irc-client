@@ -1,0 +1,7 @@
+<ul class="channels nav-items">
+{{#each channel in channels}}
+  {{ channel-menu-item channel=channel }}
+{{/each}}
+</ul>
+
+{{#link-to "channels/new" class="new-channel"}}JOIN <span class="join-icon">#</span>{{/link-to}}  

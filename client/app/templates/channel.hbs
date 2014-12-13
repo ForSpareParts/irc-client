@@ -1,14 +1,1 @@
-<ul class="messages">
-  {{#each message in model.messages}}
-  <li>
-    <span class="time">{{message.shortTime}}</span>
-    <span class="nick">{{message.nick}}:</span>
-    <span class="contents">{{message.contents}}</span>
-  </li>
-  {{/each}}
-</ul>
-
-{{view "message-input"
-  id='message-input'
-  value=messageInput
-  send='sendMessage'}}
+{{ chat-window channel=model }}

@@ -1,0 +1,23 @@
+@join-channel-font-size: 22px;
+
+.new-channel {
+  font-size: @join-channel-font-size;
+}
+
+.channel-name-wrapper {
+  border-bottom: 1px solid #DFDFDF;
+  padding: 8px 0 8px 15px;
+
+  label {
+    font-family: @join-font-family;
+  }
+
+  input {
+    border: 0;
+    font-size: @join-channel-font-size;
+
+    &:focus {
+      outline: 0;
+    }
+  }
+}

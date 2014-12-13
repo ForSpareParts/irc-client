@@ -2,9 +2,7 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
   model: function() {
-    return this.get('store').createRecord('channel', {
-      name: 'New Channel'
-    });
+    return this.get('store').createRecord('channel');
   },
 
   deactivate: function() {

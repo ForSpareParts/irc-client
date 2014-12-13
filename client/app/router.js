@@ -10,10 +10,8 @@ Router.map(function() {
     this.resource('server', { path: ':server_id'});
     this.route('new', { path: 'new' });
   });
-  this.resource('channels', function() {
-    this.resource('channel', { path: ':channel_id'});
-    this.route('new', { path: 'new' });
-  });
+  this.resource('channel', { path: '/channels/:channel_id'});
+  this.route('channels/new', { path: '/channels/new' });
 });
 
 export default Router;

@@ -4,9 +4,7 @@ import Ember from 'ember';
 export default Ember.Route.extend({
   model: function(params) {
     var store = this.get('store');
-    var promise = store.find('channel', params.channel_id);
-
-    return promise;
+    return store.find('channel', params.channel_id);
   },
 
   actions: {

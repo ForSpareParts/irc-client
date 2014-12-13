@@ -1,29 +1,15 @@
-<h4>
-  {{#if name}}
-    {{name}}
-  {{else}}
-    <em>channel name</em>
-  {{/if}}
-</h4>
+<div class="main-view new-channel">
 
-{{#if saveFailed}}
-<div class="save-failed">
-  could not save channel
+
+<div class="channel-name-wrapper">
+  <label for="channel-name">JOIN</label>
+    {{input
+        type="text"
+        id="channel-name"
+        placeholder="#channelname"
+        value=name}}
 </div>
-{{/if}}
 
-<ul>
-
-<li>
-  <label for="channel-name">Name:</label>
-  {{input
-      type="text"
-      id="channel-name"
-      placeholder="channel name"
-      value=name}}
-</li>
-
-<li>
   <label for="server">Server:</label>
   {{view "select"
     content=allServers
@@ -32,8 +18,11 @@
     prompt="Servers:"
     id="server"
     selection=selectedServer}}
-</li>
 
-</ul>
+<button {{action "save" model}}>Save</button></div>
 
-<button {{action "save" model}}>Save</button>
+{{#if saveFailed}}
+<div class="save-failed">
+  could not save channel
+</div>
+{{/if}}
