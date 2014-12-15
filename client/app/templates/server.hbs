@@ -1,10 +1,43 @@
-<h4>
-  {{#if name}}
-    {{name}}
-  {{else}}
-    <em>server name</em>
-  {{/if}}
-</h4>
+<div class="create-edit server">
+
+<ul class="fields">
+
+  <li>
+    {{form-input
+        type="text"
+        id="server-name"
+        placeholder="Server Name"
+        value=name}}
+  </li>
+
+  <li>
+    {{form-input
+        type="text"
+        id="host"
+        placeholder="irc.someserver.net"
+        value=host}}
+  </li>
+
+  <li>
+    {{form-input
+        type="text"
+        id="port"
+        placeholder="6667"
+        required=false
+        value=port}}
+  </li>
+
+  <li>
+    {{form-input
+        type="nick"
+        id="nick"
+        placeholder="Nick"
+        value=nick}}
+  </li>
+
+</ul>
+
+<button id="save-button" {{action "save" controller.model controller.model.server.connectionUser}}>Save</button>
 
 {{#if saveFailed}}
 <div class="save-failed">
@@ -12,44 +45,4 @@
 </div>
 {{/if}}
 
-<ul>
-
-<li>
-  <label for="server-name">Name:</label>
-  {{input
-      type="text"
-      id="server-name"
-      placeholder="server name"
-      value=name}}
-</li>
-
-<li>
-  <label for="host">Host:</label>
-  {{input
-      type="text"
-      id="host"
-      placeholder="irc.someserver.net"
-      value=host}}
-</li>
-
-<li>
-  <label for="port">Port:</label>
-  {{input
-      type="text"
-      id="port"
-      placeholder="6667"
-      value=port}}
-</li>
-
-<li>
-  <label for="nick">Nick:</label>
-  {{input
-      type="nick"
-      id="nick"
-      placeholder="Nick"
-      value=nick}}
-</li>
-
-</ul>
-
-<button id="save-button" {{action "save" controller.model controller.model.server.connectionUser}}>Save</button>
+</div>

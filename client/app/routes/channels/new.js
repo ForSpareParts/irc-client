@@ -15,19 +15,29 @@ export default Ember.Route.extend({
 
   actions: {
     save: function(model) {
-      model.set('server', this.get('selectedServer'));
       var self = this;
 
-      model.save()
+      model.get('server').then(function(server) {
+        //validation
+        if (!model.get('name')) {
+          throw new Error();
+        }
+
+        if (!server) {
+          throw new Error();
+        }
+
+        return model.save();
+      })
 
       .then(function() {
-        self.transitionTo("channel", model);
+        self.transitionTo('channel', model);
       })
 
       .catch(function() {
         self.set('controller.saveFailed', true);
       });
+    },
 
-    }
   }
 });

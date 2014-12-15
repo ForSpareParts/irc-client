@@ -8,10 +8,10 @@ var Router = Ember.Router.extend({
 Router.map(function() {
   this.resource('servers', function() {
     this.resource('server', { path: ':server_id'});
-    this.route('new', { path: 'new' });
   });
   this.resource('channel', { path: '/channels/:channel_id'});
   this.route('channels/new', { path: '/channels/new' });
+  this.route('servers/new', { path: '/servers/new' });
 });
 
 export default Router;

@@ -1,28 +1,30 @@
-<div class="main-view new-channel">
+<div class="create-edit new-channel">
 
 
-<div class="channel-name-wrapper">
-  <label for="channel-name">JOIN</label>
-    {{input
-        type="text"
-        id="channel-name"
-        placeholder="#channelname"
-        value=name}}
-</div>
+<ul class="fields">
+<li>
+    {{ form-input
+      type="text"
+      id="channel-name"
+      placeholder="#channelname"
+      value=name}}
+</li>
 
-  <label for="server">Server:</label>
-  {{view "select"
+<li>
+  {{ twitter-typeahead
+    name="server"
     content=allServers
-    optionLabelPath="content.name"
-    optionValuePath="content.id"
-    prompt="Servers:"
-    id="server"
-    selection=selectedServer}}
+    displayValuePath='name'
+    selection=model.server
+    placeholder="server"}}
+</li>
 
-<button {{action "save" model}}>Save</button></div>
+<button {{action "save" model}}>JOIN</button>
 
 {{#if saveFailed}}
 <div class="save-failed">
   could not save channel
 </div>
 {{/if}}
+
+</div>
