@@ -1,0 +1,23 @@
+<div class="content">
+  <div class="title">SERVERS</div>
+  <button class="close">x</button>
+
+  <div class="main-view server">
+    {{server-edit server=activeServer}}
+  </div>
+
+  <div class="server-menu">
+    <ul class="servers">
+    {{#each server in servers}}
+      {{ server-menu-item
+        server=server
+        activeServer=activeServer
+        action="setActive"
+        id=server.menuItemId }}
+    {{/each}}
+    </ul>
+
+    <a href="#" class="create" {{action "newServer" bubbles="false"}}><span class="link-text">NEW</span> <span class="icon">+</span></a>
+
+  </div>
+</div>

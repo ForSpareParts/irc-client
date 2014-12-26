@@ -18,7 +18,8 @@
     "ember-cli-test-loader": "dgeb/ember-cli-test-loader#test-agnostic",
     "lesshat": "~3.0.2",
     "jquery-autosize": "~1.18.17",
-    "typeahead.js": "~0.10.5"
+    "typeahead.js": "~0.10.5",
+    "ic-modal": "~1.0.0"
   },
   "resolutions": {
     "chai": "~1.9.1",

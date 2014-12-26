@@ -1,0 +1,47 @@
+{{#if server}}
+  <ul class="fields">
+
+    <li>
+      {{form-input
+        type="text"
+        id="server-name"
+        placeholder="Server Name"
+        value=server.name}}
+    </li>
+
+    <li>
+      {{form-input
+        type="text"
+        id="host"
+        placeholder="irc.someserver.net"
+        value=server.host}}
+    </li>
+
+    <li>
+      {{form-input
+        type="text"
+        id="port"
+        placeholder="6667"
+        required=false
+        value=server.port}}
+    </li>
+
+    <li>
+      {{form-input
+        type="nick"
+        id="nick"
+        placeholder="Nick"
+        value=server.nick}}
+    </li>
+
+  </ul>
+
+  <button id="save-button" {{action "save" server}}>Save</button>
+
+  {{#if saveFailed}}
+  <div class="save-failed">
+    could not save server
+  </div>
+  {{/if}}
+
+{{/if}}

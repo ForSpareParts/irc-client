@@ -12,14 +12,14 @@
 
 <li>
   {{ twitter-typeahead
-    name="server"
+    id="channel-server-name"
     content=allServers
     displayValuePath='name'
     selection=model.server
     placeholder="server"}}
 </li>
 
-<button {{action "save" model}}>JOIN</button>
+<button id="channel-save-button" {{action "save" model}}>JOIN</button>
 
 {{#if saveFailed}}
 <div class="save-failed">

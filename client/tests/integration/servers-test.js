@@ -21,33 +21,31 @@ describeModule('route:servers', 'Servers', {}, function() {
     var menuItems = null;
     var serverCountAtStart = null;
 
-    visit('/servers');
+    visit('/');
+    click('#servers-modal-trigger');
 
     andThen(function() {
-      menuItems = find('.nav-items li');
+      menuItems = find('.server-menu li');
       serverCountAtStart = store.all('server').get('length');
 
       //there's one menu item for every server, plus one for the 'create' link
       assert.strictEqual(
         menuItems.length,
-        serverCountAtStart + 1);
+        serverCountAtStart);
     });
 
-    click('li.new a');
-    fillIn('#server-name', 'TestServer');
-    fillIn('#host', 'irc.test.net');
-    fillIn('#port', '1234');
+    click('.server-menu a.create');
+
+    fillInFocus('#server-name', 'TestServer');
+    fillInFocus('#host', 'irc.test.net');
+    fillInFocus('#port', '1234');
     click('#save-button');
 
     andThen(function() {
-      menuItems = find('.nav-items li');
+      menuItems = find('.server-menu li');
       assert.strictEqual(
         menuItems.length,
-        serverCountAtStart + 2);
-
-      assert.strictEqual(
-        currentRouteName(),
-        'servers.index');
+        serverCountAtStart + 1);
     });
   });
 
@@ -55,10 +53,10 @@ describeModule('route:servers', 'Servers', {}, function() {
     var serverRecord = null;
     var serverMenuItem = null;
 
-    visit('/servers');
+    visit('/');
     click('#server-1 a');
 
-    fillIn('#server-name', 'TestServer');
+    fillInFocus('#server-name', 'TestServer');
     
     //leaving without clicking save should discard the changes
     click('#server-2 a');
@@ -74,10 +72,6 @@ describeModule('route:servers', 'Servers', {}, function() {
 
       //the changes weren't saved, so 'TestServer' shouldn't be in the HTML
       assert.strictEqual(serverMenuItem.html().indexOf('TestServer'), -1);
-      assert.strictEqual(
-        currentRouteName(),
-        'server');
-
     });
 
   });
@@ -86,11 +80,12 @@ describeModule('route:servers', 'Servers', {}, function() {
     var serverRecord = null;
     var serverMenuItem = null;
 
-    visit('/servers');
+    visit('/');
+    click('#servers-modal-trigger');
     click('#server-1 a');
 
-    fillIn('#server-name', 'TestServer');
-    click('button');
+    fillInFocus('#server-name', 'TestServer');
+    click('#save-button');
 
     andThen(function() {
       serverRecord = store.getById('server', 1);
@@ -103,9 +98,6 @@ describeModule('route:servers', 'Servers', {}, function() {
 
       //the changes were saved, so we should be able to find the new title
       assert.notEqual(serverMenuItem.html().indexOf('TestServer'), -1);
-      assert.strictEqual(
-        currentRouteName(),
-        'servers.index');
 
     });
 

@@ -1,15 +1,13 @@
+{{#servers-modal-trigger
+  showProperty=showModal
+  id="servers-modal-trigger"}}SERVERS{{/servers-modal-trigger}}
+
 <div class="main-view">{{ outlet }}</div>
 {{ channel-menu channels=model }}
 
-<div class="modal">
-{{!-- {{ outlet 'modal' }} --}}
-
-  <h3>Hello, modal</h3>
-  <p>content, content, content</p>
-
-  <ul>
-    <li>First thing</l1>
-    <li>Second thing</li>
-  </ul>
-
-</div>
+{{ servers-modal
+  id="servers-modal"
+  servers=allServers
+  newServer="makeServer"
+  saveServer="saveServer"
+  show=showModal }}

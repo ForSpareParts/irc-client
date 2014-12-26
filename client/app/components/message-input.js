@@ -2,7 +2,7 @@ import Ember from 'ember';
 
 /** The text field on a chat channel where the user enters a new message. */
 export default Ember.TextField.extend({
-  onEvent: 'keyPressed',
+  onEvent: 'keyPress',
 
   /** If event.keyCode is Enter, and the input is not empty, send the content
   of the message input as a send event (to be handled by the parent context)
@@ -11,8 +11,11 @@ export default Ember.TextField.extend({
   We can't do this with the 'enter' event, because that's triggered on keyUp,
   and we want the event to go out as soon as the key is pressed.*/
   keyPress: function(event) {
-    if (event.keyCode === 13 && this.value !== '') {
-      this.sendAction('send', this.value);
+    if (event.keyCode === 13 && this.get('value') !== '') {
+      this.sendAction('sendMessage', this.get('value'));
+
+      //clear the input
+      this.set('value', '');
     }
   },
 });

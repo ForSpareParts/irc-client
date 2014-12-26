@@ -35,6 +35,7 @@
     "ember-cli-mocha": "^0.1.4"
   },
   "dependencies": {
-    "ember-moment": "^1.0.0"
+    "ember-moment": "^1.0.0",
+    "ember-cli-ic-modal": "^0.1.0"
   }
 }

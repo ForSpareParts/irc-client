@@ -17,8 +17,6 @@ var serverProc = child_process.spawn('bin/www',
     cwd: serverDir,
   });
 
-debugger;
-
 console.log('Running Ember tests...');
 var testProc = child_process.spawn('ember',
 ['test'], {

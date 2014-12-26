@@ -5,10 +5,11 @@ import {
 } from 'ember-mocha';
 
 describeComponent(
-  'chat-window',
-  'ChatWindowComponent',
+  'servers-modal-trigger',
+  'ServersModalTriggerComponent',
   {
-    needs: ['component:message-input']
+    // specify the other units that are required for this test
+    // needs: ['component:foo', 'helper:bar']
   },
   function() {
     it('renders', function() {

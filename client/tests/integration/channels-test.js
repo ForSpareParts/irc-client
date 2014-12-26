@@ -22,28 +22,32 @@ describeModule('route:channels', 'Channels', {}, function() {
     var menuItems = null;
     var channelCountAtStart = null;
 
-    visit('/channels');
+    visit('/');
 
     andThen(function() {
-      menuItems = find('.nav-items li');
+      menuItems = find('.channels li');
       channelCountAtStart = store.all('channel').get('length');
 
       //there's one menu item for every channel, plus one for the 'create' link
       assert.strictEqual(
         menuItems.length,
-        channelCountAtStart + 1);
+        channelCountAtStart);
     });
 
-    click('li.new a');
-    fillIn('#channel-name', '#testchannel');
-    fillIn('#server', '1');
-    click('button');
+    click('a.create');
+    andThen(function() {
+      console.log('woo');
+    });
+    fillInFocus('#channel-name', '#testchannel');
+    fillInFocus('#channel-server-name', 'FooServer');
+    triggerEvent('#channel-server-name', 'blur');
+    click('#channel-save-button');
 
     andThen(function() {
-      menuItems = find('.nav-items li');
+      menuItems = find('.channels li');
       assert.strictEqual(
         menuItems.length,
-        channelCountAtStart + 2);
+        channelCountAtStart + 1);
 
       assert.strictEqual(
         currentRouteName(),
@@ -79,7 +83,7 @@ describeModule('route:channels', 'Channels', {}, function() {
       assert.strictEqual(message.html().indexOf('test message!'), -1);
     });
 
-    fillIn('#message-input', "test message!");
+    fillInFocus('#message-input', "test message!");
     keyEvent(
       '#message-input',
       'keypress',
@@ -112,7 +116,7 @@ describeModule('route:channels', 'Channels', {}, function() {
       expectedMessageCount = find('ul.messages li').length;
     });
 
-    fillIn('#message-input', '');
+    fillInFocus('#message-input', '');
     keyEvent(
       '#message-input',
       'keypress',

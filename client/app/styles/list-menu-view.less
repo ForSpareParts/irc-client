@@ -1,11 +1,15 @@
 @menu-background-color: #EFEFEF;
-@menu-border: 1px solid #AAAAAA;
 
 @new-channel-link-width: @menu-width * 0.6;
 @new-channel-icon-width: 22px;
 @new-channel-link-height: 22px;
 
-.channel-menu {
+.servers-edit {
+  overflow: hidden;
+  padding-left: @menu-width;
+}
+
+.channel-menu, .server-menu {
   .background-image(linear-gradient(left, rgba(226,226,226,1) 0%, rgba(255,255,255,1) 89%, rgba(255,255,255,1) 100%));
   // background-color: @menu-background-color;
   // background-image: url( http://api.thumbr.it/whitenoise-361x370.png?background=474747ff&noise=878787&density=100&opacity=15);
@@ -21,7 +25,7 @@
   margin-left: -100%;
 }
 
-ul.channels {
+ul.channels, .servers {
   font-size: 13px;
   list-style-type: none;
   margin: 0;
@@ -45,7 +49,7 @@ ul.channels {
   }
 }
 
-a.new-channel {
+a.create {
 
   .border-top-right-radius(4px);
   .border-bottom-right-radius(4px);
@@ -62,7 +66,7 @@ a.new-channel {
   padding: 6px 5px 10px 0;
   text-align: right;
 
-  position: fixed;
+  position: absolute;
   bottom: 35px;
   left: -1 * (@new-channel-link-width - @new-channel-icon-width);
 
@@ -72,15 +76,34 @@ a.new-channel {
   &:hover {
     left: 0px;
   }
+
+  .link-text {
+    display: inline-block;
+    position: relative;
+  }
+
+  .icon {
+    display: inline-block;
+    font-family: 'Merriweather', serif;
+    font-size: 29px;
+    line-height: 22px;
+    margin-left: 10px;
+    margin-top: -3px;
+
+    width: 20px;
+  }
+
 }
 
-.join-icon {
-  display: inline-block;
-  font-family: 'Merriweather', serif;
-  font-size: 29px;
-  line-height: 22px;
-  margin-left: 10px;
-  margin-top: -3px;
 
-  width: 20px;
+.server-menu {
+
+  a .link-text {
+    top: -7px;
+  }
+
+  a .icon {
+    font-size: 39px;
+    margin-top: 5px;
+  }
 }

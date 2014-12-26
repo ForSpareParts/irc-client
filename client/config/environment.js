@@ -43,5 +43,10 @@ module.exports = function(environment) {
 
   }
 
+  ENV.contentSecurityPolicy = {
+    'font-src': "'self' http://fonts.gstatic.com",
+    'style-src': "'self' 'unsafe-inline' http://fonts.googleapis.com"
+  };
+
   return ENV;
 };

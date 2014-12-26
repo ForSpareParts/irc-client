@@ -5,10 +5,13 @@ import {
 } from 'ember-mocha';
 
 describeComponent(
-  'chat-window',
-  'ChatWindowComponent',
+  'servers-modal-content',
+  'ServerModalContentComponent',
   {
-    needs: ['component:message-input']
+    needs: [
+      'component:server-menu-item',
+      'component:server-edit',
+      'component:form-input']
   },
   function() {
     it('renders', function() {
