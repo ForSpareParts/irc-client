@@ -23,6 +23,7 @@
   },
   "resolutions": {
     "chai": "~1.9.1",
-    "mocha": "~1.17.0"
+    "mocha": "~1.17.0",
+    "handlebars": ">= 2.0.0 < 3.0.0"
   }
 }

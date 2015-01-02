@@ -4,21 +4,7 @@ var displayValuePath = 'name';
 
 export default FormInput.extend({
 
-  // focusOut: function() {
-  //   var path = this.get('displayValuePath');
-  //   var value = this.get('value');
-  //   var self = this;
-
-  //   this.set('selection', null);
-
-  //   this.get('content').forEach(function(item) {
-  //     if (item.get() === value) {
-  //       self.set('selection', item);
-  //     }
-  //   });
-
-  //   return this._super();
-  // },
+  classNameBindings: ['error'],
 
   /** See typeahead.js docs for information on source() **/
   source: function(q, cb) {
@@ -38,52 +24,52 @@ export default FormInput.extend({
   },
 
   didInsertElement: function() {
-    // this.$().typeahead(
-    //   {
-    //     highlight: true,
-    //     minLength: 1
-    //   },
-    //   {
-    //     name: this.get('name'),
-    //     displayKey: 'displayValue',
-    //     source: this.source.bind(this)
-    //   });
+    this.$().typeahead(
+      {
+        highlight: true,
+        minLength: 1
+      },
+      {
+        name: this.get('name'),
+        displayKey: 'displayValue',
+        source: this.source.bind(this)
+      });
 
-    // this.$().bind('typeahead:selected typeahead:autocompleted',
-    //   function(e, datum) {
-    //     if (e.target === this.get('element')) {
-    //       this.set('selection', datum.item);
-    //     }
-    //   }.bind(this));
-
-    // var initialSelection = this.get('selection');
-    // if (initialSelection) {
-    //   this.set(
-    //     'value',
-    //     initialSelection.get(displayValuePath));
-    // }
+    var initialModel = this.get('selection');
+    if (initialModel) {
+      this.set(
+        'value',
+        initialModel.get(displayValuePath));
+    }
   },
 
   valid: function() {
-    // Values in 'selection' are always promise proxies for models. By this
+    // Values in 'currentModel' are always promise proxies for models. By this
     // point, they should *always* be resolved, so _data should have a model in
     // it (or null).
-    var selection = this.get('selection');
+    var currentModel = this.get('currentModel');
 
-    if (selection && selection._data) {
+    if (currentModel && currentModel._data) {
       return true;
     }
 
     return false;
-  }.property('selection'),
+  }.property('currentModel'),
 
-  selection: function() {
+  currentModel: function() {
     var value = this.get('value');
     return this.get('content').findBy(displayValuePath, value);
-  }.property('value', 'content'),
+  }.property('value'),
 
-  meaninglessProperty: function() {
-    return true;
-  }.property('value')
+  /**
+   *  Sets a selection property to mirror currentModel. We need this so that the
+   *  typeahead field can act like a <select>, with a 'selection' field we can
+   *  use with a two-way binding -- e.g., we can't do
+   *  {{ twitter-typeahead currentModel=channel.server}} (because that's like
+   *  calling set() on a read-only property).
+   */
+  setSelection: function() {
+    this.set('selection', this.get('currentModel'));
+  }.observes('currentModel')
 
 });
