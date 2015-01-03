@@ -26,7 +26,6 @@ var Server = DS.Model.extend({
     if (
         this.get('name') &&
         this.get('host') &&
-        this.get('port') &&
         this.get('nick')) {
       return true;
     }

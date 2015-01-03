@@ -6,24 +6,13 @@ export default Ember.Component.extend({
     return false;
   },
 
-  /**
-   * Rollback unsaved changes and delete unpersisted models when the
-   * activeServer value changes.
-   */
-  cleanupEdit: function() {
-    //we don't know which one was the old value, so we do a rollback on all
-    //servers
-    this.get('servers').forEach(function(server) {
-      server.rollback();
-      if (server.get('isNew')) {
-        server.deleteRecord();
-      }
-    });
-  }.observes('activeServer'),
-
   actions: {
+    close: function() {
+      this.sendAction('close');
+    },
+
     setActive: function(server) {
-      this.set('activeServer', server);
+      this.sendAction('setActive', server);
     },
 
     newServer: function() {
