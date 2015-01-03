@@ -12,7 +12,7 @@ export default Ember.TextField.extend({
       return !this.get('valid');
     }
 
-    return true;
+    return false;
   }.property('valid'),
 
   required: true,

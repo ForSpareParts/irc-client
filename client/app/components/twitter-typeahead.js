@@ -6,6 +6,8 @@ export default FormInput.extend({
 
   classNameBindings: ['error'],
 
+  content: [],
+
   /** See typeahead.js docs for information on source() **/
   source: function(q, cb) {
 
