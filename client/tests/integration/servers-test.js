@@ -11,6 +11,8 @@ describeModule('route:servers', 'Servers', {}, function() {
     App = startApp();
     store = App.__container__.lookup('store:main');
 
+    visit('/');
+    click('#servers-modal-trigger');
   });
 
   afterEach(function(){
@@ -20,9 +22,6 @@ describeModule('route:servers', 'Servers', {}, function() {
   asyncIt('should add a new server', function() {
     var menuItems = null;
     var serverCountAtStart = null;
-
-    visit('/');
-    click('#servers-modal-trigger');
 
     andThen(function() {
       menuItems = find('.server-menu li');
@@ -53,9 +52,7 @@ describeModule('route:servers', 'Servers', {}, function() {
     var serverRecord = null;
     var serverMenuItem = null;
 
-    visit('/');
     click('#server-1 a');
-
     fillInFocus('#server-name', 'TestServer');
     
     //leaving without clicking save should discard the changes
@@ -80,10 +77,7 @@ describeModule('route:servers', 'Servers', {}, function() {
     var serverRecord = null;
     var serverMenuItem = null;
 
-    visit('/');
-    click('#servers-modal-trigger');
     click('#server-1 a');
-
     fillInFocus('#server-name', 'TestServer');
     click('#save-button');
 
@@ -100,7 +94,15 @@ describeModule('route:servers', 'Servers', {}, function() {
       assert.notEqual(serverMenuItem.html().indexOf('TestServer'), -1);
 
     });
+  });
 
+  asyncIt('should refuse to save a server that doesn\'t validate', function() {
+    click('.server-menu a.create');
+    click('#save-button');
+
+    andThen(function() {
+      assert.ok(find('.save-failed').text().indexOf('could not save') > -1);
+    });
   });
 
 

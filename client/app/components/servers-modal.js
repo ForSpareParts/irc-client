@@ -14,6 +14,7 @@ export default Ember.Component.extend({
       target: this
     });
   },
+
   /**
    * Rollback unsaved changes and delete unpersisted models when the
    * activeServer value changes.
