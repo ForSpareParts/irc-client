@@ -19,7 +19,5 @@ var app = new EmberApp();
 
 app.import('bower_components/typeahead.js/dist/typeahead.bundle.js');
 
-app.import('bower_components/ic-styled/main.js');
-app.import('bower_components/ic-modal/dist/globals/main.js');
-
 module.exports = app.toTree();
+ 

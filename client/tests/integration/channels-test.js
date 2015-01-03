@@ -35,9 +35,6 @@ describeModule('route:channels', 'Channels', {}, function() {
     });
 
     click('a.create');
-    andThen(function() {
-      console.log('woo');
-    });
     fillInFocus('#channel-name', '#testchannel');
     fillInFocus('#channel-server-name', 'FooServer');
     triggerEvent('#channel-server-name', 'blur');

@@ -1,8 +1,8 @@
 import Ember from 'ember';
-import IrcENV from 'irc/config/environment';
+import config from './config/environment';
 
 var Router = Ember.Router.extend({
-  location: IrcENV.locationType
+  location: config.locationType
 });
 
 Router.map(function() {
