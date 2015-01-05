@@ -19,7 +19,13 @@ describe('The connection API', function() {
     return request.get(CONNECTION_PATH)
 
     .expect(200)
-    .expect({connected: false, server: 1, joined: []});
+    .expect({
+      connection: {
+        id: 1,
+        connected: false,
+        server: 1,
+        joined: []}
+      });
   });
 
   it('should show connection state at /connected', function() {
@@ -33,7 +39,7 @@ describe('The connection API', function() {
     return request.post(CONNECTION_PATH + '/connected')
     .send({connected: true})
     .expect(200)
-    .expect({connected: true})
+    .expect({connected: true});
   });
 
   //when already connected

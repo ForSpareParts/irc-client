@@ -13,9 +13,12 @@ var router = express.Router();
  */
 router.get('/', function(req, res) {
   res.send({
-    connected: req.server.connection().isConnected(),
-    server: req.server.id,
-    joined: req.server.connection().getJoinedChannels()
+    connection : {
+      id: req.server.id,
+      connected: req.server.connection().isConnected(),
+      server: req.server.id,
+      joined: req.server.connection().getJoinedChannels()
+    }
   });
 });
 
