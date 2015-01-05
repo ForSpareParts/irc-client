@@ -11,17 +11,24 @@ var router = express.Router();
 /**
  * Send a quick summary of the connection.
  */
-router.get('/', function(req, res) {
-  res.send({
-    connection : {
-      id: req.server.id,
-      connected: req.server.connection().isConnected(),
-      server: req.server.id,
-      joined: req.server.connection().getJoinedChannels()
-    }
-  });
-});
+router.route('/')
+  .get(function(req, res) {
+    res.send({
+      connection : {
+        id: req.server.id,
+        connected: req.server.connection().isConnected(),
+        server: req.server.id,
+        joined: req.server.connection().getJoinedChannels()
+      }
+    });
+  })
 
+  .all(function(req, res) {
+    res.status(405).send({
+      message:
+        'connection resource is read-only, use subpaths to edit a connection'
+    });
+  });
 
 router.route('/connected')
   /** Get connection state. */
@@ -33,13 +40,13 @@ router.route('/connected')
 
   /** Update connection state (connect/disconnect). */
   .post(function(req, res) {
-    if (req.body.connected == true) {
+    if (req.body.connected === true) {
       req.server.connection().connect().then(function() {
         res.send({connected: true});
       });
     }
 
-    else if (req.body.connected == false) {
+    else if (req.body.connected === false) {
       req.server.connection().disconnect().then(function() {
         res.send({connected: false});
       });

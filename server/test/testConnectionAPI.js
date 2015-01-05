@@ -28,6 +28,13 @@ describe('The connection API', function() {
       });
   });
 
+  it('should 405 for non-GET requests to the connection root', function() {
+    return request.post(CONNECTION_PATH)
+    .send({})
+
+    .expect(405);
+  });
+
   it('should show connection state at /connected', function() {
     return request.get(CONNECTION_PATH + '/connected')
 
