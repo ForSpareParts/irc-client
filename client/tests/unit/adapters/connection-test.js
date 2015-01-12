@@ -3,6 +3,7 @@ import {
   describeModule,
   it
 } from 'ember-mocha';
+/** global sinon */
 
 describeModule(
   'adapter:connection',

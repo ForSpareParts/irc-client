@@ -1,13 +1,11 @@
+/* jshint expr:true */
 import Ember from 'ember';
-import startApp from '../helpers/start-app'; // change this due to your folder hierarchy
-import { describeModule, it } from 'ember-mocha';
-/* global assert, asyncIt */
+import startApp from '../helpers/start-app';
 
 var App;
 var store;
 
-describeModule('route:channels', 'Channels', {}, function() {
-
+describe('Acceptance: Channels', function() {
   beforeEach(function(){
     App = startApp();
     store = App.__container__.lookup('store:main');
@@ -17,7 +15,7 @@ describeModule('route:channels', 'Channels', {}, function() {
     Ember.run(App, 'destroy');
   });
 
-  asyncIt('should join a new channel', function() {
+  it('should join a new channel', function() {
 
     var menuItems = null;
     var channelCountAtStart = null;
@@ -35,9 +33,8 @@ describeModule('route:channels', 'Channels', {}, function() {
     });
 
     click('a.create');
-    fillInFocus('#channel-name', '#testchannel');
-    fillInFocus('#channel-server-name', 'FooServer');
-    triggerEvent('#channel-server-name', 'blur');
+    fillIn('#channel-name', '#testchannel');
+    fillIn('#channel-server-name', 'FooServer');
     click('#channel-save-button');
 
     andThen(function() {
@@ -53,7 +50,7 @@ describeModule('route:channels', 'Channels', {}, function() {
 
   });
 
-  asyncIt('should show the channel view', function() {
+  it('should show the channel view', function() {
     visit('/channels/1');
 
     //get the channel's messages, and make sure we're showing all of them
@@ -71,7 +68,7 @@ describeModule('route:channels', 'Channels', {}, function() {
       });
   });
 
-  asyncIt('should send a message', function() {
+  it('should send a message', function() {
     visit('/channels/1');
 
     andThen(function() {
@@ -80,7 +77,7 @@ describeModule('route:channels', 'Channels', {}, function() {
       assert.strictEqual(message.html().indexOf('test message!'), -1);
     });
 
-    fillInFocus('#message-input', "test message!");
+    fillIn('#message-input', "test message!");
     keyEvent(
       '#message-input',
       'keypress',
@@ -103,7 +100,7 @@ describeModule('route:channels', 'Channels', {}, function() {
     });
   });
 
-  asyncIt('should not send a nessage if the message box is empty', function() {
+  it('should not send a nessage if the message box is empty', function() {
     var expectedMessageCount = null;
 
     visit('/channels/1');
@@ -113,7 +110,7 @@ describeModule('route:channels', 'Channels', {}, function() {
       expectedMessageCount = find('ul.messages li').length;
     });
 
-    fillInFocus('#message-input', '');
+    fillIn('#message-input', '');
     keyEvent(
       '#message-input',
       'keypress',
@@ -124,6 +121,5 @@ describeModule('route:channels', 'Channels', {}, function() {
       assert.strictEqual(find('ul.messages li').length, expectedMessageCount);
     });
   });
-
 
 });

@@ -1,6 +1,7 @@
-/* global require, module */
+/* global require, module, process */
 
 var EmberApp = require('ember-cli/lib/broccoli/ember-app');
+var isProduction = ( process.env.EMBER_ENV || 'development' ) === 'production';
 
 var app = new EmberApp();
 
@@ -17,7 +18,18 @@ var app = new EmberApp();
 // please specify an object with the list of modules as keys
 // along with the exports of each module as its value.
 
-app.import('bower_components/typeahead.js/dist/typeahead.bundle.js');
+app.import(app.bowerDirectory + '/typeahead.js/dist/typeahead.bundle.js');
+
+if (!isProduction) {
+  app.import(app.bowerDirectory + '/sinon/index.js', {
+    type: 'test'
+  });
+  app.import(app.bowerDirectory + '/chai-as-promised/lib/chai-as-promised.js', {
+    type: 'test'
+  });
+
+}
+
 
 module.exports = app.toTree();
  

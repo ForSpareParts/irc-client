@@ -1,13 +1,12 @@
+/* jshint expr:true */
 import Ember from 'ember';
 import startApp from '../helpers/start-app';
-import { describeModule, it } from 'ember-mocha';
-/* global assert, asyncIt */
 
 var App;
 var store;
 
-describeModule('route:servers', 'Servers', {}, function() {
-  beforeEach(function(){
+describe('Acceptance: the Servers modal', function() {
+  beforeEach(function() {
     App = startApp();
     store = App.__container__.lookup('store:main');
 
@@ -15,11 +14,11 @@ describeModule('route:servers', 'Servers', {}, function() {
     click('#servers-modal-trigger');
   });
 
-  afterEach(function(){
+  afterEach(function() {
     Ember.run(App, 'destroy');
   });
 
-  asyncIt('should add a new server', function() {
+  it('should add a new server', function() {
     var menuItems = null;
     var serverCountAtStart = null;
 
@@ -35,9 +34,9 @@ describeModule('route:servers', 'Servers', {}, function() {
 
     click('.server-menu a.create');
 
-    fillInFocus('#server-name', 'TestServer');
-    fillInFocus('#host', 'irc.test.net');
-    fillInFocus('#port', '1234');
+    fillIn('#server-name', 'TestServer');
+    fillIn('#host', 'irc.test.net');
+    fillIn('#port', '1234');
     click('#save-button');
 
     andThen(function() {
@@ -48,12 +47,13 @@ describeModule('route:servers', 'Servers', {}, function() {
     });
   });
 
-  asyncIt('should edit a server and discard', function() {
+  it('should edit a server and discard', function() {
     var serverRecord = null;
     var serverMenuItem = null;
 
-    click('#server-1 a');
-    fillInFocus('#server-name', 'TestServer');
+    click('#server-1');
+
+    fillIn('#server-name', 'TestServer');
     
     //leaving without clicking save should discard the changes
     click('#server-2 a');
@@ -73,12 +73,12 @@ describeModule('route:servers', 'Servers', {}, function() {
 
   });
 
-  asyncIt('should edit a server and save', function() {
+  it('should edit a server and save', function() {
     var serverRecord = null;
     var serverMenuItem = null;
 
     click('#server-1 a');
-    fillInFocus('#server-name', 'TestServer');
+    fillIn('#server-name', 'TestServer');
     click('#save-button');
 
     andThen(function() {
@@ -96,7 +96,7 @@ describeModule('route:servers', 'Servers', {}, function() {
     });
   });
 
-  asyncIt('should refuse to save a server that doesn\'t validate', function() {
+  it('should refuse to save a server that doesn\'t validate', function() {
     click('.server-menu a.create');
     click('#save-button');
 
@@ -104,6 +104,4 @@ describeModule('route:servers', 'Servers', {}, function() {
       assert.ok(find('.save-failed').text().indexOf('could not save') > -1);
     });
   });
-
-
 });

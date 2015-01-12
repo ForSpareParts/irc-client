@@ -17,28 +17,36 @@ export default ApplicationAdapter.extend({
   buildURL: function(type, id) {
     //type should always be 'connection'
     //the ID of a Connection always matches that of its Server
-    return '/servers/' + id + '/' + type;
+    return [
+      this.urlPrefix(),
+      'servers',
+      id,
+      type].join('/');
   },
 
   //a POST would 405 anyway, but let's save ourselves the trip
   createRecord: function() {
-    throw new Ember.Error('Connections cannot be created by the client.');
+    return Ember.RSVP.reject(
+      new Ember.Error('Connections cannot be created by the client.'));
   },
 
   //same as createRecord
   deleteRecord: function() {
-    throw new Ember.Error('Connections cannot be deleted by the client.');
+    return Ember.RSVP.reject(
+      new Ember.Error('Connections cannot be deleted by the client.'));
   },
 
 
   //there's no equivalent path for findAll/findQuery on the backend
   //shouldn't really need one, but could implement it later if necessary
   findAll: function() {
-    throw new Ember.Error('findAll is not supported for Connections');
+    return Ember.RSVP.reject(
+      new Ember.Error('findAll is not supported for Connections'));
   },
 
   findQuery: function() {
-    throw new Ember.Error('findQuery is not supported for Connections');
+    return Ember.RSVP.reject(
+      new Ember.Error('findQuery is not supported for Connections'));
   },
 
 
