@@ -71,30 +71,19 @@ export default ApplicationAdapter.extend({
 
     var adapter = this;
 
-    var changedAttributes = record.changedAttributes();
+    return this.ajax(url + '/connected', "POST", {
+      data: {
+        connected: record.get('connected')
+      }
+    })
 
-    if (changedAttributes.hasOwnProperty('server')) {
-      return Ember.RSVP.reject(
-        new Ember.Error('Can\'t reassign a Connection to a different Server.'));
-    }
-
-
-    var promise = Ember.RSVP.resolve(null);
-
-    if (changedAttributes.hasOwnProperty('connected')) {
-      promise.then(function() {
-        adapter.ajax(url, "POST", record.get('connected'));
+    .then(function() {
+      return adapter.ajax(url + '/joined', "POST", {
+        data: {
+          joined: record.get('joined')
+        }
       });
-    }
-
-    if (changedAttributes.hasOwnProperty('joined')) {
-      //NOTE: sends the whole channel list each time. might be inefficient.
-      promise.then(function() {
-        adapter.ajax(url, "POST", record.get('joined'));
-      });
-    }
-
-    return promise;
+    });
   }
 
 });
