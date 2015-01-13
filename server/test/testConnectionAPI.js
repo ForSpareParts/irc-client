@@ -7,85 +7,89 @@ var app = require('../app')
 var connectionLib = require('../connection');
 
 var CONNECTION_PATH = NAMESPACE + '/servers/1/connection';
+var CONNECTION_JSON = {
+  connection: {
+    id: 1,
+    connected: false,
+    server: 1,
+    joined: []
+  }
+};
+
+var clone;
+
 
 describe('The connection API', function() {
 
   beforeEach(function() {
     //clear out all connection information between tests
     connectionLib.clearConnections();
+
+    clone = JSON.parse(JSON.stringify(CONNECTION_JSON));
   });
 
   it('should show a summary of a connection', function() {
     return request.get(CONNECTION_PATH)
 
     .expect(200)
-    .expect({
-      connection: {
-        id: 1,
-        connected: false,
-        server: 1,
-        joined: []}
-      });
+    .expect(CONNECTION_JSON);
   });
 
-  it('should 405 for non-GET requests to the connection root', function() {
+  it('should 405 for non-GET/PUT requests to the connection root', function() {
     return request.post(CONNECTION_PATH)
     .send({})
 
     .expect(405);
   });
 
-  it('should show connection state at /connected', function() {
-    return request.get(CONNECTION_PATH + '/connected')
+  it('should connect when we set connected to true', function() {
+    clone.connection.connected = true;
 
+    return request.put(CONNECTION_PATH)
+    .send({
+      connection: {
+        connected: true
+      }
+    })
     .expect(200)
-    .expect({connected: false});
-  });
-
-  it('should connect when we set /connected to true', function() {
-    return request.post(CONNECTION_PATH + '/connected')
-    .send({connected: true})
-    .expect(200)
-    .expect({connected: true});
+    .expect(clone);
   });
 
   //when already connected
   describe('when servers are already connected,', function() {
     beforeEach(function() {
-
       //start with a couple joined channels
-      return request.post(CONNECTION_PATH + '/joined')
-      .send({joined: ['#channelA', '#channelB']});
+      clone.connection.joined = ['#channelA', '#channelB'];
+
+      return request.put(CONNECTION_PATH)
+      .send(clone);
 
     });
 
-    it('should disconnect when we set /connected to false', function() {
-      return request.post(CONNECTION_PATH + '/connected')
-      .send({connected: false})
+    it('should disconnect when we set connected to false', function() {
+      clone.connection.connected = false;
+
+      return request.put(CONNECTION_PATH)
+      .send(clone)
 
       .expect(200)
-      .expect({connected: false});
+      .expect(clone);
     });
 
-    it('should list joined channels at /joined', function() {
-      return request.get(CONNECTION_PATH + '/joined')
+    it('should list joined channels', function() {
+      return request.get(CONNECTION_PATH)
 
       .expect(200)
-      .expect({joined: ['#channelA', '#channelB']});
+      .expect(clone);
     });
 
-    it('should replace all joined channels on a POST to /joined', function() {
-      return request.post(CONNECTION_PATH + '/joined')
-      .send({joined: ['#channelB', '#channelC']})
-      .expect(200)
-      .expect({joined: ['#channelB', '#channelC']});
-    });
+    it('should replace all joined channels on a PUT', function() {
+      clone.connection.joined = ['#channelB', '#channelC'];
 
-    it('should add joined channels on a PUT to /joined', function() {
-      return request.put(CONNECTION_PATH + '/joined')
-      .send({joined: ['#channelB', '#channelC']})
+      return request.put(CONNECTION_PATH)
+      .send(clone)
       .expect(200)
-      .expect({joined: ['#channelA', '#channelB', '#channelC']});
+      .expect(clone);
     });
 
   });

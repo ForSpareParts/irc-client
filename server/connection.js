@@ -3,7 +3,7 @@ var Promise = require('bluebird');
 
 var _ = require('underscore');
 
-var argv = require('yargs').argv
+var argv = require('yargs').argv;
 argv.settings = 'test';
 
 var settings = require('./settings');
@@ -48,7 +48,7 @@ module.exports.getConnection = function(host, port, nick) {
 module.exports.clearConnections = function() {
   connectionCache = {};
   idCounter = 0;
-}
+};
 
 /**
  * Emits events related to connections so that we can respond to events from IRC
@@ -126,6 +126,29 @@ Connection.prototype.disconnect = function() {
   });
 };
 
+
+/**
+ * Wraps both connect() and disconnect() to take a boolean. The resulting
+ * Promise is a no-op if the Connection doesn't actually need to change its
+ * state.
+ * @param {boolean} shouldBeConnected
+ * @return {Promise}
+ */
+Connection.prototype.setConnected = function(shouldBeConnected) {
+  if (this.connected === shouldBeConnected) {
+    return Promise.resolve(null);
+  }
+
+  if (shouldBeConnected === true) {
+    return this.connect();
+  }
+  else if (shouldBeConnected === false) {
+    return this.disconnect();
+  }
+
+  return Promise.reject(new Error('invalid value for \'connected\''));
+};
+
 /**
  * Promise-enabled wrapper for the join() method of this.client.
  * @param  {string} channel
@@ -139,7 +162,7 @@ Connection.prototype.join = function(channel) {
       connectionEmitter.emit(
         'joined', self.host, self.port, self.nick, channel);
       resolve(joinInfo);
-    })
+    });
   });
 };
 
@@ -156,7 +179,7 @@ Connection.prototype.part = function(channel) {
       connectionEmitter.emit(
         'parted', self.host, self.port, self.nick, channel);
       resolve(partInfo);
-    })
+    });
   });
 };
 
