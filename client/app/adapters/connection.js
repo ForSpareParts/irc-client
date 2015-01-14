@@ -47,43 +47,6 @@ export default ApplicationAdapter.extend({
   findQuery: function() {
     return Ember.RSVP.reject(
       new Ember.Error('findQuery is not supported for Connections'));
-  },
-
-
-  //The backend API for connection uses separate paths for connection
-  //properties, i.e.:
-  //
-  // POST /servers/1/connection/connected: {connected: true}
-  // 
-  // instead of
-  // 
-  // PUT /servers/1/connection: {connection: {connected: true}}
-  // 
-  //We're doing this because it's simply easier to write on the backend (see
-  //server/routes/connection.js). The frontend inherits the mess, of course,
-  //but I think it's easier to handle here.
-  updateRecord: function(store, type, record) {
-    //WARNING: of course, this means that an update to a Connection isn't
-    //necessarily atomic. Oh, well. Most of the time we're only going to update
-    //connected or joined, anyway.
-    var id = Ember.get(record, 'id');
-    var url = this.buildURL(type.typeKey, id, record);
-
-    var adapter = this;
-
-    return this.ajax(url + '/connected', "POST", {
-      data: {
-        connected: record.get('connected')
-      }
-    })
-
-    .then(function() {
-      return adapter.ajax(url + '/joined', "POST", {
-        data: {
-          joined: record.get('joined')
-        }
-      });
-    });
   }
 
 });

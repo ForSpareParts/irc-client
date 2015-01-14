@@ -14,7 +14,12 @@ var requestSpy = function(event, request, settings) {
   var data = settings.data;
 
   if (typeof(data) === 'string') {
-    data = JSON.parse(data);
+    try {
+      data = JSON.parse(data);
+    }
+    catch (SyntaxError) {
+      //do nothing
+    }
   }
 
   requests.push({
@@ -32,6 +37,7 @@ describeModel(
   {
     // Specify the other units that are required for this test.
       needs: [
+        'adapter:application',
         'adapter:connection',
         'model:server',
         'model:channel',
@@ -78,7 +84,17 @@ describeModel(
       });
     });
 
-    it('performs an update as two separate requests', function() {
+    it('refuses to perform invalid find operations', function() {
+      isRejected(function() {
+        return store.find('connection');
+      });
+
+      isRejected(function() {
+        return store.find('connection', { param: 'value'});
+      });
+    });
+
+    it('performs an update', function() {
       andThen(function() {
         connection.set('connected', true);
         connection.set('joined', ['#channelname']);
@@ -86,24 +102,23 @@ describeModel(
       });
 
       andThen(function() {
-        var postRequests = requests.filter(function(request) {
-          return request.method === 'POST';
+        var putRequests = requests.filter(function(request) {
+          return request.method === 'PUT';
         });
-        assert.strictEqual(postRequests.length, 2);
+        assert.strictEqual(putRequests.length, 1);
 
         assert.strictEqual(
-          postRequests[0].url,
-          'api/servers/1/connection/connected');
+          putRequests[0].url,
+          'api/servers/1/connection');
         assert.deepEqual(
-          postRequests[0].data,
-          { connected: true });
+          putRequests[0].data,
+          { connection: {
+            server: '1',
+            connected: true,
+            joined: ['#channelname']
+            }
+          });
 
-        assert.strictEqual(
-          postRequests[1].url,
-          'api/servers/1/connection/joined');
-        assert.deepEqual(
-          postRequests[1].data,
-          { joined: ['#channelname'] });
       });
     });
   }
