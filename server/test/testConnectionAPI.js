@@ -35,7 +35,7 @@ describe('The connection API', function() {
     .expect(CONNECTION_JSON);
   });
 
-  it('should 405 for non-GET/PUT requests to the connection root', function() {
+  it('should 405 for non-GET/PATCH requests to the connection root', function() {
     return request.post(CONNECTION_PATH)
     .send({})
 
@@ -45,7 +45,7 @@ describe('The connection API', function() {
   it('should connect when we set connected to true', function() {
     clone.connection.connected = true;
 
-    return request.put(CONNECTION_PATH)
+    return request.patch(CONNECTION_PATH)
     .send({
       connection: {
         connected: true
@@ -61,7 +61,7 @@ describe('The connection API', function() {
       //start with a couple joined channels
       clone.connection.joined = ['#channelA', '#channelB'];
 
-      return request.put(CONNECTION_PATH)
+      return request.patch(CONNECTION_PATH)
       .send(clone);
 
     });
@@ -69,7 +69,7 @@ describe('The connection API', function() {
     it('should disconnect when we set connected to false', function() {
       clone.connection.connected = false;
 
-      return request.put(CONNECTION_PATH)
+      return request.patch(CONNECTION_PATH)
       .send(clone)
 
       .expect(200)
@@ -83,10 +83,10 @@ describe('The connection API', function() {
       .expect(clone);
     });
 
-    it('should replace all joined channels on a PUT', function() {
+    it('should replace all joined channels on a PATCH', function() {
       clone.connection.joined = ['#channelB', '#channelC'];
 
-      return request.put(CONNECTION_PATH)
+      return request.patch(CONNECTION_PATH)
       .send(clone)
       .expect(200)
       .expect(clone);

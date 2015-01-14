@@ -102,16 +102,16 @@ describeModel(
       });
 
       andThen(function() {
-        var putRequests = requests.filter(function(request) {
-          return request.method === 'PUT';
+        var patchRequests = requests.filter(function(request) {
+          return request.method === 'PATCH';
         });
-        assert.strictEqual(putRequests.length, 1);
+        assert.strictEqual(patchRequests.length, 1);
 
         assert.strictEqual(
-          putRequests[0].url,
+          patchRequests[0].url,
           'api/servers/1/connection');
         assert.deepEqual(
-          putRequests[0].data,
+          patchRequests[0].data,
           { connection: {
             server: '1',
             connected: true,

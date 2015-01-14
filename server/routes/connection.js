@@ -29,7 +29,7 @@ router.route('/')
     res.send(serverConnectionJSON(req.server));
   })
 
-  .put(function(req, res) {
+  .patch(function(req, res) {
     var promise = Promise.resolve(null);
 
     var updated = req.body.connection;
@@ -55,52 +55,7 @@ router.route('/')
 
   .all(function(req, res) {
     res.status(405).send({
-      message: 'Connection model only accepts GET and PUT.'});
+      message: 'Connection model only accepts GET and PATCH.'});
   });
-
-// router.route('/connected')
-//   /** Get connection state. */
-//   .get(function(req, res) {
-//     res.send({
-//       connected: req.server.connection().isConnected()
-//     });
-//   })
-
-//   /** Update connection state (connect/disconnect). */
-//   .post(function(req, res) {
-//     if (req.body.connected === true) {
-//       req.server.connection().connect().then(function() {
-//         res.send({connected: true});
-//       });
-//     }
-
-//     else if (req.body.connected === false) {
-//       req.server.connection().disconnect().then(function() {
-//         res.send({connected: false});
-//       });
-//     }
-//   });
-
-
-// router.route('/joined')
-
-//   .get(function(req, res) {
-//     res.send({
-//       joined: req.server.connection().getJoinedChannels()});
-//   })
-
-//   .post(function(req, res) {
-//     req.server.connection().setJoinedChannels(req.body.joined);
-
-//     res.send({
-//       joined: req.server.connection().getJoinedChannels()});
-//   })
-
-//   .put(function(req, res) {
-//     req.server.connection().addJoinedChannels(req.body.joined);
-
-//     res.send({
-//       joined: req.server.connection().getJoinedChannels()});
-//   });
 
 module.exports = router;
