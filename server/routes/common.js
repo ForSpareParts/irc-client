@@ -107,32 +107,72 @@ module.exports.modelRestRouter = function(model) {
     res.send(req[model.tableName()].toEmber());
   };
 
-  router.updateSingleRecord = function(req, res) {
-    //delete any id in the request body -- otherwise, it could override the id
-    //in the path
-    tableName = model.tableName();
-    delete req.body[tableName].id;
+  router.updateSingleRecord = function(req, res, next) {
+    var canEdit = this.canEdit(req);
 
-    var updateRecord = model.fromEmber(req.body);
+    if (canEdit !== true) {
+      next(canEdit);
+    }
 
-    //use the request body to overwrite the contents of the fetched model
-    req[model.tableName()].set(updateRecord.attributes);
+    else {
+      //delete any id in the request body -- otherwise, it could override the id
+      //in the path
+      tableName = model.tableName();
+      delete req.body[tableName].id;
 
-    return req[model.tableName()].save()
+      var updateRecord = model.fromEmber(req.body);
+      
+      //use the request body to overwrite the contents of the fetched model
+      req[model.tableName()].set(updateRecord.attributes);
 
-    .then(function(updated) {
-      res.send(updated.toEmber());
-    });
+      return req[model.tableName()].save()
+
+      .then(function(updated) {
+        res.send(updated.toEmber());
+      });
+    }
   };
 
-  router.deleteSingleRecord = function(req, res) {
-    return req[model.tableName()].destroy()
+  router.deleteSingleRecord = function(req, res, next) {
+    var canDelete = this.canDelete(req);
 
-    .then(function() {
-      res.send(
-        {success: true}
-      );
-    });
+    if (canDelete !== true) {
+      next(canDelete);
+    }
+
+    else {
+      return req[model.tableName()].destroy()
+
+      .then(function() {
+        res.send(
+          {success: true}
+        );
+      });
+    }
+  };
+
+  /**
+   * If we are allowed to edit this record, return true. Otherwise, return an
+   * error object indicating the reason we can't edit the record.
+   *
+   * By default, always returns true.
+   * 
+   * @param  {Request} req the current request
+   */
+  router.canEdit = function(req) {
+    return true;
+  };
+
+  /**
+   * If we are allowed to delete this record, return true. Otherwise, return an
+   * error object indicating the reason we can't delete the record.
+   *
+   * By default, returns this.canEdit().
+   * 
+   * @param  {Request} req the current request
+   */
+  router.canDelete = function(req) {
+    return this.canEdit(req);
   };
 
   return router;

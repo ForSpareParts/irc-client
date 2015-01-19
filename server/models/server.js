@@ -32,9 +32,19 @@ var Server = BaseModel.extend({
   virtuals: {
     links: function() {
       return {
-        channels: '/api/servers/' + this.get('id') + '/channels'
+        channels: '/api/servers/' + this.get('id') + '/channels',
+        connection: '/api/servers/' + this.get('id') + '/connection'
       };
     }
+  }
+}, {
+  fromEmber: function(emberObject) {
+    //Ember really wants a "connection" key on there, we'll just strip it out so
+    //that Bookshelf doesn't complain
+    
+    delete emberObject.server.connection;
+
+    return BaseModel.fromEmber.bind(this)(emberObject);
   }
 });
 

@@ -25,7 +25,7 @@ if (apiRouter.get('env') === 'development' || apiRouter.get('env') === 'test') {
     var errorContext = {
       message: err.message,
       error: err
-    }
+    };
 
     res.status(err.status || 500);
 

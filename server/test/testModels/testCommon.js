@@ -12,10 +12,11 @@ describe('The base model', function() {
         host: 'irc.hostname.net',
         port: '3000',
         links: {
-          channels: '/api/servers/undefined/channels'
+          channels: '/api/servers/undefined/channels',
+          connection: '/api/servers/undefined/connection'
         }
       }
-    }
+    };
 
     var convertedToModel = models.Server.fromEmber(sampleEmber);
 
@@ -39,7 +40,8 @@ describe('The base model', function() {
           host: 'irc.hostone.net',
           port: '3000',
           links: {
-            channels: '/api/servers/undefined/channels'
+            channels: '/api/servers/undefined/channels',
+            connection: '/api/servers/undefined/connection'
           }
         },
         {
@@ -47,7 +49,8 @@ describe('The base model', function() {
           host: 'irc.hosttwo.net',
           port: '3001',
           links: {
-            channels: '/api/servers/undefined/channels'
+            channels: '/api/servers/undefined/channels',
+            connection: '/api/servers/undefined/connection'
           }
         }
       ]

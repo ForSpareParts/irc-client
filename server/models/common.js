@@ -182,7 +182,7 @@ var BaseModel = Bookshelf.Model.extend(
 /** Update the current database to the most recent migration. */
 var migrateLatest = function() {
   return knex.migrate.latest();
-}
+};
 
 module.exports = {
   BaseModel: BaseModel,

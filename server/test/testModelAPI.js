@@ -95,7 +95,7 @@ describe('The database access API', function() {
       .then(function(res) {
         assert.strictEqual(res.body.channel.server, 1);
         assert.notProperty(res.body.channel, 'server_id');
-      })
+      });
     });
 
   it('should get all channels for a server', function() {
@@ -129,6 +129,29 @@ describe('The database access API', function() {
     function() {
       return request.get(NAMESPACE + '/channels/2/messages/1')
       .expect(404);      
+  });
+
+  it('should 403 for update/delete requests to a conneted server.', function() {
+    return request.patch(NAMESPACE + '/servers/1/connection')
+
+    .send({
+      connection: {
+        connected: true
+      }
+    })
+
+    .expect(200)
+
+    .then(function() {
+      return request.put(NAMESPACE + '/servers/1')
+      .send({})
+      .expect(403);
+    })
+
+    .then(function() {
+      return request.del(NAMESPACE + '/servers/1')
+      .expect(403);
+    });
   });
 
 });
