@@ -37,6 +37,11 @@
   </ul>
 
   <button id="save-button" {{action "save" server}}>Save</button>
+  {{#if server.connected}}
+    <button id="connect-button" {{action "disconnect" server}}>Disconnect</button>
+  {{else}}
+    <button id="connect-button" {{action "connect" server}}>Connect</button>
+  {{/if}}
 
   {{#if saveFailed}}
   <div class="save-failed">

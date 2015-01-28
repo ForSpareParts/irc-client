@@ -9,6 +9,7 @@ var Server = DS.Model.extend({
   nick: DS.attr('string'),
 
   channels: DS.hasMany('channel', {async: true}),
+  connection: DS.belongsTo('connection', {async: true}),
 
   menuItemId: function() {
     if (this.get('id')) {
@@ -17,6 +18,10 @@ var Server = DS.Model.extend({
 
     return 'server-new';
   }.property('id'),
+
+  connected: function() {
+    return this.get('connection.connected');
+  }.property('connection.connected'),
 
   /**
    * Whether the instance *appears* valid (distinct from the 'valid' state,

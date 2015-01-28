@@ -3,23 +3,53 @@ import {
   describeComponent,
   it
 } from 'ember-mocha';
+import Ember from 'ember';
+import DS from 'ember-data';
+
 
 describeComponent(
   'server-edit',
   'ServerEditComponent',
   {
     // specify the other units that are required for this test
-    // needs: ['component:foo', 'helper:bar']
+    needs: [
+      'model:server',
+      'model:channel',
+      'model:message',
+      'model:connection',
+      'adapter:application',
+      'adapter:connection',
+      'transform:array'
+    ]
   },
   function() {
-    it('renders', function() {
-      // creates the component instance
-      var component = this.subject();
-      expect(component._state).to.equal('preRender');
+    it('connects and disconnects the server', function() {
+      this.timeout(0);
 
-      // renders the component on the page
-      this.render();
-      expect(component._state).to.equal('inDOM');
+      DS._setupContainer(this.container);
+      var store = this.container.lookup('store:main');
+
+      var component = this.subject();
+
+
+      Ember.run(function() {
+        return store.find('server', 1)
+
+        .then(function(server) {
+          component.set('server', server);
+          return component.send('connect', server);
+        })
+
+        .then(function() {
+          return component.get('server.connection');
+        })
+
+        .then(function(connection) {
+          assert.strictEqual(connection.get('connected'), true);
+        });
+      });
+
+      wait();
     });
   }
 );

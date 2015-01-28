@@ -11,7 +11,11 @@ describeComponent(
     needs: [
       'component:server-menu-item',
       'component:server-edit',
-      'component:form-input']
+      'component:form-input',
+      'model:server',
+      'model:channel',
+      'model:message',
+      'model:connection']
   },
   function() {
     it('renders', function() {

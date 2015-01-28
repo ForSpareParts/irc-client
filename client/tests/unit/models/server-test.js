@@ -4,6 +4,7 @@ describeModel('server', 'Server', {
   // Specify the other units that are required for this test.
   needs: [
     'model:channel',
+    'model:connection',
     'model:message',
     'model:user'
   ]
