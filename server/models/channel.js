@@ -1,9 +1,18 @@
+var util = require('util');
+
 var Promise = require('bluebird');
 
 var modelsCommon = require('./common');
 var Message = require('./message');
 
 var BaseModel = modelsCommon.BaseModel;
+
+var CannotSpeakError = function(message) {
+  this.status = 405; //you can speak, but not when you're offline!
+  this.message = message;
+};
+
+util.inherits(CannotSpeakError, Error);
 
 /** Represents an IRC channel or direct-message conversation. */
 var Channel = BaseModel.extend({
@@ -34,11 +43,11 @@ var Channel = BaseModel.extend({
       var connection = server.connection();
 
       if (!connection.isConnected()) {
-        throw new Error("Cannot speak while offline.");
+        throw new CannotSpeakError("Cannot speak while offline.");
       }
 
       if (connection.getJoinedChannels().indexOf(self.get('name')) === -1) {
-        throw new Error("Cannot speak without joining channel.");
+        throw new CannotSpeakError("Cannot speak without joining channel.");
       }
 
       connection.say(self.get('name'), messageContents);

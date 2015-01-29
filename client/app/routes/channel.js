@@ -31,10 +31,6 @@ export default Ember.Route.extend({
       .then(function(savedMessage) {
         channel.get('messages').addObject(savedMessage);
         channel.set('messageInput', '');
-      })
-
-      .catch(function(reason) {
-        console.log(reason);
       });
     }
   }
