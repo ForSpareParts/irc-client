@@ -22,16 +22,22 @@ var defaults = {
   //or wipe the database, or load test fixtures. Allows the Ember tests to reset
   //the app like the backend tests do.
   enableDevRoutes: false,
+
+  //when true, sends stacktraces on errors. only use this in dev and test.
+  sendErrorStacktraces: false
 };
 
 
 var profiles = {
-  dev: {}, //dev is just the default profile,
+  dev: {
+    sendErrorStacktraces: true
+  },
   test: {
     databaseConfig: 'test',
     listenToIRC: false,
     enableDevRoutes: true,
-    logRequests: false
+    logRequests: false,
+    sendErrorStacktraces: true
   },
 
   production: {

@@ -2,6 +2,7 @@ var express = require('express');
 
 var models = require('../models');
 var modelRestRouter = require('./common').modelRestRouter;
+var sendErrorStacktraces = require('../settings').sendErrorStacktraces;
 
 var apiRouter = express.Router();
 
@@ -20,7 +21,7 @@ apiRouter.use(function(req, res, next) {
 
 // development error handler
 // will print stacktrace
-if (apiRouter.get('env') === 'development' || apiRouter.get('env') === 'test') {
+if (sendErrorStacktraces) {
   apiRouter.use(function(err, req, res, next) {
     var errorContext = {
       message: err.message,
