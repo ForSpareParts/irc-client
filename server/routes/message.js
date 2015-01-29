@@ -24,4 +24,16 @@ router.canEdit = function(req) {
   };
 };
 
+router.canCreate = function(req) {
+  if (!req.channel) {
+    return {
+      status: 405,
+      message: 'Messages must be created via a Channel route.' 
+    };
+  }
+
+  return true;
+};
+
+
 module.exports = router;
