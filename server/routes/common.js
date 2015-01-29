@@ -16,7 +16,16 @@ module.exports.modelRestRouter = function(model) {
 
   router.route('/')
     .get(lazyRoute('getAll'))
-    .post(lazyRoute('createRecord'));
+    .post(function(req, res, next) {
+      var canCreate = router.canCreate(req);
+      if (canCreate !== true) {
+        next(canCreate);
+      }
+
+      else {
+        return router.createRecord(req, res, next);        
+      }
+    });
 
   //grab the model instance and store it in req[model.tableName()] so that we
   //have it when we get to the next step
@@ -24,8 +33,26 @@ module.exports.modelRestRouter = function(model) {
 
   router.route('/:id')
     .get(lazyRoute('getSingleRecord'))
-    .put(lazyRoute('updateSingleRecord'))
-    .delete(lazyRoute('deleteSingleRecord'));
+    .put(function(req, res, next) {
+      var canEdit = router.canEdit(req);
+      if (canEdit !== true) {
+        next(canEdit);
+      }
+
+      else {
+        return router.updateSingleRecord(req, res, next);        
+      }
+    })
+    .delete(function(req, res, next) {
+      var canDelete = router.canDelete(req);
+      if (canDelete !== true) {
+        next(canDelete);
+      }
+
+      else {
+        return router.deleteSingleRecord(req, res, next);
+      }
+    });
 
 
   /**
@@ -108,47 +135,29 @@ module.exports.modelRestRouter = function(model) {
   };
 
   router.updateSingleRecord = function(req, res, next) {
-    var canEdit = this.canEdit(req);
+    tableName = model.tableName();
+    delete req.body[tableName].id;
 
-    if (canEdit !== true) {
-      next(canEdit);
-    }
+    var updateRecord = model.fromEmber(req.body);
+    
+    //use the request body to overwrite the contents of the fetched model
+    req[model.tableName()].set(updateRecord.attributes);
 
-    else {
-      //delete any id in the request body -- otherwise, it could override the id
-      //in the path
-      tableName = model.tableName();
-      delete req.body[tableName].id;
+    return req[model.tableName()].save()
 
-      var updateRecord = model.fromEmber(req.body);
-      
-      //use the request body to overwrite the contents of the fetched model
-      req[model.tableName()].set(updateRecord.attributes);
-
-      return req[model.tableName()].save()
-
-      .then(function(updated) {
-        res.send(updated.toEmber());
-      });
-    }
+    .then(function(updated) {
+      res.send(updated.toEmber());
+    });
   };
 
   router.deleteSingleRecord = function(req, res, next) {
-    var canDelete = this.canDelete(req);
+    return req[model.tableName()].destroy()
 
-    if (canDelete !== true) {
-      next(canDelete);
-    }
-
-    else {
-      return req[model.tableName()].destroy()
-
-      .then(function() {
-        res.send(
-          {success: true}
-        );
-      });
-    }
+    .then(function() {
+      res.send(
+        {success: true}
+      );
+    });
   };
 
   /**
@@ -167,12 +176,22 @@ module.exports.modelRestRouter = function(model) {
    * If we are allowed to delete this record, return true. Otherwise, return an
    * error object indicating the reason we can't delete the record.
    *
-   * By default, returns this.canEdit().
+   * By default, returns this.canEdit(req).
    * 
    * @param  {Request} req the current request
    */
   router.canDelete = function(req) {
     return this.canEdit(req);
+  };
+
+  /**
+   * If we are allowed to create a record at this path, return true. Otherwise,
+   * return an error object indicating the reason we can't create a record.
+   * 
+   * @param  {Request} req the current request
+   */
+  router.canCreate = function(req) {
+    return true;
   };
 
   return router;
