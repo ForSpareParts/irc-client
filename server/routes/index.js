@@ -7,7 +7,7 @@ var apiRouter = express.Router();
 
 apiRouter.use('/servers', require('./server'));
 apiRouter.use('/channels', require('./channel'));
-apiRouter.use('/messages', modelRestRouter(models.Message));
+apiRouter.use('/messages', require('./message'));
 
 /// catch 404 and forward to error handler
 apiRouter.use(function(req, res, next) {

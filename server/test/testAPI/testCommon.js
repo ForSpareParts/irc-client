@@ -3,11 +3,11 @@
  * Channel, and Message).
  */
 
-var app = require('../app')
+var app = require('../../app')
   , request = require('supertest-as-promised')(app);
 
 
-describe('The database access API', function() {
+describe('The API', function() {
   it('should get data for all models of a type', function() {
     return request.get(NAMESPACE + '/servers')
 
@@ -46,20 +46,18 @@ describe('The database access API', function() {
   });
 
   it('should create new models', function() {
-    return request.post(NAMESPACE + '/messages/')
+    return request.post(NAMESPACE + '/channels/')
     .send({
-      message: {
-        nick: 'somenick',
-        channel_id: 1,
-        time: new Date('2000-01-01T00:02:00').toISOString(),
-        contents: 'test message'
+      channel: {
+        name: '#createchannel',
+        server: 1,
       }
     })
 
     .expect(200)
     .then(function(res) {
-      message = res.body.message;
-      assert.strictEqual(message.contents, 'test message');
+      channel = res.body.channel;
+      assert.strictEqual(channel.name, '#createchannel');
     });
   });
 
@@ -97,61 +95,5 @@ describe('The database access API', function() {
         assert.notProperty(res.body.channel, 'server_id');
       });
     });
-
-  it('should get all channels for a server', function() {
-    return request.get(NAMESPACE + '/servers/1/channels')
-    .expect(200)
-    .then(function(res) {
-      //there's only one channel for server 1, so we should only get a single
-      //record
-      assert.strictEqual(res.body.channels.length, 1);
-    });
-  });
-
-  it('should 404 for channels that do not belong to the indicated server',
-    function() {
-      //channel 1 does exist, but it doesn't belong to server 2 -- so the request
-      //should 404
-      return request.get(NAMESPACE + '/servers/2/channels/1')
-      .expect(404);
-  });
-
-  it('should get all messages for a channel', function() {
-    return request.get(NAMESPACE + '/channels/1/messages')
-    .expect(200)
-    .then(function(res) {
-      //we should only get the two messages in channel 1
-      assert.strictEqual(res.body.messages.length, 2);
-    });
-  });
-
-  it('should 404 for messages that do not belong to the indicated channel',
-    function() {
-      return request.get(NAMESPACE + '/channels/2/messages/1')
-      .expect(404);      
-  });
-
-  it('should 403 for update/delete requests to a conneted server.', function() {
-    return request.patch(NAMESPACE + '/servers/1/connection')
-
-    .send({
-      connection: {
-        connected: true
-      }
-    })
-
-    .expect(200)
-
-    .then(function() {
-      return request.put(NAMESPACE + '/servers/1')
-      .send({})
-      .expect(403);
-    })
-
-    .then(function() {
-      return request.del(NAMESPACE + '/servers/1')
-      .expect(403);
-    });
-  });
 
 });

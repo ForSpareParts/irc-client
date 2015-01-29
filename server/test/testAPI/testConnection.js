@@ -1,10 +1,10 @@
 /**
  * Test accessing IRC server connections through the API.
  */
-var app = require('../app')
+var app = require('../../app')
   , request = require('supertest-as-promised')(app);
 
-var connectionLib = require('../connection');
+var connectionLib = require('../../connection');
 
 var CONNECTION_PATH = NAMESPACE + '/servers/1/connection';
 var CONNECTION_JSON = {

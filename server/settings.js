@@ -22,7 +22,7 @@ var defaults = {
   //or wipe the database, or load test fixtures. Allows the Ember tests to reset
   //the app like the backend tests do.
   enableDevRoutes: false,
-}
+};
 
 
 var profiles = {
