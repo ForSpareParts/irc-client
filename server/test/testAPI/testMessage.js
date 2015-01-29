@@ -3,6 +3,7 @@
  */
 
 var app = require('../../app')
+  , Server = require('../../models/server')
   , request = require('supertest-as-promised')(app);
 
 describe('The Message API', function() {
@@ -21,15 +22,63 @@ describe('The Message API', function() {
       .expect(404);      
   });
 
-  it('should 405 if we try to create a message without a channel', function() {
+  it('should 400 if we try to create a message without a channel', function() {
     return request.post(NAMESPACE + '/messages')
-    .send({})
-    .expect(405);
+    .send({
+      message: {
+        contents: 'Hello!'
+      }
+    })
+    .expect(400);
+  });
+
+  it('should 400 if we specify two different channels on POST', function() {
+    return request.post(NAMESPACE + '/channels/1/messages')
+    .send({
+      message: {
+        contents: 'Hello!',
+        channel: 2
+      }
+    });
   });
 
   it('should 405 if we try to edit a message', function() {
     return request.put(NAMESPACE + '/messages/1')
     .send({})
     .expect(405);
+  });
+
+  it('should 400 if we try to send a message from the wrong nick', function() {
+    return request.post(NAMESPACE + '/channels/1/messages')
+    .send({
+      message: {
+        contents: 'Hello!',
+        nick: 'someUserNick'
+      }
+    })
+    .expect(400);
+  });
+
+  it('should send a message if the server is connected and the channel is ' +
+    'joined',
+    function() {
+      var server;
+      return Server.get(1)
+      .then(function(fetchedServer) {
+        server = fetchedServer;
+        return server.connection().connect();
+      })
+      .then(function() {
+        return server.connection().join('#somechannel');
+      })
+      .then(function() {
+        return request.post(NAMESPACE + '/channels/1/messages')
+        .send({
+          message: {
+            contents: 'Hello!',
+          }
+        })
+        .expect(200);
+      });
   });
 });

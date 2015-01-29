@@ -57,7 +57,7 @@ var Channel = BaseModel.extend({
     links: function() {
       return {
         messages: '/api/channels/' + this.get('id') + '/messages'
-      }
+      };
     }
   }
 },
