@@ -10,14 +10,17 @@ export default Ember.Route.extend({
   actions: {
 
     /** Send messageText to the Channel. */
-    sendMessage: function(messageText) {
+    sendMessage: function(messageText, callback) {
+      //NOTE: see message-input.js for reasoning behind callback
       var channel = this.modelFor(this.routeName);
       var store = channel.get('store');
+
+      var message;
 
       channel.get('server')
 
       .then(function(server) {
-        var message = store.createRecord('message', {
+        message = store.createRecord('message', {
           nick: server.get('nick'),
           channel: channel,
           time: moment(new Date(Date.now())),
@@ -30,7 +33,17 @@ export default Ember.Route.extend({
 
       .then(function(savedMessage) {
         channel.get('messages').addObject(savedMessage);
-        channel.set('messageInput', '');
+
+        if (callback){
+          callback();
+        }
+      })
+
+      .catch(function(reason) {
+        message.deleteRecord();
+        if (callback){
+          callback(reason);
+        }
       });
     }
   }

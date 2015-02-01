@@ -1,5 +1,12 @@
 #!/usr/bin/env node
 
+var argv = require('yargs')
+  .usage('starts a backend server in test mode, then runs the frontend tests')
+  .boolean('server')
+  .alias('s', 'server')
+  .describe('server', 'run the tests in server/watch mode')
+  .argv;
+
 var path = require('path');
 var child_process = require('child_process');
 
@@ -17,12 +24,19 @@ var serverProc = child_process.spawn('bin/www',
     cwd: serverDir,
   });
 
+
+var emberOpts = ['test'];
+
+if (argv.server) {
+  emberOpts.push('--server');
+}
+
 console.log('Running Ember tests...');
 var testProc = child_process.spawn('ember',
-['test'], {
-  cwd: clientDir,
-  stdio: 'inherit'
-});
+  emberOpts, {
+    cwd: clientDir,
+    stdio: 'inherit'
+  });
 
 testProc.on('exit', function(code, signal) {
   serverProc.kill();
