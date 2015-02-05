@@ -2,7 +2,7 @@
 var models = require('../models');
 
 var channelsRouter = require('./channel');
-var connectionRouter = require('./connection');
+var connectionRouter = require('./connection').singleRouter;
 var modelRestRouter = require('./common').modelRestRouter;
 
 

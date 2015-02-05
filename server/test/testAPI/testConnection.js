@@ -35,6 +35,24 @@ describe('The connection API', function() {
     .expect(CONNECTION_JSON);
   });
 
+  it('should show all connections', function() {
+    return request.get(NAMESPACE + '/connections')
+
+    .expect(200)
+    .then(function(res) {
+      assert.strictEqual(res.body.connections.length, 2);
+    });
+  });
+
+  it('should make a connection available from /connections/:id as well',
+    function() {
+      return request.get(NAMESPACE + '/connections/1')
+
+      .expect(200)
+      .expect(CONNECTION_JSON);
+    }
+  );
+
   it('should 405 for non-GET/PATCH requests to the connection root', function() {
     return request.post(CONNECTION_PATH)
     .send({})

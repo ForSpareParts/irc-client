@@ -16,6 +16,8 @@ exports.up = function(knex, Promise) {
     table.string('name', 100);
 
     table.integer('server_id').references('server.id');
+
+    table.unique(['name', 'server_id']);
   })
 
   .createTable('message', function(table) {
