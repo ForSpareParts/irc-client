@@ -16,6 +16,25 @@ describe('The Channel API', function() {
     });
   });
 
+  it('should query channels by name', function() {
+    return request.get(NAMESPACE + '/channels?name=%23somechannel')
+
+    .expect(200)
+    .then(function(res){
+      assert.strictEqual(res.body.channels.length, 1);
+      assert.strictEqual(res.body.channels[0].name, '#somechannel');
+    });
+  });
+
+  it('should limit queries to the server scope, if applicable', function() {
+    return request.get(NAMESPACE + '/servers/2/channels?name=%23somechannel')
+
+    .expect(200)
+    .then(function(res){
+      assert.strictEqual(res.body.channels.length, 0);
+    });
+  });
+
   it('should 404 for channels that do not belong to the indicated server',
     function() {
       //channel 1 does exist, but it doesn't belong to server 2 -- so the request

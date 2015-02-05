@@ -69,12 +69,23 @@ module.exports.modelRestRouter = function(model) {
     return model.collection();
   };
 
+  /**
+   * Filters the collection of records (for the list route) according to params
+   * on the query object. Returns the filtered collection.
+   */
+  router.filterCollection = function(query, collection) {
+    return collection;
+  };
+
 
   /**
    * Get and serve all records for this route.
    */
   router.getAll = function(req, res, next) {
-    return router.getCollection(req).fetch()
+    var collection = router.getCollection(req);
+    collection = this.filterCollection(req.query, collection);
+
+    return collection.fetch()
 
     .then(function (records) {
       //records is a Bookshelf collection, .models is the actual array of

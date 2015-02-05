@@ -6,6 +6,7 @@ var modelRestRouter = require('./common').modelRestRouter;
 
 
 var router = modelRestRouter(models.Channel);
+
 router.getCollection = function(req) {
   //if we've already retrieved a server, we filter to get only its channels
   if (req.server) {
@@ -18,6 +19,15 @@ router.getCollection = function(req) {
   return models.Channel.collection();
 };
 
+router.filterCollection = function(query, collection) {
+  if (!query.name) {
+    return collection;
+  }
+
+  return collection.query(function(qb) {
+    qb.where({name: query.name});
+  });
+};
 
 router.use('/:id/messages', messagesRouter);
 
