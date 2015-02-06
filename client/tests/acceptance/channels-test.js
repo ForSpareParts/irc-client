@@ -9,6 +9,13 @@ describe('Acceptance: Channels', function() {
   beforeEach(function(){
     App = startApp();
     store = App.__container__.lookup('store:main');
+
+    //connect to a server so we can join channels
+    visit('/');
+    click('#servers-modal-trigger');
+    click('#server-1 a');
+    click('#connect-button');
+    click('.close');
   });
 
   afterEach(function(){
@@ -16,60 +23,30 @@ describe('Acceptance: Channels', function() {
   });
 
   it('should join a new channel', function() {
-
-    var menuItems = null;
-    var channelCountAtStart = null;
-
     visit('/');
 
     andThen(function() {
-      menuItems = find('.channels li');
-      channelCountAtStart = store.all('channel').get('length');
-
       //there's one menu item for every channel, plus one for the 'create' link
       assert.strictEqual(
-        menuItems.length,
-        channelCountAtStart);
+        channelMenuItems().length,
+        0);
     });
 
-    click('a.create');
-    fillIn('#channel-name', '#testchannel');
-    fillIn('#channel-server-name', 'FooServer');
-    click('#channel-save-button');
+    joinChannel('#testchannel', 'FooServer');
 
     andThen(function() {
-      menuItems = find('.channels li');
       assert.strictEqual(
-        menuItems.length,
-        channelCountAtStart + 1);
+        channelMenuItems().length,
+        1);
 
       assert.strictEqual(
         currentRouteName(),
         'channel');
     });
-
-  });
-
-  it('should show the channel view', function() {
-    visit('/channels/1');
-
-    //get the channel's messages, and make sure we're showing all of them
-
-    andThen(function() {
-      return store.find('channel', 1)
-
-      .then(function(channel) {
-        var uiMessages = find('ul.messages li');
-
-        assert.strictEqual(
-          uiMessages.length,
-          channel.get('messages').get('length'));
-        });
-      });
   });
 
   it('should send a message', function() {
-    visit('/channels/1');
+    joinChannel('#somechannel', 'FooServer');
 
     andThen(function() {
       //the test message shouldn't exist before submitting...

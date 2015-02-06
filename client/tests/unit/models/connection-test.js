@@ -84,11 +84,7 @@ describeModel(
       });
     });
 
-    it('refuses to perform invalid find operations', function() {
-      isRejected(function() {
-        return store.find('connection');
-      });
-
+    it('refuses to perform findQuery', function() {
       isRejected(function() {
         return store.find('connection', { param: 'value'});
       });
@@ -109,7 +105,7 @@ describeModel(
 
         assert.strictEqual(
           patchRequests[0].url,
-          'api/servers/1/connection');
+          '/api/connections/1');
         assert.deepEqual(
           patchRequests[0].data,
           { connection: {

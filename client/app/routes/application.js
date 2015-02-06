@@ -2,8 +2,27 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
   model: function() {
-    return this.get('store').find('channel');
+    var store = this.get('store');
+
+    //preload servers, connections, and channels into the store
+    //NOTE: this is inefficient -- it would be better to implement a query on
+    //the server for joined channels
+    return store.find('server')
+
+    .then(function() {
+      return store.find('connection');
+    })
+
+    .then(function() {
+      return store.find('channel');      
+    })
+
+    .then(function(channels) {
+      var foo = channels.filterBy('joined', true);
+      return foo;
+    });
   },
+
 
   actions: {
     makeServer: function(serversEditComponent) {
@@ -17,6 +36,14 @@ export default Ember.Route.extend({
 
     saveServer: function(server) {
       return server.save();
+    },
+
+    /**
+     * Refreshes the ApplicationRoute model, which is a filtered list of joined
+     * channels.
+     */
+    refreshJoined: function() {
+      this.refresh();
     }
 
   }

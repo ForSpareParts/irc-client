@@ -16,8 +16,10 @@ export default Ember.Route.extend({
   actions: {
     save: function(model) {
       var self = this;
+      var server;
 
-      model.get('server').then(function(server) {
+      model.get('server').then(function(fetchedServer) {
+        server = fetchedServer;
         //validation
         if (!model.get('name')) {
           throw new Error();
@@ -27,10 +29,37 @@ export default Ember.Route.extend({
           throw new Error();
         }
 
+        //try to find an existing Channel that matches
+        return self.store.find('channel', {
+          name: model.get('name'),
+          // server: model.get('server') //TODO: server doesn't actually use this yet!
+        });
+      })
+
+      .then(function(fetchedChannels) {
+        if (fetchedChannels.content.length > 0) {
+          //we found an existing Channel
+
+          //we don't have to delete our new/unsaved one -- it'll get cleaned up
+          //when the route is deactivated
+          model = fetchedChannels.objectAt(0);
+          return Ember.RSVP.resolve(model);
+        }
+
+        //no old Channel -- save ours!
         return model.save();
       })
 
       .then(function() {
+        return server.get('connection');
+      })
+
+      .then(function(connection) {
+        return connection.join(model);
+      })
+
+      .then(function() {
+        self.send('refreshJoined');
         self.transitionTo('channel', model);
       })
 

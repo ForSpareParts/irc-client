@@ -14,16 +14,6 @@ import ApplicationAdapter from './application';
  * the backend.
  */
 export default ApplicationAdapter.extend({
-  buildURL: function(type, id) {
-    //type should always be 'connection'
-    //the ID of a Connection always matches that of its Server
-    return [
-      this.urlPrefix(),
-      'servers',
-      id,
-      type].join('/');
-  },
-
   //a POST would 405 anyway, but let's save ourselves the trip
   createRecord: function() {
     return Ember.RSVP.reject(
@@ -36,13 +26,6 @@ export default ApplicationAdapter.extend({
       new Ember.Error('Connections cannot be deleted by the client.'));
   },
 
-
-  //there's no equivalent path for findAll/findQuery on the backend
-  //shouldn't really need one, but could implement it later if necessary
-  findAll: function() {
-    return Ember.RSVP.reject(
-      new Ember.Error('findAll is not supported for Connections'));
-  },
 
   findQuery: function() {
     return Ember.RSVP.reject(

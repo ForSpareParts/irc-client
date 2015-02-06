@@ -1,7 +1,11 @@
-<ul class="channels nav-items">
-{{#each channel in channels}}
-  {{ channel-menu-item channel=channel }}
-{{/each}}
-</ul>
+{{#if channels}}
+  <ul class="channels nav-items">
+  {{#each channel in channels}}
+    {{ channel-menu-item channel=channel }}
+  {{/each}}
+  </ul>
+{{else}}
+  <span class="menu-empty">no joined channels</span>  
+{{/if}}
 
-{{#link-to "channels/new" class="create"}}<span class="link-text">JOIN</span> <span class="icon">#</span>{{/link-to}}  
+{{#link-to "channels/new" class="create" id="join-channel-button"}}<span class="link-text">JOIN</span> <span class="icon">#</span>{{/link-to}}  

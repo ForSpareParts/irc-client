@@ -25,7 +25,7 @@ export default Ember.Route.extend({
           channel: channel,
           time: moment(new Date(Date.now())),
 
-          contents: messageText
+          contents: messageText,
         });
 
         return message.save();
@@ -37,6 +37,7 @@ export default Ember.Route.extend({
         if (callback){
           callback();
         }
+
       })
 
       .catch(function(reason) {
