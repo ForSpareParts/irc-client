@@ -78,7 +78,11 @@ describe('The Message API', function() {
             contents: 'Hello!',
           }
         })
-        .expect(200);
+        .expect(200)
+        .then(function(res) {
+          assert.strictEqual(res.body.message.nick, 'myUserNick');
+          assert.strictEqual(res.body.message.contents, 'Hello!');
+        });
       });
   });
 });

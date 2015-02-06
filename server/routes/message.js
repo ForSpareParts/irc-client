@@ -72,7 +72,7 @@ router.createRecord = function(req, res, next) {
       });
     }
 
-    return channel.say(message.contents);
+    return channel.say(message.get('contents'));
   })
 
   .then(function(createdMessage) {
