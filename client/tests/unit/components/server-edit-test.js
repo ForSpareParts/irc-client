@@ -45,7 +45,7 @@ describeComponent(
         })
 
         .then(function(connection) {
-          assert.strictEqual(connection.get('connected'), true);
+          equal(connection.get('connected'), true);
         });
       });
 

@@ -12,7 +12,7 @@ describe('The Channel API', function() {
     .then(function(res) {
       //there's only one channel for server 1, so we should only get a single
       //record
-      assert.strictEqual(res.body.channels.length, 1);
+      equal(res.body.channels.length, 1);
     });
   });
 
@@ -21,8 +21,8 @@ describe('The Channel API', function() {
 
     .expect(200)
     .then(function(res){
-      assert.strictEqual(res.body.channels.length, 1);
-      assert.strictEqual(res.body.channels[0].name, '#somechannel');
+      equal(res.body.channels.length, 1);
+      equal(res.body.channels[0].name, '#somechannel');
     });
   });
 
@@ -31,7 +31,7 @@ describe('The Channel API', function() {
 
     .expect(200)
     .then(function(res){
-      assert.strictEqual(res.body.channels.length, 0);
+      equal(res.body.channels.length, 0);
     });
   });
 

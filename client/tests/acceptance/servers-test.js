@@ -27,9 +27,7 @@ describe('Acceptance: the Servers modal', function() {
       serverCountAtStart = store.all('server').get('length');
 
       //there's one menu item for every server, plus one for the 'create' link
-      assert.strictEqual(
-        menuItems.length,
-        serverCountAtStart);
+      equal(menuItems.length, serverCountAtStart);
     });
 
     click('.server-menu a.create');
@@ -41,9 +39,7 @@ describe('Acceptance: the Servers modal', function() {
 
     andThen(function() {
       menuItems = find('.server-menu li');
-      assert.strictEqual(
-        menuItems.length,
-        serverCountAtStart + 1);
+      equal(menuItems.length, serverCountAtStart + 1);
     });
   });
 
@@ -63,12 +59,10 @@ describe('Acceptance: the Servers modal', function() {
       serverMenuItem = find('#server-1');
 
       //the record hasn't changed
-      assert.strictEqual(
-        serverRecord.get('name'),
-        'FooServer');
+      equal(serverRecord.get('name'), 'FooServer');
 
       //the changes weren't saved, so 'TestServer' shouldn't be in the HTML
-      assert.strictEqual(serverMenuItem.html().indexOf('TestServer'), -1);
+      equal(serverMenuItem.html().indexOf('TestServer'), -1);
     });
 
   });
@@ -86,12 +80,10 @@ describe('Acceptance: the Servers modal', function() {
       serverMenuItem = find('#server-1');
 
       //the record was successfully changed
-      assert.strictEqual(
-        serverRecord.get('name'),
-        'TestServer');
+      equal(serverRecord.get('name'), 'TestServer');
 
       //the changes were saved, so we should be able to find the new title
-      assert.notEqual(serverMenuItem.html().indexOf('TestServer'), -1);
+      notEqual(serverMenuItem.html().indexOf('TestServer'), -1);
 
     });
   });

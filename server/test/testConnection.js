@@ -27,7 +27,7 @@ describe('The IRC connection module', function() {
 
       //the library should be smart enough to reuse the connection object it
       //made for the first call
-      assert.strictEqual(first.id, second.id);
+      equal(first.id, second.id);
     });
 
   it('should connect to an IRC server', function() {

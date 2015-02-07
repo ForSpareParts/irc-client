@@ -9,6 +9,10 @@ export default Ember.Route.extend({
     var model = this.get('controller.model');
     if (model.get('dirtyType') === 'created') {
       model.deleteRecord();
+
+
+      //if we were rejoining a channel that existed before, there'll be an extra
+      //copy of the channel in the 
       this.send('refreshJoined');
     }
 

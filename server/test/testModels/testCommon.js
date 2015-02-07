@@ -21,7 +21,7 @@ describe('The base model', function() {
     var convertedToModel = models.Server.fromEmber(sampleEmber);
 
     //make sure the data made it into the model
-    assert.strictEqual(
+    equal(
       convertedToModel.get('name'),
       sampleEmber.server.name);
 
@@ -58,13 +58,13 @@ describe('The base model', function() {
 
     var convertedToModelArray = models.Server.fromEmberArray(sampleEmberArray);
 
-    assert.strictEqual(
+    equal(
       convertedToModelArray.length,
       2);
-    assert.strictEqual(
+    equal(
       convertedToModelArray[0].get('name'),
       'name one');
-    assert.strictEqual(
+    equal(
       convertedToModelArray[1].get('host'),
       'irc.hosttwo.net');
 
@@ -100,7 +100,7 @@ describe('The base model', function() {
         }
       });
 
-      assert.strictEqual(record.attributes.contents, 'foobar');
-      assert.strictEqual(record.attributes.channel_id, 1);
+      equal(record.attributes.contents, 'foobar');
+      equal(record.attributes.channel_id, 1);
     });
 });

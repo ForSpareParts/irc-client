@@ -101,11 +101,9 @@ describeModel(
         var patchRequests = requests.filter(function(request) {
           return request.method === 'PATCH';
         });
-        assert.strictEqual(patchRequests.length, 1);
+        equal(patchRequests.length, 1);
 
-        assert.strictEqual(
-          patchRequests[0].url,
-          '/api/connections/1');
+        equal(patchRequests[0].url, '/api/connections/1');
         assert.deepEqual(
           patchRequests[0].data,
           { connection: {

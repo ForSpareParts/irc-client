@@ -12,7 +12,7 @@ describe('The Message API', function() {
     .expect(200)
     .then(function(res) {
       //we should only get the two messages in channel 1
-      assert.strictEqual(res.body.messages.length, 2);
+      equal(res.body.messages.length, 2);
     });
   });
 
@@ -80,8 +80,8 @@ describe('The Message API', function() {
         })
         .expect(200)
         .then(function(res) {
-          assert.strictEqual(res.body.message.nick, 'myUserNick');
-          assert.strictEqual(res.body.message.contents, 'Hello!');
+          equal(res.body.message.nick, 'myUserNick');
+          equal(res.body.message.contents, 'Hello!');
         });
       });
   });
