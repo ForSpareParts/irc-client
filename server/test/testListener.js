@@ -17,7 +17,7 @@ describe('The IRC listener module', function() {
     return Server.get(1)
     .then(function(fetched) {
       serverInstance = fetched;
-    })
+    });
   });
 
   afterEach(function() {
@@ -41,7 +41,7 @@ describe('The IRC listener module', function() {
   //       });
   //     });
 
-  //     connection.connect()
+  //     connection.connect();
   // });
 
   it('should ensure the database has a Channel for any joined IRC channel',

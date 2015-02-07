@@ -15,8 +15,8 @@ describe('The API', function() {
     .then(function(res) {
       var servers = res.body.servers;
 
-      equal(servers.length, 2);
-      equal(servers[0].name, "FooServer");
+      assert.strictEqual(servers.length, 2);
+      assert.strictEqual(servers[0].name, "FooServer");
     });
   });
 
@@ -26,7 +26,7 @@ describe('The API', function() {
     .expect(200)
     .then(function(res) {
       channel = res.body.channel;
-      equal(channel.name, "#somechannel");
+      assert.strictEqual(channel.name, "#somechannel");
     });
   });
 
@@ -40,8 +40,8 @@ describe('The API', function() {
     .then(function(res) {
       channel = res.body.channel;
 
-      equal(channel.id, 1);
-      equal(channel.name, '#newchannelname');
+      assert.strictEqual(channel.id, 1);
+      assert.strictEqual(channel.name, '#newchannelname');
     });
   });
 
@@ -57,7 +57,7 @@ describe('The API', function() {
     .expect(200)
     .then(function(res) {
       channel = res.body.channel;
-      equal(channel.name, '#createchannel');
+      assert.strictEqual(channel.name, '#createchannel');
     });
   });
 
@@ -91,7 +91,7 @@ describe('The API', function() {
       .expect(200)
 
       .then(function(res) {
-        equal(res.body.channel.server, 1);
+        assert.strictEqual(res.body.channel.server, 1);
         assert.notProperty(res.body.channel, 'server_id');
       });
     });

@@ -40,7 +40,7 @@ describe('The connection API', function() {
 
     .expect(200)
     .then(function(res) {
-      equal(res.body.connections.length, 2);
+      assert.strictEqual(res.body.connections.length, 2);
     });
   });
 
