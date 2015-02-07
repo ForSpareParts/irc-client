@@ -23,25 +23,27 @@ describe('Acceptance: Channels', function() {
   });
 
   it('should join a new channel', function() {
-    visit('/');
-
     andThen(function() {
-      //there's one menu item for every channel, plus one for the 'create' link
-      assert.strictEqual(
-        channelMenuItems().length,
-        0);
+      equal(channelMenuItems().length, 0);
     });
 
     joinChannel('#testchannel', 'FooServer');
 
     andThen(function() {
-      assert.strictEqual(
-        channelMenuItems().length,
-        1);
+      equal(channelMenuItems().length, 1);
+      equal(currentRouteName(), 'channel');
+    });
+  });
 
-      assert.strictEqual(
-        currentRouteName(),
-        'channel');
+  it('should join an existing channel', function() {
+    andThen(function() {
+      equal(channelMenuItems().length, 0);
+    });
+
+    joinChannel('#somechannel', 'FooServer');
+
+    andThen(function() {
+      equal(channelMenuItems().length, 1);      
     });
   });
 
@@ -51,7 +53,7 @@ describe('Acceptance: Channels', function() {
     andThen(function() {
       //the test message shouldn't exist before submitting...
       var message = find('ul.messages li').last();
-      assert.strictEqual(message.html().indexOf('test message!'), -1);
+      equal(message.html().indexOf('test message!'), -1);
     });
 
     fillIn('#message-input', "test message!");
@@ -68,12 +70,10 @@ describe('Acceptance: Channels', function() {
 
       //the timestamp should also be populated
       //(this can get screwed up if the time input to the model is bad)
-      assert.notStrictEqual(messageAfter.find('.time').text(), '');
+      notEqual(messageAfter.find('.time').text(), '');
 
       //the input should be cleared
-      assert.strictEqual(
-        find('#message-input').val(),
-        '');
+      equal(find('#message-input').val(), '');
     });
   });
 
@@ -95,7 +95,7 @@ describe('Acceptance: Channels', function() {
 
     andThen(function() {
       //make sure that the number of messages hasn't changed
-      assert.strictEqual(find('ul.messages li').length, expectedMessageCount);
+      equal(find('ul.messages li').length, expectedMessageCount);
     });
   });
 

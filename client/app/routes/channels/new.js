@@ -7,10 +7,11 @@ export default Ember.Route.extend({
 
   deactivate: function() {
     var model = this.get('controller.model');
-    model.rollback();
-    if (model.get('isNew')) {
+    if (model.get('dirtyType') === 'created') {
       model.deleteRecord();
+      this.send('refreshJoined');
     }
+
   },
 
   actions: {

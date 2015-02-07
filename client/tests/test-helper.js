@@ -18,6 +18,10 @@ $(document).ready(function(){
   window.assert = chai.assert;
   window.expect = chai.expect;
 
+  //we use these a lot, so just a couple quick aliases...
+  window.equal = window.assert.strictEqual;
+  window.notEqual = window.assert.notStrictEqual;
+
   require('ember-cli/test-loader')['default'].load();
 
   before(function(done) {
