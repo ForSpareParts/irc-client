@@ -4,7 +4,6 @@ var Promise = require('bluebird');
 var _ = require('underscore');
 
 var argv = require('yargs').argv;
-argv.settings = 'test';
 
 var settings = require('./settings');
 var irc = require(settings.ircLib);
@@ -46,7 +45,14 @@ module.exports.getConnection = function(host, port, nick) {
  * with a blank slate. Used in testing.
  */
 module.exports.clearConnections = function() {
+  for (var connection in connectionCache) {
+    if (connection.client) {
+      connection.client.removeAllListeners();
+    }
+  }
+
   connectionCache = {};
+
   idCounter = 0;
 };
 
@@ -89,6 +95,12 @@ var Connection = function(host, port, nick) {
 
   this.id = idCounter;
   idCounter += 1;
+
+  if (settings.listenToIRC) {
+    this.client.on('error', function(message) {
+      connectionEmitter.emit('error', message);
+    });
+  }
 };
 
 /**

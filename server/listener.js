@@ -23,7 +23,7 @@ var Server = require('./models/server');
 var listenerEmitter = new events.EventEmitter();
 module.exports.listenerEmitter = listenerEmitter;
 
-connectionEmitter.on('joined', function(host, port, nick, channel) {
+var joined = function(host, port, nick, channel) {
   //ensure a channel model exists  
   return Server.get({host:host, port:port, nick:nick})
 
@@ -37,4 +37,22 @@ connectionEmitter.on('joined', function(host, port, nick, channel) {
   .then(function() {
     listenerEmitter.emit('joinedFinished');
   });
-});
+};
+
+var ircErrors = [];
+module.exports.ircErrors = ircErrors;
+var error = function(message) {
+  ircErrors.push(message);
+  listenerEmitter.emit('errorFinished');
+};
+
+
+module.exports.setupListeners = function() {
+  connectionEmitter.on('joined', joined);
+  connectionEmitter.on('error', error);
+};
+
+module.exports.clearListeners = function() {
+  connectionEmitter.removeAllListeners();
+  listenerEmitter.removeAllListeners();
+};

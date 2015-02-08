@@ -63,12 +63,12 @@ before(function() {
 beforeEach(function() {
   //TODO: would prefer to do this as a transaction, rather than loading/dropping
   //data every time
-  connection.clearConnections();
   return fixtures.loadAll();
 });
 
 afterEach(function() {
   //wipe out the data before the next test
+  connection.clearConnections();
   return models.truncateAll();
 });
 
