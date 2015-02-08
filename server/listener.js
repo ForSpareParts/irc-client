@@ -6,6 +6,7 @@
 var events = require('events');
 
 var connectionEmitter = require('./connection').connectionEmitter;
+var socketLib = require('./socket');
 
 var Channel = require('./models/channel');
 var Message = require('./models/message');
@@ -76,6 +77,7 @@ var message = function(connection, nick, to, text, message) {
   })
 
   .then(function(message) {
+    socketLib.emit('message', message.toEmber());
     listenerEmitter.emit('messageFinished');
   });
 };

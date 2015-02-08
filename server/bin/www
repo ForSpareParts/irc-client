@@ -8,9 +8,13 @@ var argv = require('yargs')
 
 var debug = require('debug')('server');
 var app = require('../app');
+var setupSocket = require('../socket').setupSocket;
 
 app.set('port', process.env.PORT || 3000);
 
 var server = app.listen(app.get('port'), function() {
   debug('Express server listening on port ' + server.address().port);
 });
+
+var io = require('socket.io')(server);
+setupSocket(io);
