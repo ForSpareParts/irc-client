@@ -3,6 +3,7 @@ var listener = require('../listener');
 var settings = require('../settings');
 
 var Channel = require('../models/channel');
+var Message = require('../models/message');
 var Server = require('../models/server');
 
 var listenerEmitter = listener.listenerEmitter;
@@ -54,12 +55,30 @@ describe('The IRC listener module', function() {
     var connection = serverInstance.connection();
 
     listenerEmitter.on('errorFinished', function() {
-      assert.strictEqual(listener.ircErrors[0], 'test error message');
+      assert.include(listener.ircErrors[0], 'test error message');
       done();
     });
 
     connection.client.emit('error', 'test error message');
   });
 
+  it ('should record messages from the IRC server', function(done) {
+    var connection = serverInstance.connection();
+
+    listenerEmitter.on('messageFinished', function() {
+      Message.get({
+        channel_id: 1,
+        nick: 'testListenerNick'
+      })
+
+      .then(function(message) {
+        assert.strictEqual(message.get('contents'), 'can you hear me?');
+        done();
+      });
+    });
+
+    connection.client.emit('message', 'testListenerNick', '#somechannel',
+      'can you hear me?', {});
+  });
 
 });

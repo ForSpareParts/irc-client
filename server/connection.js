@@ -97,8 +97,14 @@ var Connection = function(host, port, nick) {
   idCounter += 1;
 
   if (settings.listenToIRC) {
+    var self = this;
+
     this.client.on('error', function(message) {
-      connectionEmitter.emit('error', message);
+      connectionEmitter.emit('error', self, message);
+    });
+
+    this.client.on('message', function(nick, to, text, message) {
+      connectionEmitter.emit('message', self, nick, to, text, message);
     });
   }
 };
@@ -114,7 +120,7 @@ Connection.prototype.connect = function() {
     //just call connect...
     self.client.connect(function(connectInfo) {
 
-      connectionEmitter.emit('connected', self.host, self.port, self.nick);
+      connectionEmitter.emit('connected', self);
 
       //...and resolve in the callback
       resolve(connectInfo);
@@ -132,7 +138,7 @@ Connection.prototype.disconnect = function() {
   return new Promise(function(resolve, reject) {
     self.client.disconnect(function(disconnectInfo) {
 
-      connectionEmitter.emit('disconnected', self.host, self.port, self.nick);
+      connectionEmitter.emit('disconnected', self);
       resolve(disconnectInfo);
     });
   });
@@ -171,8 +177,7 @@ Connection.prototype.join = function(channel) {
 
   return new Promise(function(resolve, reject) {
     self.client.join(channel, function(joinInfo) {
-      connectionEmitter.emit(
-        'joined', self.host, self.port, self.nick, channel);
+      connectionEmitter.emit('joined', self, channel);
       resolve(joinInfo);
     });
   });
@@ -188,8 +193,7 @@ Connection.prototype.part = function(channel) {
 
   return new Promise(function(resolve, reject) {
     self.client.part(channel, function(partInfo) {
-      connectionEmitter.emit(
-        'parted', self.host, self.port, self.nick, channel);
+      connectionEmitter.emit('parted', self, channel);
       resolve(partInfo);
     });
   });

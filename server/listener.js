@@ -8,6 +8,7 @@ var events = require('events');
 var connectionEmitter = require('./connection').connectionEmitter;
 
 var Channel = require('./models/channel');
+var Message = require('./models/message');
 var Server = require('./models/server');
 
 /**
@@ -23,9 +24,12 @@ var Server = require('./models/server');
 var listenerEmitter = new events.EventEmitter();
 module.exports.listenerEmitter = listenerEmitter;
 
-var joined = function(host, port, nick, channel) {
+var joined = function(connection, channel) {
   //ensure a channel model exists  
-  return Server.get({host:host, port:port, nick:nick})
+  return Server.get({
+    host: connection.host,
+    port: connection.port,
+    nick: connection.nick})
 
   .then(function(server) {
     return Channel.getOrCreate({
@@ -41,15 +45,46 @@ var joined = function(host, port, nick, channel) {
 
 var ircErrors = [];
 module.exports.ircErrors = ircErrors;
-var error = function(message) {
-  ircErrors.push(message);
+var error = function(connection, message) {
+  var hostString = (connection.nick + '@' + connection.host + ':' +
+    connection.port);
+  ircErrors.push(hostString + ': ' + message);
   listenerEmitter.emit('errorFinished');
+};
+
+
+var message = function(connection, nick, to, text, message) {
+  return Server.get({
+    host: connection.host,
+    port: connection.port,
+    nick: connection.nick})
+
+  .then(function(server) {
+    return Channel.get({
+      server_id: server.get('id'),
+      name: to
+    });
+  })
+
+  .then(function(channel) {
+    return Message.create({
+      channel_id: channel.get('id'),
+      contents: text,
+      nick: nick,
+      time: new Date().toISOString()
+    });
+  })
+
+  .then(function(message) {
+    listenerEmitter.emit('messageFinished');
+  });
 };
 
 
 module.exports.setupListeners = function() {
   connectionEmitter.on('joined', joined);
   connectionEmitter.on('error', error);
+  connectionEmitter.on('message', message);
 };
 
 module.exports.clearListeners = function() {

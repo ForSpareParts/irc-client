@@ -82,7 +82,7 @@ Client.prototype.disconnect = function(message, callback) {
     'Quit reason for server: ' + this.server,
     [],
     {});
-}
+};
 
 /**
  * Pretend to join a channel.
