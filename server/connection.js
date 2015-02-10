@@ -90,7 +90,8 @@ var Connection = function(host, port, nick) {
 
   this.client = new irc.Client(this.host, this.nick, {
     port: this.port,
-    autoConnect: false
+    autoConnect: false,
+    debug: true,
   });
 
   this.id = idCounter;
@@ -153,7 +154,7 @@ Connection.prototype.disconnect = function() {
  * @return {Promise}
  */
 Connection.prototype.setConnected = function(shouldBeConnected) {
-  if (this.connected === shouldBeConnected) {
+  if (this.isConnected() === shouldBeConnected) {
     return Promise.resolve(null);
   }
 

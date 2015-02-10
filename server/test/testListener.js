@@ -59,7 +59,7 @@ describe('The IRC listener module', function() {
       done();
     });
 
-    connection.client.emit('error', 'test error message');
+    connection.client.emit('error', { command:'test error message' });
   });
 
   it ('should record messages from the IRC server', function(done) {

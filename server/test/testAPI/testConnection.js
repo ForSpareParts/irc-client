@@ -2,9 +2,12 @@
  * Test accessing IRC server connections through the API.
  */
 var app = require('../../app')
-  , request = require('supertest-as-promised')(app);
+  , request = require('supertest-as-promised')(app)
+  , sinon = require('sinon');
+
 
 var connectionLib = require('../../connection');
+var Server = require('../../models/server');
 
 var CONNECTION_PATH = NAMESPACE + '/servers/1/connection';
 var CONNECTION_JSON = {
@@ -78,6 +81,7 @@ describe('The connection API', function() {
     beforeEach(function() {
       //start with a couple joined channels
       clone.connection.joined = ['#channelA', '#channelB'];
+      clone.connection.connected = true;
 
       return request.patch(CONNECTION_PATH)
       .send(clone);
@@ -108,6 +112,27 @@ describe('The connection API', function() {
       .send(clone)
       .expect(200)
       .expect(clone);
+    });
+
+    it('should not attemp to reconnect if sent {connect: true}', function() {
+      var callback = sinon.spy();
+
+      return Server.get(1)
+      
+      .then(function(server) {
+        server.connection().client.on('registered', function() {
+          callback();
+        });
+
+        return request.patch(CONNECTION_PATH)
+        .send(clone)
+        .expect(200)
+        .expect(clone);
+      })
+
+      .then(function() {
+        assert.isFalse(callback.called);
+      });
     });
 
   });

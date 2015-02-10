@@ -49,7 +49,8 @@ module.exports.ircErrors = ircErrors;
 var error = function(connection, message) {
   var hostString = (connection.nick + '@' + connection.host + ':' +
     connection.port);
-  ircErrors.push(hostString + ': ' + message);
+  ircErrors.push(hostString + ': ' + message.command);
+  console.log(hostString + ': ' + message.command);
   listenerEmitter.emit('errorFinished');
 };
 

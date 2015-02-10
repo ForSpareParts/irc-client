@@ -18,3 +18,5 @@ var server = app.listen(app.get('port'), function() {
 
 var io = require('socket.io')(server);
 setupSocket(io);
+
+require('../listener').setupListeners();

@@ -45,7 +45,7 @@ describe('The IRC connection module', function() {
       return connection.connect()
       .then(function() {
         return connection.setJoinedChannels(['#channelA', '#channelB']);
-      })
+      });
     });
 
     it('should disconnect from an IRC server', function() {
