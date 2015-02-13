@@ -44,6 +44,7 @@ module.exports = function(environment) {
   }
 
   ENV.contentSecurityPolicy = {
+    'connect-src': "'self' ws://localhost:35729 ws://0.0.0.0:35729 ws://localhost:4200",
     'font-src': "'self' http://fonts.gstatic.com",
     'style-src': "'self' 'unsafe-inline' http://fonts.googleapis.com"
   };

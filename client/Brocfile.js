@@ -19,6 +19,7 @@ var app = new EmberApp();
 // along with the exports of each module as its value.
 
 app.import(app.bowerDirectory + '/typeahead.js/dist/typeahead.bundle.js');
+app.import(app.bowerDirectory + '/socket.io-client/socket.io.js');
 
 if (!isProduction) {
   app.import(app.bowerDirectory + '/sinon/index.js', {
