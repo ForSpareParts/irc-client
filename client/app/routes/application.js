@@ -18,8 +18,7 @@ export default Ember.Route.extend({
     })
 
     .then(function(channels) {
-      var foo = channels.filterBy('joined', true);
-      return foo;
+      return channels.filterBy('joined', true);
     });
   },
 
