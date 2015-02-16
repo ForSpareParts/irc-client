@@ -1,29 +1,43 @@
 import FormInput from './form-input';
 
-var displayValuePath = 'name';
-
+/**
+ * Uses typeahead.js to create a FormInput with typeahead functionality.
+ * Properties:
+ *
+ * - 'content': Array or PromiseArray of Objects to serve as typeahead content.
+ * - 'selection': The currently selected object from 'content'.
+ *
+ * 'valid' works as in FormInput. Don't use 'value' -- it's just the text value
+ * of the input!
+ */
 export default FormInput.extend({
 
   classNameBindings: ['error'],
 
   content: [],
+  displayValuePath: 'name',
 
-  /** See typeahead.js docs for information on source() **/
-  source: function(q, cb) {
+  /**
+   * Like content, but it's always resolved. Don't set this directly, let the
+   * resolveContent observer take care of it.
+   * @type {Array}
+   */
+  _content: [],
 
-    this.get('content').then(function(content) {
-      var matches = content.map(function(item) {
-        return {
-          item: item,
-          displayValue: item.get(displayValuePath)
-        };
-      }).filter(function(typeaheadObj) {
-        return (typeaheadObj.item.get(displayValuePath).indexOf(q) !== -1);
+  resolveContent: function() {
+    var self = this;
+    var content = this.get('content');
+    if (typeof content.then === 'function') {
+      content.then(function(resolvedArray) {
+        self.set('_content', resolvedArray);
       });
+    }
+    else {
+      this.set('_content', content);
+    }
+  }.observes('content').on('init'),
 
-      cb(matches);
-    });
-  },
+
 
   didInsertElement: function() {
     this.$().typeahead(
@@ -33,7 +47,7 @@ export default FormInput.extend({
       },
       {
         name: this.get('name'),
-        displayKey: 'displayValue',
+        display: 'displayValue',
         source: this.source.bind(this)
       });
 
@@ -41,26 +55,29 @@ export default FormInput.extend({
     if (initialModel) {
       this.set(
         'value',
-        initialModel.get(displayValuePath));
+        initialModel.get(this.get('displayValuePath')));
     }
   },
 
-  valid: function() {
-    // Values in 'currentModel' are always promise proxies for models. By this
-    // point, they should *always* be resolved, so _data should have a model in
-    // it (or null).
-    var currentModel = this.get('currentModel');
+  /** See typeahead.js docs for information on source() **/
+  source: function(q, cb) {
+    var self = this;
+    var matches = this.get('_content').map(function(item) {
+      return {
+        item: item,
+        displayValue: item.get(self.get('displayValuePath'))
+      };
+    }).filter(function(typeaheadObj) {
+      return (typeaheadObj.item.get(
+        self.get('displayValuePath')).indexOf(q) !== -1);
+    });
 
-    if (currentModel && currentModel._data) {
-      return true;
-    }
-
-    return false;
-  }.property('currentModel'),
+    cb(matches);
+  },
 
   currentModel: function() {
     var value = this.get('value');
-    return this.get('content').findBy(displayValuePath, value);
+    return this.get('_content').findBy(this.get('displayValuePath'), value);
   }.property('value'),
 
   /**
@@ -72,6 +89,16 @@ export default FormInput.extend({
    */
   setSelection: function() {
     this.set('selection', this.get('currentModel'));
-  }.observes('currentModel')
+  }.observes('currentModel'),
+
+  valid: function() {
+    var currentModel = this.get('currentModel');
+
+    if (currentModel) {
+      return true;
+    }
+
+    return false;
+  }.property('currentModel'),
 
 });
