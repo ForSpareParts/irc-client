@@ -94,11 +94,20 @@ var Connection = function(host, port, nick) {
     debug: true,
   });
 
+  //channel name -> list of nicks in channel
+  this.nicksInChannel = {};
+
   this.id = idCounter;
   idCounter += 1;
 
   if (settings.listenToIRC) {
     var self = this;
+
+    this.client.on('names', function(channel, nicks) {
+      var nickList = Object.getOwnPropertyNames(nicks);
+      self.nicksInChannel[channel] = nickList;
+      connectionEmitter.emit('nicks', self, channel, nickList);
+    });
 
     this.client.on('error', function(message) {
       connectionEmitter.emit('error', self, message);

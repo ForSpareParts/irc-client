@@ -1,12 +1,15 @@
 var sinon = require('sinon');
 
 var connectionLib = require('../connection');
+var settings = require('../settings');
 
 //a connection we'll create for each test
 var connection = null;
 
 //a sinon test spy we'll also create for each test
 var callback = null;
+
+var cacheListenSetting;
 
 describe('The IRC connection module', function() {
   beforeEach(function() {
@@ -98,4 +101,40 @@ describe('The IRC connection module', function() {
     });
   });
 
+
+  describe('The IRC connection module with listening enabled,', function() {
+
+    before(function() {
+      cacheListenSetting = settings.listenToIRC;
+      settings.listenToIRC = true;
+    });
+
+    beforeEach(function() {
+      //clear out all connection information between tests
+      connectionLib.clearConnections();
+
+      connection = connectionLib.getConnection(
+        'irc.foobar.net', '6667', 'myNick');
+      callback = sinon.spy();
+    });
+
+    after(function() {
+      settings.listenToIRC = cacheListenSetting;
+    });
+
+    it('should populate a list of nicks for a joined channel', function(done) {
+      connectionLib.connectionEmitter.on('nicks',
+        function(connection, channel, nicks) {
+          assert.strictEqual(nicks[0], 'nickA');
+          assert.strictEqual(nicks[1], 'nickB');
+
+          done();
+        });
+
+      connection.client.emit('names', '#testNicks', {
+        'nickA': '',
+        'nickB': ''
+      });
+    });
+  });
 });

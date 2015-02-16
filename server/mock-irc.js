@@ -95,6 +95,16 @@ Client.prototype.join = function(channel, callback) {
   this.chans[channel] = {};
   this.emit('join', channel, this.nick, {});
   this.emit('join' + channel, this.nick, {});
+
+  var nicks;
+  if (this._channelNicks[channel]) {
+    nicks = this._channelNicks[channel];
+  }
+  else {
+    nicks = {};
+  }
+
+  this.emit('names', channel, nicks);
 };
 
 /**
@@ -125,6 +135,14 @@ Client.prototype.part = function(channel, callback) {
 Client.prototype.say = function(target, message) {
   return;
 };
+
+
+/**
+ * Maps channel names to nicks objects. Used for testing, NOT part of the real
+ * API.
+ * @type {Object}
+ */
+Client.prototype._channelNicks = {};
 
 module.exports = {
   Client: Client
