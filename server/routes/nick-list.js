@@ -17,6 +17,9 @@ singleRouter.get('/:id', function(req, res) {
 
   .then(function(server) {
     req.server = server;
+    var connection = server.connection();
+
+    
   });
 });
 

@@ -1,5 +1,5 @@
 var connectionLib = require('../connection');
-var listener = require('../listener');
+var listener = require('../connection/listener');
 var settings = require('../settings');
 
 var Channel = require('../models/channel');

@@ -90,7 +90,9 @@ Client.prototype.disconnect = function(message, callback) {
  * @param  {Function} callback
  */
 Client.prototype.join = function(channel, callback) {
-  this.once('join' + channel, callback);
+  if (typeof callback === 'function') {
+    this.once('join' + channel, callback);
+  }
 
   this.chans[channel] = {};
   this.emit('join', channel, this.nick, {});
@@ -105,6 +107,7 @@ Client.prototype.join = function(channel, callback) {
   }
 
   this.emit('names', channel, nicks);
+  this.emit('names' + channel, nicks);
 };
 
 /**

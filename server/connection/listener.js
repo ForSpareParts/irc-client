@@ -5,12 +5,12 @@
 
 var events = require('events');
 
-var connectionEmitter = require('./connection').connectionEmitter;
-var socketLib = require('./socket');
+var connectionEmitter = require('./index').connectionEmitter;
+var socketLib = require('../socket');
 
-var Channel = require('./models/channel');
-var Message = require('./models/message');
-var Server = require('./models/server');
+var Channel = require('../models/channel');
+var Message = require('../models/message');
+var Server = require('../models/server');
 
 /**
  * Emitter that triggers whenever one of the listener handlers is finished

@@ -1,7 +1,7 @@
 var http = require('http');
 
 var connectionEmitter = require('../connection').connectionEmitter;
-var listener = require('../listener');
+var listener = require('../connection/listener');
 var Server = require('../models/server');
 var settings = require('../settings');
 var socketLib = require('../socket');

@@ -1,3 +1,12 @@
+/**
+ * Provides an abstraction over an irc.Client instance. It has promise-based
+ * versions of connect/disconnect, join/part, etc.
+ *
+ * Connection does *not* respond to "unexpected" events like new messages -- it
+ * just exposes them as events through module.exports.connectionEmitter. See
+ * listener.js for event handling.
+ */
+
 var events = require('events');
 var Promise = require('bluebird');
 
@@ -5,8 +14,9 @@ var _ = require('underscore');
 
 var argv = require('yargs').argv;
 
-var settings = require('./settings');
+var settings = require('../settings');
 var irc = require(settings.ircLib);
+var callAfterAllEvents = require('../utils').callAfterAllEvents;
 
 var connectionCache = {};
 
@@ -100,23 +110,21 @@ var Connection = function(host, port, nick) {
   this.id = idCounter;
   idCounter += 1;
 
-  if (settings.listenToIRC) {
-    var self = this;
+  var self = this;
 
-    this.client.on('names', function(channel, nicks) {
-      var nickList = Object.getOwnPropertyNames(nicks);
-      self.nicksInChannel[channel] = nickList;
-      connectionEmitter.emit('nicks', self, channel, nickList);
-    });
+  this.client.on('names', function(channel, nicks) {
+    var nickList = Object.getOwnPropertyNames(nicks);
+    self.nicksInChannel[channel] = nickList;
+    connectionEmitter.emit('nicks', self, channel, nickList);
+  });
 
-    this.client.on('error', function(message) {
-      connectionEmitter.emit('error', self, message);
-    });
+  this.client.on('error', function(message) {
+    connectionEmitter.emit('error', self, message);
+  });
 
-    this.client.on('message', function(nick, to, text, message) {
-      connectionEmitter.emit('message', self, nick, to, text, message);
-    });
-  }
+  this.client.on('message', function(nick, to, text, message) {
+    connectionEmitter.emit('message', self, nick, to, text, message);
+  });
 };
 
 /**
@@ -178,7 +186,11 @@ Connection.prototype.setConnected = function(shouldBeConnected) {
 };
 
 /**
- * Promise-enabled wrapper for the join() method of this.client.
+ * Promise-enabled wrapper for the join() method of this.client. Promise
+ * resolves only after we've joined *and* received the names in the channel.
+ *
+ * Waiting for the names makes testing easier (less need for event listeners),
+ * and we'll nearly always need the names when joining, anyway.
  * @param  {string} channel
  * @return {Promise}
  */
@@ -186,10 +198,17 @@ Connection.prototype.join = function(channel) {
   var self = this;
 
   return new Promise(function(resolve, reject) {
-    self.client.join(channel, function(joinInfo) {
-      connectionEmitter.emit('joined', self, channel);
-      resolve(joinInfo);
-    });
+    callAfterAllEvents(
+      self.client,
+      ['join' + channel, 'names' + channel],
+      function(eventArgs) { 
+        //NOTE: if we need the joinInfo object from the join() call, we'll have
+        //to rework callAfterAllEvents to capture event arguments
+        connectionEmitter.emit('joined', self, channel);
+        resolve();
+      });
+
+    self.client.join(channel);
   });
 };
 
