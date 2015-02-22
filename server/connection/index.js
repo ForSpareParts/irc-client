@@ -114,7 +114,6 @@ var Connection = function(host, port, nick) {
 
   this.client.on('names', function(channel, nicks) {
     var nickList = Object.getOwnPropertyNames(nicks);
-    self.nicksInChannel[channel] = nickList;
     connectionEmitter.emit('nicks', self, channel, nickList);
   });
 
@@ -198,17 +197,10 @@ Connection.prototype.join = function(channel) {
   var self = this;
 
   return new Promise(function(resolve, reject) {
-    callAfterAllEvents(
-      self.client,
-      ['join' + channel, 'names' + channel],
-      function(eventArgs) { 
-        //NOTE: if we need the joinInfo object from the join() call, we'll have
-        //to rework callAfterAllEvents to capture event arguments
-        connectionEmitter.emit('joined', self, channel);
-        resolve();
-      });
-
-    self.client.join(channel);
+    self.client.join(channel, function(joinInfo) {
+      connectionEmitter.emit('joined', self, channel);
+      resolve(joinInfo);
+    });
   });
 };
 

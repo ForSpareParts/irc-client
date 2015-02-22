@@ -1,13 +1,14 @@
-var connectionLib = require('../connection');
-var listener = require('../connection/listener');
-var settings = require('../settings');
+var connectionLib = require('../../connection');
+var listener = require('../../connection/listener');
+var settings = require('../../settings');
 
-var Channel = require('../models/channel');
-var Message = require('../models/message');
-var Server = require('../models/server');
+var Channel = require('../../models/channel');
+var Message = require('../../models/message');
+var Server = require('../../models/server');
 
 var listenerEmitter = listener.listenerEmitter;
 var serverInstance = null;
+var connection = null;
 
 var cacheListenSetting;
 
@@ -22,6 +23,7 @@ describe('The IRC listener module', function() {
     return Server.get(1)
     .then(function(fetched) {
       serverInstance = fetched;
+      connection = serverInstance.connection();
     });
   });
 
@@ -34,8 +36,6 @@ describe('The IRC listener module', function() {
   });
 
   it('should trap and log errors from the IRC server', function(done) {
-    var connection = serverInstance.connection();
-
     listenerEmitter.on('errorFinished', function() {
       assert.include(listener.ircErrors[0], 'test error message');
       done();
@@ -45,8 +45,6 @@ describe('The IRC listener module', function() {
   });
 
   it('should record messages from the IRC server', function(done) {
-    var connection = serverInstance.connection();
-
     listenerEmitter.on('messageFinished', function() {
       Message.get({
         channel_id: 1,
@@ -61,6 +59,20 @@ describe('The IRC listener module', function() {
 
     connection.client.emit('message', 'testListenerNick', '#somechannel',
       'can you hear me?', {});
+  });
+
+  it('should rewrite the nick list for a channel (on \'names\')',
+    function(done) {
+      listenerEmitter.on('nicksFinished', function() {
+        assert.deepEqual(connection.nicksInChannel['#somechannel'],
+          ['somenick', 'othernick']);
+        done();
+      });
+
+      connection.client.emit('names', '#somechannel', {
+        'somenick': '',
+        'othernick': ''
+      });
   });
 
 });

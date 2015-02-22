@@ -83,11 +83,16 @@ var message = function(connection, nick, to, text, message) {
   });
 };
 
+var nicks = function(connection, channel, nickList) {  
+  connection.nicksInChannel[channel] = nickList;
+  listenerEmitter.emit('nicksFinished');
+};
 
 module.exports.setupListeners = function() {
   connectionEmitter.on('joined', joined);
   connectionEmitter.on('error', error);
   connectionEmitter.on('message', message);
+  connectionEmitter.on('nicks', nicks);
 };
 
 module.exports.clearListeners = function() {
