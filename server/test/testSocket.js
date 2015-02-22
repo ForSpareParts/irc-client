@@ -9,6 +9,8 @@ var socketLib = require('../socket');
 var server;
 var client;
 
+var serverConn;
+
 //We need to set up:
 //- A new HTTP server (for socket.io to use)
 //- The socket instance itself
@@ -31,6 +33,13 @@ describe('The socket.io connection', function() {
     listener.setupListeners();
 
     client = require('socket.io-client')('http://localhost:4000');
+  });
+
+  beforeEach(function() {
+    return Server.get(1)
+    .then(function(server) {
+      serverConn = server.connection();
+    });
   });
 
   afterEach(function() {
@@ -56,11 +65,19 @@ describe('The socket.io connection', function() {
       done();
     });
 
-    Server.get(1)
-    .then(function(server) {
-      var serverConn = server.connection();
-      connectionEmitter.emit('message', serverConn, 'testSocketNick',
-        '#somechannel', 'is the socket working?', {});
-    });
+    connectionEmitter.emit('message', serverConn, 'testSocketNick',
+      '#somechannel', 'is the socket working?', {});
   });
+
+  it('should notify the client when the list of nicks for a channel is updated',
+    function(done) {
+      client.on('nicks', function(data) {
+        assert.strictEqual(data.nickList.channel, 1);
+        assert.deepEqual(data.nickList.nicks, ['somenick', 'othernick']);
+        done();
+      });
+
+      connectionEmitter.emit('nicks', serverConn, '#somechannel',
+        ['somenick', 'othernick']);
+    });
 });

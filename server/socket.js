@@ -18,6 +18,10 @@ module.exports.setupSocket = function(ioInstance) {
   io.on('message', function(socket, message) {
     socket.emit('message', message.toEmber());
   });
+
+  io.on('nicks', function(channel, nickList) {
+    socket.emit('nicks', nickList);
+  });
 };
 
 module.exports.clearSocket = function() {
@@ -29,4 +33,3 @@ module.exports.emit = function() {
     io.emit.apply(io, arguments);
   }
 };
-

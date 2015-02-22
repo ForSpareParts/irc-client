@@ -12,6 +12,24 @@ var Channel = require('../models/channel');
 var Message = require('../models/message');
 var Server = require('../models/server');
 
+var getServer = function(connection) {
+  return Server.get({
+    host: connection.host,
+    port: connection.port,
+    nick: connection.nick});
+};
+
+var getChannel = function(connection, channelName) {
+  return getServer(connection)
+
+  .then(function(server) {
+    return Channel.get({
+      server_id: server.get('id'),
+      name: channelName
+    });
+  });
+};
+
 /**
  * Emitter that triggers whenever one of the listener handlers is finished
  * (including any asynchronous processing the listener might have kicked off).
@@ -27,10 +45,7 @@ module.exports.listenerEmitter = listenerEmitter;
 
 var joined = function(connection, channel) {
   //ensure a channel model exists  
-  return Server.get({
-    host: connection.host,
-    port: connection.port,
-    nick: connection.nick})
+  return getServer(connection)
 
   .then(function(server) {
     return Channel.getOrCreate({
@@ -56,17 +71,7 @@ var error = function(connection, message) {
 
 
 var message = function(connection, nick, to, text, message) {
-  return Server.get({
-    host: connection.host,
-    port: connection.port,
-    nick: connection.nick})
-
-  .then(function(server) {
-    return Channel.get({
-      server_id: server.get('id'),
-      name: to
-    });
-  })
+  return getChannel(connection, to)
 
   .then(function(channel) {
     return Message.create({
@@ -83,9 +88,25 @@ var message = function(connection, nick, to, text, message) {
   });
 };
 
-var nicks = function(connection, channel, nickList) {  
-  connection.nicksInChannel[channel] = nickList;
-  listenerEmitter.emit('nicksFinished');
+var nicks = function(connection, channelName, nickList) {
+  //update the list
+  connection.nicksInChannel[channelName] = nickList;
+
+  return getChannel(connection, channelName)
+
+  .then(function(channel) {
+    var nicksJSON = {
+      nickList: {
+        id: channel.get('id'),
+        channel: channel.get('id'),
+        nicks: connection.nicksInChannel[channelName]
+      }
+    };
+
+    //tell the socket to send out the new nicks
+    socketLib.emit('nicks', nicksJSON);
+    listenerEmitter.emit('nicksFinished');
+  });
 };
 
 module.exports.setupListeners = function() {
