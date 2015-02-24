@@ -23,7 +23,7 @@ var getChannel = function(connection, channelName) {
   return getServer(connection)
 
   .then(function(server) {
-    return Channel.get({
+    return Channel.getOrCreate({
       server_id: server.get('id'),
       name: channelName
     });
@@ -43,18 +43,18 @@ var getChannel = function(connection, channelName) {
 var listenerEmitter = new events.EventEmitter();
 module.exports.listenerEmitter = listenerEmitter;
 
-var joined = function(connection, channel) {
+var joined = function(connection, channelName, nick) {
   //ensure a channel model exists  
-  return getServer(connection)
+  return getChannel(connection, channelName)
 
-  .then(function(server) {
-    return Channel.getOrCreate({
-      server_id: server.get('id'),
-      name: channel
-    });
-  })
+  .then(function(channel) {
+    if (connection.nicksInChannel[channelName] === undefined) {
+      connection.nicksInChannel[channelName] = [];
+    }
 
-  .then(function() {
+    connection.nicksInChannel[channelName].push(nick);
+
+    socketLib.emit('joined', channel.get('id'), nick);
     listenerEmitter.emit('joinedFinished');
   });
 };
@@ -95,16 +95,8 @@ var nicks = function(connection, channelName, nickList) {
   return getChannel(connection, channelName)
 
   .then(function(channel) {
-    var nicksJSON = {
-      nickList: {
-        id: channel.get('id'),
-        channel: channel.get('id'),
-        nicks: connection.nicksInChannel[channelName]
-      }
-    };
-
     //tell the socket to send out the new nicks
-    socketLib.emit('nicks', nicksJSON);
+    socketLib.emit('nicks', connection.nickListJSON(channel));
     listenerEmitter.emit('nicksFinished');
   });
 };

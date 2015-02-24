@@ -31,6 +31,20 @@ var Channel = BaseModel.extend({
   },
 
   /**
+   * Convenience function for getting the connection for this Channel's Server.
+   * Promise-based, unlike Server#connection.
+   * 
+   * @return {Promise}
+   */
+  connection: function() {
+    return this.related('server').fetch()
+
+    .then(function(server) {
+      return server.connection();
+    });
+  },
+
+  /**
    * Send messageContents to this Channel, then persist in a Message.
    * @param  {string} messageContents
    * @return {Promise}

@@ -75,4 +75,14 @@ describe('The IRC listener module', function() {
       });
   });
 
+  it('should add a nick to the list when it joins a channel', function(done) {
+    listenerEmitter.on('joinedFinished', function() {
+      assert.include(connection.nicksInChannel['#somechannel'], 'aNewNick');
+      done();
+    });
+
+    assert.notInclude(connection.nicksInChannel['#somechannel'], 'aNewNick');
+    connection.client.emit('join', '#somechannel', 'aNewNick', {});
+  });
+
 });

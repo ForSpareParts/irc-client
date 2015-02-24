@@ -8,6 +8,8 @@
  *
  * This is simply a no-op if there's no active socket.
  */
+var Channel = require('./models/channel');
+
 
 var io;
 
@@ -15,12 +17,22 @@ module.exports.setupSocket = function(ioInstance) {
   //received new message from IRC server
   io = ioInstance;
 
-  io.on('message', function(socket, message) {
-    socket.emit('message', message.toEmber());
-  });
+  io.on('connection', function(socket) {
 
-  io.on('nicks', function(channel, nickList) {
-    socket.emit('nicks', nickList);
+    /** Send the current nick list for the given channel ID */
+    socket.on('refreshNicks', function(channelID) {
+      var channel;
+      return Channel.get(channelID)
+      .then(function(fetched) {
+        channel = fetched;
+        return channel.connection();
+      })
+
+      .then(function(connection) {
+        socket.emit('nicks', connection.nickListJSON(channel));
+      });
+    });
+
   });
 };
 

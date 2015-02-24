@@ -80,4 +80,15 @@ describe('The socket.io connection', function() {
       connectionEmitter.emit('nicks', serverConn, '#somechannel',
         ['somenick', 'othernick']);
     });
+
+  it('should resend the nick list when asked', function(done) {
+    client.on('nicks', function(data) {
+      assert.strictEqual(data.nickList.channel, 1);
+      assert.deepEqual(data.nickList.nicks, ['resendNick']);
+      done();
+    });
+
+    serverConn.nicksInChannel['#somechannel'] = ['resendNick'];
+    client.emit('refreshNicks', 1);
+  });
 });

@@ -112,6 +112,10 @@ var Connection = function(host, port, nick) {
 
   var self = this;
 
+  this.client.on('join', function(channel, nick, message) {
+    connectionEmitter.emit('joined', self, channel, nick);
+  });
+
   this.client.on('names', function(channel, nicks) {
     var nickList = Object.getOwnPropertyNames(nicks);
     connectionEmitter.emit('nicks', self, channel, nickList);
@@ -198,7 +202,7 @@ Connection.prototype.join = function(channel) {
 
   return new Promise(function(resolve, reject) {
     self.client.join(channel, function(joinInfo) {
-      connectionEmitter.emit('joined', self, channel);
+      connectionEmitter.emit('joined', self, channel, self.nick);
       resolve(joinInfo);
     });
   });
@@ -328,4 +332,20 @@ Connection.prototype.addJoinedChannels = function(newChannels) {
  */
 Connection.prototype.say = function(channel, messageContents) {
   this.client.say(channel, messageContents);
+};
+
+/**
+ * Return an Ember-formatted NickList representing the nicks in the given
+ * Channel.
+ * 
+ * @param  {Channel} channel
+ */
+Connection.prototype.nickListJSON = function(channel) {
+  return  {
+    nickList: {
+      id: channel.get('id'),
+      channel: channel.get('id'),
+      nicks: this.nicksInChannel[channel.get('name')]
+    }
+  };
 };
