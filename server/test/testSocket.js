@@ -81,6 +81,17 @@ describe('The socket.io connection', function() {
         ['somenick', 'othernick']);
     });
 
+  it('should notify the client when someone joins a channel', function(done) {
+    client.on('joined', function(data) {
+      assert.strictEqual(data.message.nick, 'joinNick');
+      assert.strictEqual(data.message.channel, 1);
+      assert.strictEqual(data.message.type, 'join');
+      done();
+    });
+
+    connectionEmitter.emit('joined', serverConn, '#somechannel', 'joinNick');
+  });
+
   it('should resend the nick list when asked', function(done) {
     client.on('nicks', function(data) {
       assert.strictEqual(data.nickList.channel, 1);

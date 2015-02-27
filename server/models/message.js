@@ -7,6 +7,7 @@ var Message = BaseModel.extend({
 
   // contents (string)
   // time (string, ISO-formatted -- SQLite doesn't have native DATETIME columns)
+  // type (string, empty [for normal message], or 'join', 'part')
   // nick (string)
 
   /** The Channel in which this Message was sent. */

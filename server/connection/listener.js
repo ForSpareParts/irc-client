@@ -48,13 +48,23 @@ var joined = function(connection, channelName, nick) {
   return getChannel(connection, channelName)
 
   .then(function(channel) {
+    return Message.create({
+      channel_id: channel.get('id'),
+      contents: '',
+      nick: nick,
+      time: new Date().toISOString(),
+      type: 'join'
+    })
+  })
+
+  .then(function(partMessage) {
     if (connection.nicksInChannel[channelName] === undefined) {
       connection.nicksInChannel[channelName] = [];
     }
 
     connection.nicksInChannel[channelName].push(nick);
 
-    socketLib.emit('joined', channel.get('id'), nick);
+    socketLib.emit('joined', partMessage.toEmber());
     listenerEmitter.emit('joinedFinished');
   });
 };

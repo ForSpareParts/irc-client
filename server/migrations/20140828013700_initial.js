@@ -23,6 +23,7 @@ exports.up = function(knex, Promise) {
   .createTable('message', function(table) {
     table.increments();
     table.string('nick', 30);
+    table.string('type', 10);
     table.string('contents', 512);
     table.dateTime('time');
 
