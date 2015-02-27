@@ -65,7 +65,10 @@ describe('The IRC listener module', function() {
     function(done) {
       listenerEmitter.on('nicksFinished', function() {
         assert.deepEqual(connection.nicksInChannel['#somechannel'],
-          ['somenick', 'othernick']);
+          {
+            somenick: '',
+            othernick: ''
+          });
         done();
       });
 
@@ -77,12 +80,29 @@ describe('The IRC listener module', function() {
 
   it('should add a nick to the list when it joins a channel', function(done) {
     listenerEmitter.on('joinedFinished', function() {
-      assert.include(connection.nicksInChannel['#somechannel'], 'aNewNick');
+      assert.property(connection.nicksInChannel['#somechannel'], 'aNewNick');
       done();
     });
 
-    assert.notInclude(connection.nicksInChannel['#somechannel'], 'aNewNick');
+    //we haven't handled any events on this channel yet, so #somechannel
+    //won't have a nicklist
+    assert.isUndefined(connection.nicksInChannel['#somechannel']);
     connection.client.emit('join', '#somechannel', 'aNewNick', {});
+  });
+
+  it('should remove a nick from the list when it parts a channel',
+    function(done) {
+      listenerEmitter.on('partedFinished', function() {
+        assert.notProperty(connection.nicksInChannel['#somechannel'],
+          'somenick');
+        done();
+      });
+
+      //fake an earlier 'join' by putting somenick in the nicklist for the
+      //channel
+      connection.nicksInChannel['#somechannel'] = {somenick: ''};
+      connection.client.emit('part', '#somechannel', 'somenick',
+        'reason for leaving', {});
   });
 
 });

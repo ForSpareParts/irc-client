@@ -116,9 +116,12 @@ var Connection = function(host, port, nick) {
     connectionEmitter.emit('joined', self, channel, nick);
   });
 
+  this.client.on('part', function(channel, nick, reason, message) {
+    connectionEmitter.emit('parted', self, channel, nick, reason);
+  });
+
   this.client.on('names', function(channel, nicks) {
-    var nickList = Object.getOwnPropertyNames(nicks);
-    connectionEmitter.emit('nicks', self, channel, nickList);
+    connectionEmitter.emit('nicks', self, channel, nicks);
   });
 
   this.client.on('error', function(message) {
@@ -345,7 +348,8 @@ Connection.prototype.nickListJSON = function(channel) {
     nickList: {
       id: channel.get('id'),
       channel: channel.get('id'),
-      nicks: this.nicksInChannel[channel.get('name')]
+      nicks: Object.getOwnPropertyNames(
+        this.nicksInChannel[channel.get('name')])
     }
   };
 };

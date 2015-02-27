@@ -44,7 +44,6 @@ var listenerEmitter = new events.EventEmitter();
 module.exports.listenerEmitter = listenerEmitter;
 
 var joined = function(connection, channelName, nick) {
-  //ensure a channel model exists  
   return getChannel(connection, channelName)
 
   .then(function(channel) {
@@ -54,18 +53,43 @@ var joined = function(connection, channelName, nick) {
       nick: nick,
       time: new Date().toISOString(),
       type: 'join'
-    })
+    });
   })
 
   .then(function(partMessage) {
     if (connection.nicksInChannel[channelName] === undefined) {
-      connection.nicksInChannel[channelName] = [];
+      connection.nicksInChannel[channelName] = {};
     }
 
-    connection.nicksInChannel[channelName].push(nick);
+    connection.nicksInChannel[channelName][nick] = '';
 
     socketLib.emit('joined', partMessage.toEmber());
     listenerEmitter.emit('joinedFinished');
+  });
+};
+
+var parted = function(connection, channelName, nick, reason) {
+  return getChannel(connection, channelName)
+
+  .then(function(channel) {
+    return Message.create({
+      channel_id: channel.get('id'),
+      contents: reason,
+      nick: nick,
+      time: new Date().toISOString(),
+      type: 'part'
+    });
+  })
+
+  .then(function(partMessage) {
+    if (connection.nicksInChannel[channelName] === undefined) {
+      connection.nicksInChannel[channelName] = {};
+    }
+
+    delete connection.nicksInChannel[channelName][nick];
+
+    socketLib.emit('parted', partMessage.toEmber());
+    listenerEmitter.emit('partedFinished');
   });
 };
 
@@ -98,9 +122,9 @@ var message = function(connection, nick, to, text, message) {
   });
 };
 
-var nicks = function(connection, channelName, nickList) {
+var nicks = function(connection, channelName, nicks) {
   //update the list
-  connection.nicksInChannel[channelName] = nickList;
+  connection.nicksInChannel[channelName] = nicks;
 
   return getChannel(connection, channelName)
 
@@ -113,6 +137,7 @@ var nicks = function(connection, channelName, nickList) {
 
 module.exports.setupListeners = function() {
   connectionEmitter.on('joined', joined);
+  connectionEmitter.on('parted', parted);
   connectionEmitter.on('error', error);
   connectionEmitter.on('message', message);
   connectionEmitter.on('nicks', nicks);

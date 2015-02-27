@@ -78,18 +78,32 @@ describe('The socket.io connection', function() {
       });
 
       connectionEmitter.emit('nicks', serverConn, '#somechannel',
-        ['somenick', 'othernick']);
+        {somenick: '', othernick:''});
     });
 
   it('should notify the client when someone joins a channel', function(done) {
     client.on('joined', function(data) {
       assert.strictEqual(data.message.nick, 'joinNick');
       assert.strictEqual(data.message.channel, 1);
+      assert.strictEqual(data.message.contents, '');
       assert.strictEqual(data.message.type, 'join');
       done();
     });
 
     connectionEmitter.emit('joined', serverConn, '#somechannel', 'joinNick');
+  });
+
+  it('should notify the client when someone parts a channel', function(done) {
+    client.on('parted', function(data) {
+      assert.strictEqual(data.message.nick, 'partNick');
+      assert.strictEqual(data.message.channel, 1);
+      assert.strictEqual(data.message.contents, 'Reason for leaving.');
+      assert.strictEqual(data.message.type, 'part');
+      done();
+    });
+
+    connectionEmitter.emit('parted', serverConn, '#somechannel', 'partNick',
+      'Reason for leaving.');
   });
 
   it('should resend the nick list when asked', function(done) {
@@ -99,7 +113,7 @@ describe('The socket.io connection', function() {
       done();
     });
 
-    serverConn.nicksInChannel['#somechannel'] = ['resendNick'];
+    serverConn.nicksInChannel['#somechannel'] = {resendNick: ''};
     client.emit('refreshNicks', 1);
   });
 });
