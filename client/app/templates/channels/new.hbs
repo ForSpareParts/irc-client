@@ -1,22 +1,23 @@
 <div class="create-edit new-channel">
 
 <ul class="fields">
-<li>
-    {{ form-input
-      type="text"
-      id="channel-name"
-      placeholder="#channelname"
-      value=name}}
-</li>
+  <li>
+      {{ form-input
+        type="text"
+        id="channel-name"
+        placeholder="#channelname"
+        value=name}}
+  </li>
 
-<li>
-  {{ twitter-typeahead
-    id="channel-server-name"
-    content=allServers
-    displayValuePath='name'
-    selection=model.server
-    placeholder="server"}}
-</li>
+  <li>
+    {{ twitter-typeahead
+      id="channel-server-name"
+      content=allServers
+      displayValuePath='name'
+      selection=model.server
+      placeholder="server"}}
+  </li>
+</ul>
 
 <button id="channel-save-button" {{action "save" model}}>JOIN</button>
 

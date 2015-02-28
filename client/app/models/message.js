@@ -7,10 +7,23 @@ var Message = DS.Model.extend({
   time: DS.attr('isodate'),
   nick: DS.attr('string'),
   contents: DS.attr('string'),
+  type: DS.attr('string'),
 
   shortTime: function() {
     return this.get('time').format('hh:mm A');
-  }.property('time')
+  }.property('time'),
+
+  isJoin: function() {
+    return this.get('type') === 'join';
+  }.property('type'),
+
+  isPart: function() {
+    return this.get('type') === 'part';
+  }.property('type'),
+
+  isEvent: function() {
+    return this.get('isJoin') || this.get('isPart');
+  }.property('isJoin', 'isPart')
 });
 
 export default Message;

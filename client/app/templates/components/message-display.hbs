@@ -1,0 +1,12 @@
+{{#if message.isJoin}}
+  <span class="time">{{message.shortTime}}</span>
+  <span class="nick">{{message.nick}}</span> joined the channel.
+{{else if message.isPart}}
+  <span class="time">{{message.shortTime}}</span>
+  <span class="nick">{{message.nick}}</span> left the channel
+  <span class="reason">({{message.contents}})</span>
+{{else}}
+  <span class="time">{{message.shortTime}}</span>
+  <span class="nick">{{message.nick}}</span>:
+  <span class="contents">{{message.contents}}</span>
+{{/if}}
