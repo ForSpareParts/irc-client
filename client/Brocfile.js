@@ -20,6 +20,7 @@ var app = new EmberApp();
 
 app.import(app.bowerDirectory + '/typeahead.js/dist/typeahead.bundle.js');
 app.import(app.bowerDirectory + '/socket.io-client/socket.io.js');
+app.import(app.bowerDirectory + '/eventEmitter/eventemitter.min.js');
 
 if (!isProduction) {
   app.import(app.bowerDirectory + '/sinon/index.js', {
@@ -33,4 +34,3 @@ if (!isProduction) {
 
 
 module.exports = app.toTree();
- 

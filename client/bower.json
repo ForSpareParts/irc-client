@@ -16,7 +16,8 @@
     "lesshat": "~3.0.2",
     "sinon": "http://sinonjs.org/releases/sinon-1.12.2.js",
     "chai-as-promised": "~4.1.1",
-    "socket.io-client": "~1.3.3"
+    "socket.io-client": "~1.3.3",
+    "eventEmitter": "~4.2.11"
   },
   "resolutions": {
     "ember": "1.10.0"

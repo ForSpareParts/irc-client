@@ -6,7 +6,6 @@ describeModel('server', 'Server', {
     'model:channel',
     'model:connection',
     'model:message',
-    'model:user'
   ]
 }, function() {
   it('should exist', function() {

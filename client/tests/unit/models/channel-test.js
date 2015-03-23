@@ -5,8 +5,7 @@ describeModel('channel', 'Channel', {
   needs: [
     'model:connection',
     'model:message',
-    'model:server',
-    'model:user']
+    'model:server']
 }, function() {
   it('should exist', function() {
     var model = this.subject();
