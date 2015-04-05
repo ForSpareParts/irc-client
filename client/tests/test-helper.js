@@ -5,13 +5,8 @@ import { setResolver } from 'ember-mocha';
 
 setResolver(resolver);
 
-document.write('<div id="ember-testing-container"><div id="ember-testing"></div></div>');
 
 $(document).ready(function(){
-  // Rename elements from qunit -> mocha
-  $('#qunit').attr('id', 'mocha');
-  $('#qunit-fixture').attr('id', 'mocha-fixture');
-
   // Declare `assert`/`expect` as a global here instead of as a var in
   // individual tests. This avoids jshint warnings e.g.: `Redefinition of
   // 'assert'`.
@@ -21,8 +16,6 @@ $(document).ready(function(){
   //we use these a lot, so just a couple quick aliases...
   window.equal = window.assert.strictEqual;
   window.notEqual = window.assert.notStrictEqual;
-
-  require('ember-cli/test-loader')['default'].load();
 
   before(function(done) {
     $.post('/dev/test/setup', '',
@@ -45,5 +38,4 @@ $(document).ready(function(){
       });
   });
 
-  mocha.run();
 });
