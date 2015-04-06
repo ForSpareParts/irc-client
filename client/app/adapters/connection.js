@@ -26,25 +26,9 @@ export default ApplicationAdapter.extend({
       new Ember.Error('Connections cannot be deleted by the client.'));
   },
 
-
   findQuery: function() {
     return Ember.RSVP.reject(
       new Ember.Error('findQuery is not supported for Connections'));
-  },
-
-  //this is the default updateRecord implementation, except with PATCH instead
-  //of PUT
-  updateRecord: function(store, type, record) {
-    var data = {};
-    var serializer = store.serializerFor(type.typeKey);
-
-    serializer.serializeIntoHash(data, type, record);
-
-    var id = Ember.get(record, 'id');
-
-    return this.ajax(
-      this.buildURL(type.typeKey, id, record), "PATCH", { data: data });
-
   }
 
 });

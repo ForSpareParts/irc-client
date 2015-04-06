@@ -13,10 +13,24 @@ describeModule(
     // needs: ['serializer:foo']
   },
   function() {
-    // Replace this with your real tests.
-    it('exists', function() {
+    it('refuses to be created or deleted', function() {
       var adapter = this.subject();
-      expect(adapter).to.be.ok;
+      
+      isRejected(function() {
+        return adapter.createRecord({});
+      }, /cannot be created/);
+
+      isRejected(function() {
+        return adapter.deleteRecord({});
+      }, /cannot be deleted/);
+    });
+
+    it('refuses to perform a findQuery', function() {
+      var adapter = this.subject();
+
+      isRejected(function() {
+        return adapter.findQuery();
+      }, /is not supported/);
     });
   }
 );

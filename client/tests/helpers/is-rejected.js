@@ -1,9 +1,14 @@
 import Ember from 'ember';
 
 export default Ember.Test.registerAsyncHelper('isRejected',
-  function(app, promiseReturningFunction) {
+  function(app, promiseReturningFunction, matcher) {
     Ember.run(function() {
-      assert.isRejected(promiseReturningFunction());
+      if (matcher) {
+        assert.isRejected(promiseReturningFunction(), matcher);
+      }
+      else {
+        assert.isRejected(promiseReturningFunction());
+      }
     });
 
     return wait();

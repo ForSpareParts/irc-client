@@ -4,32 +4,14 @@ import {
   describeModel,
   it
 } from 'ember-mocha';
+/* global sinon */
+
+var NULL_PROMISE = Ember.RSVP.Promise.resolve(null);
 
 var requests;
 
 var connection;
 var store;
-
-var requestSpy = function(event, request, settings) {
-  var data = settings.data;
-
-  if (typeof(data) === 'string') {
-    try {
-      data = JSON.parse(data);
-    }
-    catch (SyntaxError) {
-      //do nothing
-    }
-  }
-
-  requests.push({
-    method: settings.type,
-    data: data,
-    responseData: request.responseJSON,
-    responseCode: request.status,
-    url: settings.url
-  });
-};
 
 describeModel(
   'connection',
@@ -37,83 +19,41 @@ describeModel(
   {
     // Specify the other units that are required for this test.
       needs: [
-        'adapter:application',
-        'adapter:connection',
         'model:server',
         'model:channel',
         'model:message',
         'transform:array']
   },
   function() {
-    beforeEach(function() {
-      requests = [];
-      store = this.store();
+    it('should join a channel', function() {
+      var channel = this.subject({
+        connected: true,
+        joined: []
+      });
 
-      Ember.$(document).on('ajaxSend', requestSpy);
+      var stub = sinon.stub(channel, 'save').returns(NULL_PROMISE);
 
-      andThen(function() {
-        store.find('connection', 1)
-        .then(function(record) {
-          connection = record;
+      channel.join(Ember.Object.create({
+        name: '#somechannel'}));
+
+      assert.include(channel.get('joined'), '#somechannel');
+      assert.isTrue(stub.called);
+    });
+
+    it('should do nothing if asked to join a channel it\'s already in',
+      function() {
+        var channel = this.subject({
+          connected: true,
+          joined: ['#somechannel']
         });
-      });
-    });
 
-    afterEach(function() {
-      Ember.$(document).off('ajaxSend', requestSpy);
-    });
+        var stub = sinon.stub(channel, 'save').returns(NULL_PROMISE);
 
-    it('refuses to be created or deleted', function() {
+        channel.join(Ember.Object.create({
+          name: '#somechannel'}));
 
-      //create:
-      isRejected(function() {
-        return store.createRecord('connection').save();
-      });
-
-      //delete:
-      isRejected(function() {
-        return connection.destroyRecord();
-      });
-
-      andThen(function() {
-        //make sure we didn't hit the server
-        var nonGetRequests = requests.filter(function(request) {
-          return request.method !== 'GET';
-        });
-        assert.equal(nonGetRequests.length, 0);
-      });
-    });
-
-    it('refuses to perform findQuery', function() {
-      isRejected(function() {
-        return store.find('connection', { param: 'value'});
-      });
-    });
-
-    it('performs an update', function() {
-      andThen(function() {
-        connection.set('connected', true);
-        connection.set('joined', ['#channelname']);
-        return assert.isFulfilled(connection.save());
-      });
-
-      andThen(function() {
-        var patchRequests = requests.filter(function(request) {
-          return request.method === 'PATCH';
-        });
-        equal(patchRequests.length, 1);
-
-        equal(patchRequests[0].url, '/api/connections/1');
-        assert.deepEqual(
-          patchRequests[0].data,
-          { connection: {
-            server: '1',
-            connected: true,
-            joined: ['#channelname']
-            }
-          });
-
-      });
-    });
+        assert.isTrue(stub.notCalled);
+      }
+    );
   }
 );
