@@ -277,6 +277,8 @@ Connection.prototype.setJoinedChannels = function(newChannels) {
   var channelsToJoin = [];
   var channelsToPart = [];
 
+  console.log('newChannels: ' + newChannels);
+  console.log('joined channels: ' +this.getJoinedChannels());
 
   newChannels.forEach(function(channel) {
     if (!(channel in self.client.chans)) {

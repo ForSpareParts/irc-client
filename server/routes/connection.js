@@ -73,33 +73,24 @@ singleRouter.route('/')
     res.send(serverConnectionJSON(req.server));
   })
 
-  .patch(function(req, res) {
-    var promise = Promise.resolve(null);
-
+  .put(function(req, res) {
     var updated = req.body.connection;
     var connection = req.server.connection();
 
-    //only update the connection if something has changed
-    if (updated.connected !== undefined) {
-      promise.then(function() {
-        return connection.setConnected(updated.connected);
-      });
-    }
+    return connection.setConnected(updated.connected)
 
-    if (updated.joined !== undefined) {
-      promise.then(function() {
-        return connection.setJoinedChannels(updated.joined);
-      });
-    }
+    .then(function() {
+      return connection.setJoinedChannels(updated.joined);
+    })
 
-    promise.then(function() {
+    .then(function() {
       res.send(serverConnectionJSON(req.server));
     });
   })
 
   .all(function(req, res) {
     res.status(405).send({
-      message: 'Connection model only accepts GET and PATCH.'});
+      message: 'Connection model only accepts GET and PUT.'});
   });
 
 module.exports.singleRouter = singleRouter;

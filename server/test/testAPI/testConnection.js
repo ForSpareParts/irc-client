@@ -56,7 +56,7 @@ describe('The connection API', function() {
     }
   );
 
-  it('should 405 for non-GET/PATCH requests to the connection root', function() {
+  it('should 405 for non-GET/PUT requests to the connection root', function() {
     return request.post(CONNECTION_PATH)
     .send({})
 
@@ -66,12 +66,8 @@ describe('The connection API', function() {
   it('should connect when we set connected to true', function() {
     clone.connection.connected = true;
 
-    return request.patch(CONNECTION_PATH)
-    .send({
-      connection: {
-        connected: true
-      }
-    })
+    return request.put(CONNECTION_PATH)
+    .send(clone)
     .expect(200)
     .expect(clone);
   });
@@ -83,7 +79,7 @@ describe('The connection API', function() {
       clone.connection.joined = ['#channelA', '#channelB'];
       clone.connection.connected = true;
 
-      return request.patch(CONNECTION_PATH)
+      return request.put(CONNECTION_PATH)
       .send(clone);
 
     });
@@ -91,7 +87,7 @@ describe('The connection API', function() {
     it('should disconnect when we set connected to false', function() {
       clone.connection.connected = false;
 
-      return request.patch(CONNECTION_PATH)
+      return request.put(CONNECTION_PATH)
       .send(clone)
 
       .expect(200)
@@ -105,16 +101,16 @@ describe('The connection API', function() {
       .expect(clone);
     });
 
-    it('should replace all joined channels on a PATCH', function() {
+    it('should replace all joined channels on a PUT', function() {
       clone.connection.joined = ['#channelB', '#channelC'];
 
-      return request.patch(CONNECTION_PATH)
+      return request.put(CONNECTION_PATH)
       .send(clone)
       .expect(200)
       .expect(clone);
     });
 
-    it('should not attemp to reconnect if sent {connect: true}', function() {
+    it('should not attempt to reconnect if sent {connect: true}', function() {
       var callback = sinon.spy();
 
       return Server.get(1)
@@ -124,7 +120,7 @@ describe('The connection API', function() {
           callback();
         });
 
-        return request.patch(CONNECTION_PATH)
+        return request.put(CONNECTION_PATH)
         .send(clone)
         .expect(200)
         .expect(clone);
