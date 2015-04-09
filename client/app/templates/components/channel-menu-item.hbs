@@ -1,5 +1,7 @@
 {{#if channel.isNew}}
   {{#link-to "channels/new"}}{{channel.name}}{{/link-to}}
 {{else}}
-  {{#link-to "channel" channel}}{{channel.name}}{{/link-to}}
+  {{#link-to "channel" channel}}
+    {{channel.name}} <button class="part-button" {{action 'part'}}>X</button>
+  {{/link-to}}
 {{/if}}

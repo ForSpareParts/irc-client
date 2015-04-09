@@ -1,7 +1,7 @@
 {{#if channels}}
   <ul class="channels nav-items">
   {{#each channel in channels}}
-    {{ channel-menu-item channel=channel }}
+    {{ channel-menu-item channel=channel part='part' }}
   {{/each}}
   </ul>
 {{else}}

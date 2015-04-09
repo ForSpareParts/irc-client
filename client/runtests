@@ -2,9 +2,14 @@
 
 var argv = require('yargs')
   .usage('starts a backend server in test mode, then runs the frontend tests')
+
   .boolean('server')
   .alias('s', 'server')
   .describe('server', 'run the tests in server/watch mode')
+
+  .alias('f', 'filter')
+  .describe('filter', 'A string to filter tests to run')
+
   .argv;
 
 var path = require('path');
@@ -29,6 +34,11 @@ var emberOpts = ['test'];
 
 if (argv.server) {
   emberOpts.push('--server');
+}
+
+if (argv.filter) {
+  emberOpts.push('--filter');
+  emberOpts.push(argv.filter);
 }
 
 console.log('Running Ember tests...');

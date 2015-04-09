@@ -10,13 +10,24 @@ export default DS.Model.extend({
   joined: DS.attr('array'), //currently joined channels
   server: DS.belongsTo('server', {async: true}),
 
-  join: function(channelToJoin) {
-    if (this.get('joined').indexOf(channelToJoin.get('name')) !== -1) {
+  join: function(channel) {
+    if (this.get('joined').indexOf(channel.get('name')) !== -1) {
       //already joined!
       return Ember.RSVP.resolve();
     }
 
-    this.get('joined').push(channelToJoin.get('name'));
+    this.get('joined').push(channel.get('name'));
+    return this.save();
+  },
+
+  part: function(channel) {
+    var index = this.get('joined').indexOf(channel.get('name'));
+    if (index === -1) {
+      //not in the channel -- no need to part
+      return Ember.RSVP.resolve();
+    }
+
+    this.get('joined').splice(index, 1);
     return this.save();
   }
 });

@@ -22,7 +22,7 @@ describe('Acceptance: Channels', function() {
     Ember.run(App, 'destroy');
   });
 
-  it('should join a new channel', function() {
+  it('should join and a part a channel', function() {
     andThen(function() {
       equal(channelMenuItems().length, 0);
     });
@@ -33,9 +33,16 @@ describe('Acceptance: Channels', function() {
       equal(channelMenuItems().length, 1);
       equal(currentRouteName(), 'channel');
     });
+
+    click('#channel-menu-3 .part-button');
+
+    andThen(function() {
+      equal(channelMenuItems().length, 0);
+      equal(currentRouteName(), 'index');
+    });
   });
 
-  it('should join an existing channel', function() {
+  it('should rejoin an existing channel', function() {
     andThen(function() {
       equal(channelMenuItems().length, 0);
     });
