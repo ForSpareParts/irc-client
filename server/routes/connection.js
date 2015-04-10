@@ -10,39 +10,12 @@ var singleRouter = express.Router();
 
 //we can access the connection's Server at req.server
 
-//this is like toJSON/toEmber() for a connection
-//we need it because connections don't really have IDs of their own, and don't
-//know anything about their servers.
-var serverConnectionJSON = function(server, wrap){
-  if (wrap === undefined) {
-    wrap = true;
-  }
-
-  var connection = server.connection();
-
-  var innerData = {
-    id: server.id,
-    connected: connection.isConnected(),
-    server: server.id,
-    joined: connection.getJoinedChannels()
-  };
-
-  if (wrap) {
-    return {
-      connection: innerData
-    };
-  }
-
-  return innerData;
-};
-
-
 allRouter.get('/', function(req, res) {
   Server.all()
 
   .then(function(servers) {
     var innerData = servers.map(function(server) {
-      return serverConnectionJSON(server, false);
+      return server.connectionJSON(false);
     });
 
     res.send({ connections: innerData });
@@ -70,7 +43,7 @@ allRouter.use('/:id', singleRouter);
  */
 singleRouter.route('/')
   .get(function(req, res) {
-    res.send(serverConnectionJSON(req.server));
+    res.send(req.server.connectionJSON());
   })
 
   .put(function(req, res) {
@@ -84,7 +57,7 @@ singleRouter.route('/')
     })
 
     .then(function() {
-      res.send(serverConnectionJSON(req.server));
+      res.send(req.server.connectionJSON());
     });
   })
 

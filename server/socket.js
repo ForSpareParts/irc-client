@@ -9,7 +9,7 @@
  * This is simply a no-op if there's no active socket.
  */
 var Channel = require('./models/channel');
-
+var Server = require('./models/server');
 
 var io;
 
@@ -30,6 +30,20 @@ module.exports.setupSocket = function(ioInstance) {
 
       .then(function(connection) {
         socket.emit('nicks', connection.nickListJSON(channel));
+      });
+    });
+
+    socket.on('connectServer', function(serverID) {
+      var server;
+      return Server.get(serverID)
+
+      .then(function(fetched) {
+        server = fetched;
+        return server.connection().connect();
+      })
+
+      .then(function() {
+        socket.emit('connected', server.connectionJSON())
       });
     });
 

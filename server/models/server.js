@@ -29,6 +29,32 @@ var Server = BaseModel.extend({
       this.get('nick'));
   },
 
+  //this is like toJSON/toEmber() for a connection
+  //we need it because connections don't really have IDs of their own, and
+  //don't know anything about their servers.
+  connectionJSON: function(wrap){
+    if (wrap === undefined) {
+      wrap = true;
+    }
+
+    var connection = this.connection();
+
+    var innerData = {
+      id: this.id,
+      connected: connection.isConnected(),
+      server: this.id,
+      joined: connection.getJoinedChannels()
+    };
+
+    if (wrap) {
+      return {
+        connection: innerData
+      };
+    }
+
+    return innerData;
+  },
+
   virtuals: {
     links: function() {
       return {

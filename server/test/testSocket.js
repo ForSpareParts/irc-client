@@ -106,7 +106,7 @@ describe('The socket.io connection', function() {
       'Reason for leaving.');
   });
 
-  it('should resend the nick list when asked', function(done) {
+  it('should resend the nick list upon request', function(done) {
     client.on('nicks', function(data) {
       assert.strictEqual(data.nickList.channel, 1);
       assert.deepEqual(data.nickList.nicks, ['resendNick']);
@@ -115,5 +115,14 @@ describe('The socket.io connection', function() {
 
     serverConn.nicksInChannel['#somechannel'] = {resendNick: ''};
     client.emit('refreshNicks', 1);
+  });
+
+  it('should connect to a server upon request', function(done) {
+    client.on('connected', function(data) {
+      assert.strictEqual(data.connection.id, 2);
+      done();
+    });
+
+    client.emit('connectServer', 2);
   });
 });
