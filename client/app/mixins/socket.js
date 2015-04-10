@@ -1,12 +1,13 @@
 import Ember from 'ember';
 /* global EventEmitter, io */
 
-var fakeSocket, serverSocket;
+var fakeIncoming, fakeOutgoing, serverSocket;
 
 export default Ember.Mixin.create({
   init: function() {
     this._super();
-    fakeSocket = new EventEmitter();
+    fakeIncoming = new EventEmitter();
+    fakeOutgoing = new EventEmitter();
     serverSocket = io.connect();
   },
 
@@ -16,7 +17,7 @@ export default Ember.Mixin.create({
     * EventEmitter.
     */
     on: function(eventName, handler) {
-      fakeSocket.on(eventName, handler);
+      fakeIncoming.on(eventName, handler);
       serverSocket.on(eventName, handler);
     },
 
@@ -24,15 +25,39 @@ export default Ember.Mixin.create({
     * As on(), but only handle eventName one time.
     */
     once: function(eventName, handler) {
-      fakeSocket.once(eventName, handler);
+      fakeIncoming.once(eventName, handler);
       serverSocket.once(eventName, handler);
     },
 
     /**
-     * Sends a local event
+     * Sends an event to the server with any number of arguments, e.g.:
+     * socket.emit('join', '#somechannel');
+     */
+    emit: function(eventName) {
+      fakeOutgoing.emit.apply(fakeOutgoing, arguments);
+      serverSocket.emit.apply(serverSocket, arguments);
+    },
+
+    /**
+     * Sends a local event (used for testing)
      */
     localEmit: function(eventName) {
-      fakeSocket.emit.apply(fakeSocket, arguments);
+      fakeIncoming.emit.apply(fakeIncoming, arguments);
+    },
+
+    /**
+     * Triggers handler for eventName when eventName is sent to the server
+     * (used for testing)
+     */
+    onOutgoing: function(eventName, handler) {
+      fakeOutgoing.on(eventName, handler);
+    },
+
+     /**
+     * As onOutgoing, but only handles eventName once.
+     */
+    onceOutgoing: function(eventName, handler) {
+      fakeOutgoing.once(eventName, handler);
     }
   }
 });

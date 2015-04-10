@@ -1,6 +1,7 @@
 import Ember from 'ember';
+import SocketMixin from '../mixins/socket';
 
-export default Ember.Route.extend({
+export default Ember.Route.extend(SocketMixin, {
   model: function() {
     var store = this.get('store');
 
@@ -43,6 +44,40 @@ export default Ember.Route.extend({
      */
     refreshJoined: function() {
       this.refresh();
+    },
+
+    connect: function(server) {
+      this.socket.emit('connect', server.get('id'));
+    },
+
+    disconnect: function(server) {
+      this.socket.emit('disconnect', server.get('id'));
+    },
+
+    /**
+     * Signals the server to join `channel`, which can be a channel name or a
+     * Channel object.
+     */
+    join: function(channel) {
+      if (typeof(channel) === 'object') {
+        this.socket.emit('join', channel.get('id'));
+      }
+      else {
+        this.socket.emit('join', channel);
+      }
+    },
+
+    /**
+     * Signals the server to part `channel`, which can be a channel name or a
+     * Channel object.
+     */
+    part: function(channel) {
+      if (typeof(channel) === 'object') {
+        this.socket.emit('part', channel.get('id'));
+      }
+      else {
+        this.socket.emit('part', channel);
+      }
     }
 
   }
