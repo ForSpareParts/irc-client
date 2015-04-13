@@ -29,17 +29,6 @@ var getChannel = function(connection, channelName) {
   });
 };
 
-/**
- * Emitter that triggers whenever one of the listener handlers is finished
- * (including any asynchronous processing the listener might have kicked off).
- *
- * Yes, this is a little silly -- but my tests need to know when these functions
- * have finished doing their jobs, and since I can't retrieve their return
- * values, I can't use promises like I normally would.
- * 
- * @type {events.EventEmitter}
- */
-
 var joined = function(connection, channelName, nick) {
   return getChannel(connection, channelName)
 
@@ -59,7 +48,7 @@ var joined = function(connection, channelName, nick) {
     }
 
     connection.nicksInChannel[channelName][nick] = '';
-    emitter.emit('joinedFinished', joinMessage);
+    emitter.emit('joinedLogged', joinMessage);
   });
 };
 
@@ -82,7 +71,7 @@ var parted = function(connection, channelName, nick, reason) {
     }
 
     delete connection.nicksInChannel[channelName][nick];
-    emitter.emit('partedFinished', partMessage);
+    emitter.emit('partedLogged', partMessage);
   });
 };
 
@@ -93,7 +82,7 @@ var error = function(connection, message) {
     connection.port);
   ircErrors.push(hostString + ': ' + message.command);
   console.log(hostString + ': ' + message.command);
-  emitter.emit('errorFinished');
+  emitter.emit('errorLogged');
 };
 
 
@@ -110,7 +99,7 @@ var message = function(connection, nick, to, text, message) {
   })
 
   .then(function(message) {
-    emitter.emit('messageFinished', message);
+    emitter.emit('messageLogged', message);
   });
 };
 
@@ -121,7 +110,7 @@ var nicks = function(connection, channelName, nicks) {
   return getChannel(connection, channelName)
 
   .then(function(channel) {
-    emitter.emit('nicksFinished', connection.nickListJSON(channel));
+    emitter.emit('nicksLogged', connection.nickListJSON(channel));
   });
 };
 

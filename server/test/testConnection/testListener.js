@@ -36,7 +36,7 @@ describe('The IRC listener module', function() {
   });
 
   it('should trap and log errors from the IRC server', function(done) {
-    emitter.on('errorFinished', function() {
+    emitter.on('errorLogged', function() {
       assert.include(listener.ircErrors[0], 'test error message');
       done();
     });
@@ -45,7 +45,7 @@ describe('The IRC listener module', function() {
   });
 
   it('should record messages from the IRC server', function(done) {
-    emitter.on('messageFinished', function() {
+    emitter.on('messageLogged', function() {
       Message.get({
         channel_id: 1,
         nick: 'testListenerNick'
@@ -63,7 +63,7 @@ describe('The IRC listener module', function() {
 
   it('should rewrite the nick list for a channel (on \'names\')',
     function(done) {
-      emitter.on('nicksFinished', function() {
+      emitter.on('nicksLogged', function() {
         assert.deepEqual(connection.nicksInChannel['#somechannel'],
           {
             somenick: '',
@@ -79,7 +79,7 @@ describe('The IRC listener module', function() {
   });
 
   it('should add a nick to the list when it joins a channel', function(done) {
-    emitter.on('joinedFinished', function() {
+    emitter.on('joinedLogged', function() {
       assert.property(connection.nicksInChannel['#somechannel'], 'aNewNick');
       done();
     });
@@ -92,7 +92,7 @@ describe('The IRC listener module', function() {
 
   it('should remove a nick from the list when it parts a channel',
     function(done) {
-      emitter.on('partedFinished', function() {
+      emitter.on('partedLogged', function() {
         assert.notProperty(connection.nicksInChannel['#somechannel'],
           'somenick');
         done();

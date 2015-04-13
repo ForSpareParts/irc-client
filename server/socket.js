@@ -20,19 +20,19 @@ module.exports.setupSocket = function(ioInstance) {
 
   io.on('connection', function(socket) {
 
-    emitter.on('joinedFinished', function(message) {
+    emitter.on('joinedLogged', function(message) {
       socket.emit('joined', message.toEmber());
     });
 
-    emitter.on('partedFinished', function(message) {
+    emitter.on('partedLogged', function(message) {
       socket.emit('parted', message.toEmber());
     });
 
-    emitter.on('messageFinished', function(message) {
+    emitter.on('messageLogged', function(message) {
       socket.emit('message', message.toEmber());
     });
 
-    emitter.on('nicksFinished', function(nickListJSON) {
+    emitter.on('nicksLogged', function(nickListJSON) {
       socket.emit('nicks', nickListJSON);
     });
 
