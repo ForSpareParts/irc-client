@@ -3,9 +3,8 @@
  * conversations to the database.
  */
 
-var events = require('events');
+var emitter = require('../emitter');
 
-var connectionEmitter = require('./index').connectionEmitter;
 var socketLib = require('../socket');
 
 var Channel = require('../models/channel');
@@ -40,8 +39,6 @@ var getChannel = function(connection, channelName) {
  * 
  * @type {events.EventEmitter}
  */
-var listenerEmitter = new events.EventEmitter();
-module.exports.listenerEmitter = listenerEmitter;
 
 var joined = function(connection, channelName, nick) {
   return getChannel(connection, channelName)
@@ -56,15 +53,13 @@ var joined = function(connection, channelName, nick) {
     });
   })
 
-  .then(function(partMessage) {
+  .then(function(joinMessage) {
     if (connection.nicksInChannel[channelName] === undefined) {
       connection.nicksInChannel[channelName] = {};
     }
 
     connection.nicksInChannel[channelName][nick] = '';
-
-    socketLib.emit('joined', partMessage.toEmber());
-    listenerEmitter.emit('joinedFinished');
+    emitter.emit('joinedFinished', joinMessage);
   });
 };
 
@@ -87,9 +82,7 @@ var parted = function(connection, channelName, nick, reason) {
     }
 
     delete connection.nicksInChannel[channelName][nick];
-
-    socketLib.emit('parted', partMessage.toEmber());
-    listenerEmitter.emit('partedFinished');
+    emitter.emit('partedFinished', partMessage);
   });
 };
 
@@ -100,7 +93,7 @@ var error = function(connection, message) {
     connection.port);
   ircErrors.push(hostString + ': ' + message.command);
   console.log(hostString + ': ' + message.command);
-  listenerEmitter.emit('errorFinished');
+  emitter.emit('errorFinished');
 };
 
 
@@ -117,8 +110,7 @@ var message = function(connection, nick, to, text, message) {
   })
 
   .then(function(message) {
-    socketLib.emit('message', message.toEmber());
-    listenerEmitter.emit('messageFinished');
+    emitter.emit('messageFinished', message);
   });
 };
 
@@ -129,21 +121,15 @@ var nicks = function(connection, channelName, nicks) {
   return getChannel(connection, channelName)
 
   .then(function(channel) {
-    //tell the socket to send out the new nicks
-    socketLib.emit('nicks', connection.nickListJSON(channel));
-    listenerEmitter.emit('nicksFinished');
+    emitter.emit('nicksFinished', connection.nickListJSON(channel));
   });
 };
 
 module.exports.setupListeners = function() {
-  connectionEmitter.on('joined', joined);
-  connectionEmitter.on('parted', parted);
-  connectionEmitter.on('error', error);
-  connectionEmitter.on('message', message);
-  connectionEmitter.on('nicks', nicks);
+  emitter.on('joined', joined);
+  emitter.on('parted', parted);
+  emitter.on('error', error);
+  emitter.on('message', message);
+  emitter.on('nicks', nicks);
 };
 
-module.exports.clearListeners = function() {
-  connectionEmitter.removeAllListeners();
-  listenerEmitter.removeAllListeners();
-};

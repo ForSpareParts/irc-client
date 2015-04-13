@@ -8,6 +8,7 @@
  *
  * This is simply a no-op if there's no active socket.
  */
+var emitter = require('./emitter');
 var Channel = require('./models/channel');
 var Server = require('./models/server');
 
@@ -18,6 +19,22 @@ module.exports.setupSocket = function(ioInstance) {
   io = ioInstance;
 
   io.on('connection', function(socket) {
+
+    emitter.on('joinedFinished', function(message) {
+      socket.emit('joined', message.toEmber());
+    });
+
+    emitter.on('partedFinished', function(message) {
+      socket.emit('parted', message.toEmber());
+    });
+
+    emitter.on('messageFinished', function(message) {
+      socket.emit('message', message.toEmber());
+    });
+
+    emitter.on('nicksFinished', function(nickListJSON) {
+      socket.emit('nicks', nickListJSON);
+    });
 
     /** Send the current nick list for the given channel ID */
     socket.on('refreshNicks', function(channelID) {

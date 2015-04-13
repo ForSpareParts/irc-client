@@ -3,17 +3,17 @@
  * versions of connect/disconnect, join/part, etc.
  *
  * Connection does *not* respond to "unexpected" events like new messages -- it
- * just exposes them as events through module.exports.connectionEmitter. See
- * listener.js for event handling.
+ * just exposes them as events through the emitter. See listener.js for event
+ * handling.
  */
 
-var events = require('events');
 var Promise = require('bluebird');
 
 var _ = require('underscore');
 
 var argv = require('yargs').argv;
 
+var emitter = require('../emitter');
 var settings = require('../settings');
 var irc = require(settings.ircLib);
 var callAfterAllEvents = require('../utils').callAfterAllEvents;
@@ -67,25 +67,6 @@ module.exports.clearConnections = function() {
 };
 
 /**
- * Emits events related to connections so that we can respond to events from IRC
- * servers elsewhere in the code.
- * 
- * The convention is that any event emitted from connectionEmitter will have the
- * host, port, and nick of the IRC connection as its first three arguments,
- * followed by any other arguments used by the event.
- *
- * Emits on:
- * -  connected
- * -  disconnected
- * -  joined (channel)
- * -  parted (channel)
- * 
- * @type {events.EventEmitter}
- */
-var connectionEmitter = new events.EventEmitter();
-module.exports.connectionEmitter = connectionEmitter;
-
-/**
  * Represents a connection to an IRC server. Creates an irc.Client object for
  * the connection if one doesn't already exist.
  * 
@@ -113,23 +94,23 @@ var Connection = function(host, port, nick) {
   var self = this;
 
   this.client.on('join', function(channel, nick, message) {
-    connectionEmitter.emit('joined', self, channel, nick);
+    emitter.emit('joined', self, channel, nick);
   });
 
   this.client.on('part', function(channel, nick, reason, message) {
-    connectionEmitter.emit('parted', self, channel, nick, reason);
+    emitter.emit('parted', self, channel, nick, reason);
   });
 
   this.client.on('names', function(channel, nicks) {
-    connectionEmitter.emit('nicks', self, channel, nicks);
+    emitter.emit('nicks', self, channel, nicks);
   });
 
   this.client.on('error', function(message) {
-    connectionEmitter.emit('error', self, message);
+    emitter.emit('error', self, message);
   });
 
   this.client.on('message', function(nick, to, text, message) {
-    connectionEmitter.emit('message', self, nick, to, text, message);
+    emitter.emit('message', self, nick, to, text, message);
   });
 };
 
@@ -144,7 +125,7 @@ Connection.prototype.connect = function() {
     //just call connect...
     self.client.connect(function(connectInfo) {
 
-      connectionEmitter.emit('connected', self);
+      emitter.emit('connected', self);
 
       //...and resolve in the callback
       resolve(connectInfo);
@@ -162,7 +143,7 @@ Connection.prototype.disconnect = function() {
   return new Promise(function(resolve, reject) {
     self.client.disconnect(function(disconnectInfo) {
 
-      connectionEmitter.emit('disconnected', self);
+      emitter.emit('disconnected', self);
       resolve(disconnectInfo);
     });
   });
@@ -205,7 +186,7 @@ Connection.prototype.join = function(channel) {
 
   return new Promise(function(resolve, reject) {
     self.client.join(channel, function(joinInfo) {
-      connectionEmitter.emit('joined', self, channel, self.nick);
+      emitter.emit('joined', self, channel, self.nick);
       resolve(joinInfo);
     });
   });
@@ -221,7 +202,7 @@ Connection.prototype.part = function(channel) {
 
   return new Promise(function(resolve, reject) {
     self.client.part(channel, function(partInfo) {
-      connectionEmitter.emit('parted', self, channel);
+      emitter.emit('parted', self, channel);
       resolve(partInfo);
     });
   });

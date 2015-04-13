@@ -1,6 +1,6 @@
 var http = require('http');
 
-var connectionEmitter = require('../connection').connectionEmitter;
+var emitter = require('../emitter');
 var listener = require('../connection/listener');
 var Server = require('../models/server');
 var settings = require('../settings');
@@ -18,7 +18,7 @@ var serverConn;
 //- A socket.io client
 //
 //we *don't* need listenToIRC, because we're just going to send the message
-//by hand from the connectionEmitter
+//by hand from the emitter
 //
 //When we're done, of course, we have to tear down everything we used
 
@@ -51,7 +51,7 @@ describe('The socket.io connection', function() {
 
     socketLib.clearSocket();
 
-    listener.clearListeners();
+    emitter.removeAllListeners();
 
     client.disconnect();
   });
@@ -65,7 +65,7 @@ describe('The socket.io connection', function() {
       done();
     });
 
-    connectionEmitter.emit('message', serverConn, 'testSocketNick',
+    emitter.emit('message', serverConn, 'testSocketNick',
       '#somechannel', 'is the socket working?', {});
   });
 
@@ -77,7 +77,7 @@ describe('The socket.io connection', function() {
         done();
       });
 
-      connectionEmitter.emit('nicks', serverConn, '#somechannel',
+      emitter.emit('nicks', serverConn, '#somechannel',
         {somenick: '', othernick:''});
     });
 
@@ -90,7 +90,7 @@ describe('The socket.io connection', function() {
       done();
     });
 
-    connectionEmitter.emit('joined', serverConn, '#somechannel', 'joinNick');
+    emitter.emit('joined', serverConn, '#somechannel', 'joinNick');
   });
 
   it('should notify the client when someone parts a channel', function(done) {
@@ -102,7 +102,7 @@ describe('The socket.io connection', function() {
       done();
     });
 
-    connectionEmitter.emit('parted', serverConn, '#somechannel', 'partNick',
+    emitter.emit('parted', serverConn, '#somechannel', 'partNick',
       'Reason for leaving.');
   });
 

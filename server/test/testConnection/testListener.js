@@ -1,3 +1,4 @@
+var emitter = require('../../emitter');
 var connectionLib = require('../../connection');
 var listener = require('../../connection/listener');
 var settings = require('../../settings');
@@ -6,7 +7,6 @@ var Channel = require('../../models/channel');
 var Message = require('../../models/message');
 var Server = require('../../models/server');
 
-var listenerEmitter = listener.listenerEmitter;
 var serverInstance = null;
 var connection = null;
 
@@ -28,7 +28,7 @@ describe('The IRC listener module', function() {
   });
 
   afterEach(function() {
-    listener.clearListeners();
+    emitter.removeAllListeners();
   });
 
   after(function() {
@@ -36,7 +36,7 @@ describe('The IRC listener module', function() {
   });
 
   it('should trap and log errors from the IRC server', function(done) {
-    listenerEmitter.on('errorFinished', function() {
+    emitter.on('errorFinished', function() {
       assert.include(listener.ircErrors[0], 'test error message');
       done();
     });
@@ -45,7 +45,7 @@ describe('The IRC listener module', function() {
   });
 
   it('should record messages from the IRC server', function(done) {
-    listenerEmitter.on('messageFinished', function() {
+    emitter.on('messageFinished', function() {
       Message.get({
         channel_id: 1,
         nick: 'testListenerNick'
@@ -63,7 +63,7 @@ describe('The IRC listener module', function() {
 
   it('should rewrite the nick list for a channel (on \'names\')',
     function(done) {
-      listenerEmitter.on('nicksFinished', function() {
+      emitter.on('nicksFinished', function() {
         assert.deepEqual(connection.nicksInChannel['#somechannel'],
           {
             somenick: '',
@@ -79,7 +79,7 @@ describe('The IRC listener module', function() {
   });
 
   it('should add a nick to the list when it joins a channel', function(done) {
-    listenerEmitter.on('joinedFinished', function() {
+    emitter.on('joinedFinished', function() {
       assert.property(connection.nicksInChannel['#somechannel'], 'aNewNick');
       done();
     });
@@ -92,7 +92,7 @@ describe('The IRC listener module', function() {
 
   it('should remove a nick from the list when it parts a channel',
     function(done) {
-      listenerEmitter.on('partedFinished', function() {
+      emitter.on('partedFinished', function() {
         assert.notProperty(connection.nicksInChannel['#somechannel'],
           'somenick');
         done();
