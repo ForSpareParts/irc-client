@@ -119,10 +119,27 @@ describe('The socket.io connection', function() {
 
   it('should connect to a server upon request', function(done) {
     client.on('connected', function(data) {
-      assert.strictEqual(data.connection.id, 2);
+      assert.strictEqual(data.connection.id, 1);
+      assert.isTrue(serverConn.isConnected());
       done();
     });
 
-    client.emit('connectServer', 2);
+    assert.isFalse(serverConn.isConnected());
+    client.emit('connectServer', 1);
+  });
+
+  it('should disconnect from a server upon request', function(done) {
+    client.on('disconnected', function(data) {
+      assert.isFalse(serverConn.isConnected());
+      assert.strictEqual(data.connection.id, 1);
+      done();
+    });
+
+    serverConn.connect()
+
+    .then(function() {
+      client.emit('disconnectServer', 1);
+    });
+
   });
 });

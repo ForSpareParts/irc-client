@@ -8,9 +8,10 @@
  *
  * This is simply a no-op if there's no active socket.
  */
-var emitter = require('./emitter');
-var Channel = require('./models/channel');
-var Server = require('./models/server');
+var commands = require('./commands');
+var emitter = require('../emitter');
+var Channel = require('../models/channel');
+var Server = require('../models/server');
 
 var io;
 
@@ -37,33 +38,10 @@ module.exports.setupSocket = function(ioInstance) {
     });
 
     /** Send the current nick list for the given channel ID */
-    socket.on('refreshNicks', function(channelID) {
-      var channel;
-      return Channel.get(channelID)
-      .then(function(fetched) {
-        channel = fetched;
-        return channel.connection();
-      })
-
-      .then(function(connection) {
-        socket.emit('nicks', connection.nickListJSON(channel));
-      });
-    });
-
-    socket.on('connectServer', function(serverID) {
-      var server;
-      return Server.get(serverID)
-
-      .then(function(fetched) {
-        server = fetched;
-        return server.connection().connect();
-      })
-
-      .then(function() {
-        socket.emit('connected', server.connectionJSON())
-      });
-    });
-
+    socket.on('refreshNicks', commands.refreshNicks.bind(null, socket));
+    socket.on('connectServer', commands.connectServer.bind(null, socket));
+    socket.on('disconnectServer', commands.disconnectServer.bind(null, socket));
+    socket.on('joinChannel', commands.joinChannel.bind(null, socket));
   });
 };
 
