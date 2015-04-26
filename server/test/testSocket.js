@@ -12,8 +12,6 @@ var callAfterAllEvents = require('../utils').callAfterAllEvents;
 var server;
 var client;
 
-var serverConn;
-
 //We need to set up:
 //- A new HTTP server (for socket.io to use)
 //- The socket instance itself
@@ -36,13 +34,13 @@ describe.only('The socket.io connection', function() {
     socketLib.setupSocket(io);
   });
 
-  beforeEach(function() {
+  beforeEach(function(done) {
     client = socketIOClient.connect('http://localhost:4000', {
       multiplex: false
     });
-    return Server.get(1)
-    .then(function(server) {
-      serverConn = server.connection();
+
+    client.on('connect', function() {
+      done();
     });
   });
 
@@ -129,53 +127,58 @@ describe.only('The socket.io connection', function() {
   //TODO: this currently relies on socket/commadns accessing the nicks directly.
   //should refactor to request them from the connection via an event
   it('should resend the nick list upon request', function(done) {
-    client.on('nicks', function(data) {
-      assert.strictEqual(data.nickList.channel, 1);
-      assert.deepEqual(data.nickList.nicks, ['resendNick']);
+    emitter.on('nicksRequested', function(channelID) {
+      assert.strictEqual(channelID, 1);
       done();
     });
 
-    serverConn.nicksInChannel['#somechannel'] = {resendNick: ''};
     client.emit('refreshNicks', 1);
   });
 
-  it('should connect to a server upon request', function(done) {
-    client.on('connected', function(data) {
-      assert.strictEqual(data.connection.id, 1);
-      assert.isTrue(serverConn.isConnected());
+  it('should ask the backend to connect to a server', function(done) {
+    emitter.on('connectRequested', function(serverID) {
+      assert.strictEqual(serverID, 1);
       done();
     });
 
-    assert.isFalse(serverConn.isConnected());
     client.emit('connectServer', 1);
   });
 
-  it('should disconnect from a server upon request', function(done) {
-    client.on('disconnected', function(data) {
-      assert.isFalse(serverConn.isConnected());
-      assert.strictEqual(data.connection.id, 1);
+  it('should ask the backend to disconnect from a server', function(done) {
+    emitter.on('disconnectRequested', function(serverID) {
+      assert.strictEqual(serverID, 1);
       done();
     });
 
-    serverConn.connect()
-
-    .then(function() {
-      client.emit('disconnectServer', 1);
-    });
-
+    client.emit('disconnectServer', 1);
   });
 
-  it('should join a channel upon request', function(done) {
-    client.on('joined', function(data) {
-      assert.include(serverConn.getJoinedChannels(), '#joinchannel');
-      assert.strictEqual(data.message.type, 'join');
+  it('should ask the backend to join a channel', function(done) {
+    emitter.on('joinRequested', function(serverID, channelNameOrID) {
+      assert.strictEqual(channelNameOrID, '#joinchannel');
+      assert.strictEqual(serverID, 1);
       done();
     });
 
-    serverConn.connect()
+    client.emit('joinChannel', 1, '#joinchannel');
+  });
 
-    .then(function() {
-      client.emit('joinChannel', 1, '#joinchannel');
+  it('should ask the backend to part a channel', function(done) {
+    emitter.on('partRequested', function(channelID) {
+      assert.strictEqual(channelID, 1);
+      done();
     });
+
+    client.emit('partChannel', 1);
+  });
+
+  it('should ask the backend to send a message', function(done) {
+    emitter.on('messageRequested', function(channelID, contents) {
+      assert.strictEqual(channelID, 2);
+      assert.strictEqual(contents, 'some message');
+      done();
+    });
+
+    client.emit('message', 2, 'some message');
   });
 });

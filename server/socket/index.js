@@ -10,8 +10,6 @@
  */
 var commands = require('./commands');
 var emitter = require('../emitter');
-var Channel = require('../models/channel');
-var Server = require('../models/server');
 
 var io;
 
