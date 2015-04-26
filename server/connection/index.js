@@ -110,7 +110,7 @@ var Connection = function(host, port, nick) {
   });
 
   this.client.on('message', function(nick, to, text, message) {
-    emitter.emit('message', self, nick, to, text, message);
+    emitter.emit('message', self, nick, to, text);
   });
 };
 
@@ -186,7 +186,6 @@ Connection.prototype.join = function(channel) {
 
   return new Promise(function(resolve, reject) {
     self.client.join(channel, function(joinInfo) {
-      emitter.emit('joined', self, channel, self.nick);
       resolve(joinInfo);
     });
   });
@@ -202,7 +201,6 @@ Connection.prototype.part = function(channel) {
 
   return new Promise(function(resolve, reject) {
     self.client.part(channel, function(partInfo) {
-      emitter.emit('parted', self, channel);
       resolve(partInfo);
     });
   });
@@ -315,6 +313,8 @@ Connection.prototype.addJoinedChannels = function(newChannels) {
  */
 Connection.prototype.say = function(channel, messageContents) {
   this.client.say(channel, messageContents);
+  emitter.emit(
+    'message', this, this.nick, channel, messageContents);
 };
 
 /**
@@ -324,7 +324,7 @@ Connection.prototype.say = function(channel, messageContents) {
  * @param  {Channel} channel
  */
 Connection.prototype.nickListJSON = function(channel) {
-  return  {
+  return {
     nickList: {
       id: channel.get('id'),
       channel: channel.get('id'),

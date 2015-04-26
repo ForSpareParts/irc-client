@@ -30,6 +30,7 @@ var getChannel = function(connection, channelName) {
 };
 
 var joined = function(connection, channelName, nick) {
+  console.log('joining ' + channelName);
   return getChannel(connection, channelName)
 
   .then(function(channel) {
@@ -86,7 +87,7 @@ var error = function(connection, message) {
 };
 
 
-var message = function(connection, nick, to, text, message) {
+var message = function(connection, nick, to, text) {
   return getChannel(connection, to)
 
   .then(function(channel) {

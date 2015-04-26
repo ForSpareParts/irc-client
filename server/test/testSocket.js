@@ -2,9 +2,12 @@ var http = require('http');
 
 var emitter = require('../emitter');
 var listener = require('../connection/listener');
+var Message = require('../models/message');
 var Server = require('../models/server');
 var settings = require('../settings');
 var socketLib = require('../socket');
+var socketIOClient = require('socket.io-client');
+var callAfterAllEvents = require('../utils').callAfterAllEvents;
 
 var server;
 var client;
@@ -22,20 +25,21 @@ var serverConn;
 //
 //When we're done, of course, we have to tear down everything we used
 
-describe('The socket.io connection', function() {
+var io;
+
+describe.only('The socket.io connection', function() {
   before(function() {
     server = http.createServer();
     server.listen(4000);
 
-    var io = require('socket.io')(server);
+    io = require('socket.io')(server);
     socketLib.setupSocket(io);
-
-    listener.setupListeners();
-
-    client = require('socket.io-client')('http://localhost:4000');
   });
 
   beforeEach(function() {
+    client = socketIOClient.connect('http://localhost:4000', {
+      multiplex: false
+    });
     return Server.get(1)
     .then(function(server) {
       serverConn = server.connection();
@@ -43,30 +47,30 @@ describe('The socket.io connection', function() {
   });
 
   afterEach(function() {
-    client.removeAllListeners();
+    client.disconnect();
   });
 
   after(function() {
     server.close();
-
     socketLib.clearSocket();
-
-    emitter.removeAllListeners();
-
-    client.disconnect();
   });
 
   it('should notify the client when a new message arrives', function(done) {
     client.on('message', function(data) {
-      assert.strictEqual(data.message.nick, 'testSocketNick');
+      assert.strictEqual(data.message.nick, 'newMsgNick');
       assert.strictEqual(data.message.contents, 'is the socket working?');
       assert.strictEqual(data.message.channel, 1);
 
       done();
     });
 
-    emitter.emit('message', serverConn, 'testSocketNick',
-      '#somechannel', 'is the socket working?', {});
+    emitter.emit('messageLogged', Message.forge({
+      channel_id: 1,
+      contents: 'is the socket working?',
+      nick: 'newMsgNick',
+      time: new Date().toISOString(),
+      type: ''
+    }));
   });
 
   it('should notify the client when the list of nicks for a channel is updated',
@@ -77,10 +81,15 @@ describe('The socket.io connection', function() {
         done();
       });
 
-      emitter.emit('nicks', serverConn, '#somechannel',
-        {somenick: '', othernick:''});
-    });
-
+      emitter.emit('nicksLogged', {
+        nickList: {
+          id: 1,
+          channel: 1,
+          nicks: ['somenick', 'othernick']
+        }
+      });
+  });
+  
   it('should notify the client when someone joins a channel', function(done) {
     client.on('joined', function(data) {
       assert.strictEqual(data.message.nick, 'joinNick');
@@ -90,7 +99,13 @@ describe('The socket.io connection', function() {
       done();
     });
 
-    emitter.emit('joined', serverConn, '#somechannel', 'joinNick');
+    emitter.emit('joinedLogged', Message.forge({
+      channel_id: 1,
+      contents: '',
+      nick: 'joinNick',
+      time: new Date().toISOString(),
+      type: 'join'
+    }));
   });
 
   it('should notify the client when someone parts a channel', function(done) {
@@ -102,10 +117,17 @@ describe('The socket.io connection', function() {
       done();
     });
 
-    emitter.emit('parted', serverConn, '#somechannel', 'partNick',
-      'Reason for leaving.');
+    emitter.emit('partedLogged', Message.forge({
+      channel_id: 1,
+      contents: 'Reason for leaving.',
+      nick: 'partNick',
+      time: new Date().toISOString(),
+      type: 'part'
+    }));
   });
 
+  //TODO: this currently relies on socket/commadns accessing the nicks directly.
+  //should refactor to request them from the connection via an event
   it('should resend the nick list upon request', function(done) {
     client.on('nicks', function(data) {
       assert.strictEqual(data.nickList.channel, 1);
@@ -141,5 +163,19 @@ describe('The socket.io connection', function() {
       client.emit('disconnectServer', 1);
     });
 
+  });
+
+  it('should join a channel upon request', function(done) {
+    client.on('joined', function(data) {
+      assert.include(serverConn.getJoinedChannels(), '#joinchannel');
+      assert.strictEqual(data.message.type, 'join');
+      done();
+    });
+
+    serverConn.connect()
+
+    .then(function() {
+      client.emit('joinChannel', 1, '#joinchannel');
+    });
   });
 });

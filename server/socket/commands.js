@@ -75,28 +75,33 @@ module.exports.joinChannel = function(socket, serverID, channelNameOrID) {
   });
 };
 
-module.exports.partChannel = function(socket, serverID, channelNameOrID) {
+module.exports.partChannel = function(socket, serverID, channelID) {
   var server;
 
   return Server.get(serverID)
 
   .then(function(fetched) {
     server = fetched;
-
-    if (typeof(channelNameOrID) === 'string') {
-      return channelNameOrID;
-    }
-
-    return Channel.get(channelNameOrID)
-
-    .then(function(fetched) {
-      return fetched.get('name');
-    });
-
-    //either way, the next promise will resolve to a channel name
+    return Channel.get(channelID);
   })
 
-  .then(function(name) {
-    return server.connection().part(name);
+  .then(function(channel) {
+    return server.connection().part(channel.get('name'));
+  });
+};
+
+
+module.exports.message = function(socket, serverID, channelID, contents) {
+  var server;
+
+  return Server.get(serverID)
+
+  .then(function(fetched) {
+    server = fetched;
+    return Channel.get(channelID);
+  })
+
+  .then(function(channel) {
+    return server.connection().say(channel.get('name'), contents);
   });
 };

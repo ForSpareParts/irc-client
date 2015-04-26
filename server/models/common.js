@@ -22,6 +22,11 @@ Bookshelf.plugin('registry');
 Bookshelf.plugin('virtuals');
 
 
+var UniqueConstraintError = function(e) {
+  return e.message.match(/UNIQUE constraint failed/);
+};
+
+
 /** A base class providing added functionality on top of Bookshelf.Model. All
 application models extend this class. */
 var BaseModel = Bookshelf.Model.extend(
@@ -172,7 +177,12 @@ var BaseModel = Bookshelf.Model.extend(
       return this.get(search)
 
       .catch(this.NotFoundError, function() {
-        return self.create(search);
+        return self.create(search)
+
+        .catch(UniqueConstraintError, function(error) {
+          //another getOrCreate happened -- reattempting get()...
+          return self.get(search);
+        });
       });
     }
 

@@ -37,6 +37,7 @@ argv.settings = 'test';
 
 var fixtures = require('../models/fixtures')
   , connection = require('../connection')
+  , emitter = require('../emitter')
   , knexfile = require('../knexfile')
   , models = require('../models')
   , deleteDatabase = require('../test_utils').deleteDatabase;
@@ -69,6 +70,7 @@ beforeEach(function() {
 afterEach(function() {
   //wipe out the data before the next test
   connection.clearConnections();
+  emitter.removeAllListeners();
   return models.truncateAll();
 });
 
