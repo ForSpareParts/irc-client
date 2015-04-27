@@ -3,6 +3,7 @@
  */
 
 var app = require('../../app')
+  , Server = require('../../models/server')
   , request = require('supertest-as-promised')(app);
 
 var CONNECTION_JSON = {
@@ -17,10 +18,11 @@ var CONNECTION_JSON = {
 describe('The Server API', function() {
   it('should 403 for update/delete requests to a connected server.',
     function() {
-      return request.put(NAMESPACE + '/servers/1/connection')
+      return Server.get(1)
 
-      .send(CONNECTION_JSON)
-      .expect(200)
+      .then(function(server) {
+        return server.connection().connect();
+      })
 
       .then(function() {
         return request.put(NAMESPACE + '/servers/1')

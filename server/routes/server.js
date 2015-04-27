@@ -2,7 +2,6 @@
 var models = require('../models');
 
 var channelsRouter = require('./channel');
-var connectionRouter = require('./connection').singleRouter;
 var modelRestRouter = require('./common').modelRestRouter;
 
 
@@ -21,7 +20,6 @@ router.canEdit = function(req) {
   };
 };
 
-router.use('/:id/connection', connectionRouter);
 router.use('/:id/channels', channelsRouter);
 
 module.exports = router;
