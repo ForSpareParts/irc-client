@@ -1,6 +1,6 @@
 var emitter = require('../../emitter');
 var connectionLib = require('../../connection');
-var listener = require('../../connection/listener');
+var listener = require('../../connection/db-logger');
 var settings = require('../../settings');
 
 var Channel = require('../../models/channel');
@@ -19,7 +19,7 @@ describe('The IRC listener module', function() {
   });
 
   beforeEach(function() {
-    listener.setupListeners();
+    listener.subscribe();
     return Server.get(1)
     .then(function(fetched) {
       serverInstance = fetched;

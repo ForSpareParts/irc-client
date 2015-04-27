@@ -16,7 +16,6 @@ module.exports.callAfterAllEvents = function(emitter, events, callback) {
   var tryCompleteFunction = function(event) {
 
     return function() {
-      console.log('received event: ' + event);
       //the rest of the arguments (if any) are what were sent with the event
       eventArgs[event] = arguments;
 

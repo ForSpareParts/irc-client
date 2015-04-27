@@ -19,4 +19,5 @@ var server = app.listen(app.get('port'), function() {
 var io = require('socket.io')(server);
 setupSocket(io);
 
-require('../connection/listener').setupListeners();
+require('../connection/db-logger').subscribe();
+require('../connection/request-handler').subscribe();

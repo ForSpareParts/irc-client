@@ -1,7 +1,7 @@
 var http = require('http');
 
 var emitter = require('../emitter');
-var listener = require('../connection/listener');
+var listener = require('../connection/db-logger');
 var Message = require('../models/message');
 var Server = require('../models/server');
 var settings = require('../settings');
@@ -25,7 +25,7 @@ var client;
 
 var io;
 
-describe.only('The socket.io connection', function() {
+describe('The socket.io connection', function() {
   before(function() {
     server = http.createServer();
     server.listen(4000);

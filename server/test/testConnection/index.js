@@ -1,7 +1,7 @@
 var sinon = require('sinon');
 
-var connectionLib = require('../connection');
-var settings = require('../settings');
+var connectionLib = require('../../connection');
+var settings = require('../../settings');
 
 //a connection we'll create for each test
 var connection = null;

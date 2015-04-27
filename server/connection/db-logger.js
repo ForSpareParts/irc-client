@@ -1,6 +1,5 @@
 /**
- * Listens for and responds to events from IRC servers. Responsible for logging
- * conversations to the database.
+ * Logs IRC events to the database.
  */
 
 var emitter = require('../emitter');
@@ -30,7 +29,6 @@ var getChannel = function(connection, channelName) {
 };
 
 var joined = function(connection, channelName, nick) {
-  console.log('joining ' + channelName);
   return getChannel(connection, channelName)
 
   .then(function(channel) {
@@ -115,7 +113,7 @@ var nicks = function(connection, channelName, nicks) {
   });
 };
 
-module.exports.setupListeners = function() {
+module.exports.subscribe = function() {
   emitter.on('joined', joined);
   emitter.on('parted', parted);
   emitter.on('error', error);
@@ -123,3 +121,10 @@ module.exports.setupListeners = function() {
   emitter.on('nicks', nicks);
 };
 
+module.exports.unsubscribe = function() {
+  emitter.removeListener('joined', joined);
+  emitter.removeListener('parted', parted);
+  emitter.removeListener('error', error);
+  emitter.removeListener('message', message);
+  emitter.removeListener('nicks', nicks);
+};
