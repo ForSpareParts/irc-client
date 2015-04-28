@@ -29,6 +29,12 @@ export default ApplicationAdapter.extend({
   findQuery: function() {
     return Ember.RSVP.reject(
       new Ember.Error('findQuery is not supported for Connections'));
-  }
+  },
+
+  updateRecord: function() {
+    return Ember.RSVP.reject(
+      new Ember.Error('Connections cannot be written to by the client. Use ' +
+        'socket commands to interact with the connection.'));
+  },
 
 });

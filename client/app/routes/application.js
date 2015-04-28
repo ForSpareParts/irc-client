@@ -1,7 +1,8 @@
 import Ember from 'ember';
-import SocketMixin from '../mixins/socket';
 
-export default Ember.Route.extend(SocketMixin, {
+export default Ember.Route.extend({
+  socket: Ember.inject.service('socket'),
+
   model: function() {
     var store = this.get('store');
 

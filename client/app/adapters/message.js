@@ -1,7 +1,6 @@
 import ApplicationAdapter from './application';
-import SocketMixin from '../mixins/socket';
 
-export default ApplicationAdapter.extend(SocketMixin, {
+export default ApplicationAdapter.extend({
   init: function() {
     this._super();
 

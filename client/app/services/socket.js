@@ -3,7 +3,7 @@ import Ember from 'ember';
 
 var fakeIncoming, fakeOutgoing, serverSocket;
 
-export default Ember.Mixin.create({
+export default Ember.Service.extend({
   init: function() {
     this._super();
     fakeIncoming = new EventEmitter();

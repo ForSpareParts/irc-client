@@ -13,7 +13,7 @@ describe('The base model', function() {
         port: '3000',
         links: {
           channels: '/api/servers/undefined/channels',
-          connection: '/api/servers/undefined/connection'
+          connection: '/api/connections/undefined'
         }
       }
     };
@@ -41,7 +41,7 @@ describe('The base model', function() {
           port: '3000',
           links: {
             channels: '/api/servers/undefined/channels',
-            connection: '/api/servers/undefined/connection'
+            connection: '/api/connections/undefined'
           }
         },
         {
@@ -50,7 +50,7 @@ describe('The base model', function() {
           port: '3001',
           links: {
             channels: '/api/servers/undefined/channels',
-            connection: '/api/servers/undefined/connection'
+            connection: '/api/connections/undefined'
           }
         }
       ]

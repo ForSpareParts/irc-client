@@ -59,7 +59,7 @@ var Server = BaseModel.extend({
     links: function() {
       return {
         channels: '/api/servers/' + this.get('id') + '/channels',
-        connection: '/api/servers/' + this.get('id') + '/connection'
+        connection: '/api/connections/' + this.get('id')
       };
     }
   }

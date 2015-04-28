@@ -13,12 +13,16 @@ describeModule(
     // needs: ['serializer:foo']
   },
   function() {
-    it('refuses to be created or deleted', function() {
+    it('refuses to be created, updated, or deleted', function() {
       var adapter = this.subject();
       
       isRejected(function() {
         return adapter.createRecord({});
       }, /cannot be created/);
+
+      isRejected(function() {
+        return adapter.updateRecord({});
+      }, /cannot be written to/);
 
       isRejected(function() {
         return adapter.deleteRecord({});
