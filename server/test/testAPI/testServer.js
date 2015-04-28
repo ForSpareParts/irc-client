@@ -6,15 +6,6 @@ var app = require('../../app')
   , Server = require('../../models/server')
   , request = require('supertest-as-promised')(app);
 
-var CONNECTION_JSON = {
-  connection: {
-    id: 1,
-    connected: true,
-    server: 1,
-    joined: []
-  }
-};
-
 describe('The Server API', function() {
   it('should 403 for update/delete requests to a connected server.',
     function() {
