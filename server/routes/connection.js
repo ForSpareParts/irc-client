@@ -23,7 +23,7 @@ router.get('/', function(req, res) {
 
 .all('/', function(req, res, next) {
   var err = new Error('Connections are a read-only resource.');
-  err.status = 403;
+  err.status = 405;
   next(err);
 });
 
@@ -38,7 +38,7 @@ router.get('/:id', function(req, res, next) {
 
 .all('/:id', function(req, res, next) {
   var err = new Error('Connections are a read-only resource.');
-  err.status = 403;
+  err.status = 405;
   next(err);
 });
 

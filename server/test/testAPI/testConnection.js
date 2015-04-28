@@ -50,12 +50,12 @@ describe('The connection API', function() {
   it('should prevent any write requests to connections', function() {
     return request.post(NAMESPACE + '/connections/')
     .send({})
-    .expect(403)
+    .expect(405)
 
     .then(function() {
       return request.put(NAMESPACE + '/connections/1')
       .send({})
-      .expect(403)
+      .expect(405)
     });
   });
 
