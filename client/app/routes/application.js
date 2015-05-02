@@ -48,11 +48,11 @@ export default Ember.Route.extend({
     },
 
     connect: function(server) {
-      this.socket.emit('connect', server.get('id'));
+      this.get('socket').emit('connect', server.get('id'));
     },
 
     disconnect: function(server) {
-      this.socket.emit('disconnect', server.get('id'));
+      this.get('socket').emit('disconnect', server.get('id'));
     },
 
     /**
@@ -61,10 +61,10 @@ export default Ember.Route.extend({
      */
     join: function(channel) {
       if (typeof(channel) === 'object') {
-        this.socket.emit('join', channel.get('id'));
+        this.get('socket').emit('join', channel.get('id'));
       }
       else {
-        this.socket.emit('join', channel);
+        this.get('socket').emit('join', channel);
       }
     },
 
@@ -74,10 +74,10 @@ export default Ember.Route.extend({
      */
     part: function(channel) {
       if (typeof(channel) === 'object') {
-        this.socket.emit('part', channel.get('id'));
+        this.get('socket').emit('part', channel.get('id'));
       }
       else {
-        this.socket.emit('part', channel);
+        this.get('socket').emit('part', channel);
       }
     }
 

@@ -11,14 +11,14 @@ describeModule(
   'ApplicationRoute',
   {
     // Specify the other units that are required for this test.
-    // needs: ['controller:foo']
+    needs: ['service:socket']
   },
   function() {
     it('sends connect events', function() {
       var route = this.subject();
       var spy = sinon.spy();
 
-      route.socket.onceOutgoing('connect', spy);
+      route.get('socket').onceOutgoing('connect', spy);
       route.send('connect', Ember.Object.create({id: 1}));
 
       assert.isTrue(spy.calledWith(1));
@@ -28,7 +28,7 @@ describeModule(
       var route = this.subject();
       var spy = sinon.spy();
 
-      route.socket.onceOutgoing('disconnect', spy);
+      route.get('socket').onceOutgoing('disconnect', spy);
       route.send('disconnect', Ember.Object.create({id: 1}));
 
       assert.isTrue(spy.calledWith(1));
@@ -38,13 +38,13 @@ describeModule(
       var route = this.subject();
       var spy = sinon.spy();
 
-      route.socket.onceOutgoing('join', spy);
+      route.get('socket').onceOutgoing('join', spy);
       route.send('join', Ember.Object.create({id: 1}));
 
       assert.isTrue(spy.calledWith(1));
 
       //try it with a string (channel name) instead
-      route.socket.onceOutgoing('join', spy);
+      route.get('socket').onceOutgoing('join', spy);
       route.send('join', '#testjoinchannel');
 
       assert.isTrue(spy.calledWith('#testjoinchannel'));
@@ -54,13 +54,13 @@ describeModule(
       var route = this.subject();
       var spy = sinon.spy();
 
-      route.socket.onceOutgoing('part', spy);
+      route.get('socket').onceOutgoing('part', spy);
       route.send('part', Ember.Object.create({id: 1}));
 
       assert.isTrue(spy.calledWith(1));
 
       //try it with a string (channel name) instead
-      route.socket.onceOutgoing('part', spy);
+      route.get('socket').onceOutgoing('part', spy);
       route.send('part', '#testjoinchannel');
 
       assert.isTrue(spy.calledWith('#testjoinchannel'));

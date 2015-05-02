@@ -17,15 +17,15 @@ export default ApplicationAdapter.extend({
       return _store;
     };
 
-    this.socket.on('message', function(data) {
+    this.get('socket').on('message', function(data) {
       getStore().pushPayload('message', data);
     });
 
-    this.socket.on('join', function(data) {
+    this.get('socket').on('join', function(data) {
       getStore().pushPayload('message', data);
     });
 
-    this.socket.on('part', function(data) {
+    this.get('socket').on('part', function(data) {
       getStore().pushPayload('message', data);
     });
   }
