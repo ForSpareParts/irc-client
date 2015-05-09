@@ -52,6 +52,14 @@ export default Ember.Component.extend({
 
     newServer: function(contentComponent) {
       this.sendAction('newServer', contentComponent);
+    },
+
+    connect: function(server) {
+      this.sendAction('connect', server);
+    },
+
+    disconnect: function(server) {
+      this.sendAction('disconnect', server);
     }
   }
 });

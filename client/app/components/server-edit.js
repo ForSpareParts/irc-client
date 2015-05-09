@@ -19,21 +19,11 @@ export default Ember.Component.extend({
     },
 
     connect: function(server) {
-      return server.get('connection')
-
-      .then(function(connection) {
-        connection.set('connected', true);
-        return connection.save();
-      });
+      this.sendAction('connect', server);
     },
 
     disconnect: function(server) {
-      return server.get('connection')
-
-      .then(function(connection) {
-        connection.set('connected', false);
-        return connection.save();
-      });
+      this.sendAction('disconnect', server);
     }
   }
 });

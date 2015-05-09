@@ -17,6 +17,12 @@ module.exports.setupSocket = function(ioInstance) {
   io = ioInstance;
 
   io.on('connection', function(socket) {
+    var connected = function(connectionJSON) {
+      socket.emit('connected', connectionJSON);
+    };
+    var disconnected = function(connectionJSON) {
+      socket.emit('disconnected', connectionJSON);
+    };
     var joined = function(message) {
       socket.emit('joined', message.toEmber());
     };
@@ -30,6 +36,8 @@ module.exports.setupSocket = function(ioInstance) {
       socket.emit('nicks', nickListJSON);
     };
 
+    emitter.on('connectedLogged', connected);
+    emitter.on('disconnectedLogged', disconnected);
     emitter.on('joinedLogged', joined);
     emitter.on('partedLogged', parted);
     emitter.on('messageLogged', messageHandler);

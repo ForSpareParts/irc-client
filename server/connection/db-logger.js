@@ -28,6 +28,22 @@ var getChannel = function(connection, channelName) {
   });
 };
 
+var connected = function(connection) {
+  return getServer(connection)
+
+  .then(function(server) {
+    emitter.emit('connectedLogged', server.connectionJSON(true));
+  });
+};
+
+var disconnected = function(connection) {
+  return getServer(connection)
+
+  .then(function(server) {
+    emitter.emit('disconnectedLogged', server.connectionJSON(true));
+  });
+};
+
 var joined = function(connection, channelName, nick) {
   return getChannel(connection, channelName)
 
@@ -114,6 +130,8 @@ var nicks = function(connection, channelName, nicks) {
 };
 
 module.exports.subscribe = function() {
+  emitter.on('connected', connected);
+  emitter.on('disconnected', disconnected);
   emitter.on('joined', joined);
   emitter.on('parted', parted);
   emitter.on('error', error);
@@ -122,6 +140,8 @@ module.exports.subscribe = function() {
 };
 
 module.exports.unsubscribe = function() {
+  emitter.removeListener('connected', connected);
+  emitter.removeListener('disconnected', disconnected);
   emitter.removeListener('joined', joined);
   emitter.removeListener('parted', parted);
   emitter.removeListener('error', error);

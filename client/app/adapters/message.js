@@ -1,6 +1,9 @@
+import Ember from 'ember';
 import ApplicationAdapter from './application';
 
 export default ApplicationAdapter.extend({
+  socket: Ember.inject.service('socket'),
+
   init: function() {
     this._super();
 
