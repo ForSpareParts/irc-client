@@ -12,7 +12,8 @@ export default Ember.Route.extend({
   actions: {
     /** Send messageText to the Channel. */
     sendMessage: function(messageText, callback) {
-      this.get('socket').emit('message', this.get('model.id'), messageText);
+      this.get('socket').emit('message',
+        this.get('controller.model.id'), messageText);
     }
   }
 });

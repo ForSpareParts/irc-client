@@ -1,7 +1,6 @@
-/* global require, module, process */
+/* global require, module */
 
 var EmberApp = require('ember-cli/lib/broccoli/ember-app');
-var isProduction = ( process.env.EMBER_ENV || 'development' ) === 'production';
 
 var app = new EmberApp();
 
@@ -22,15 +21,12 @@ app.import(app.bowerDirectory + '/typeahead.js/dist/typeahead.bundle.js');
 app.import(app.bowerDirectory + '/socket.io-client/socket.io.js');
 app.import(app.bowerDirectory + '/eventEmitter/eventemitter.min.js');
 
-if (!isProduction) {
-  app.import(app.bowerDirectory + '/sinon/index.js', {
-    type: 'test'
-  });
-  app.import(app.bowerDirectory + '/chai-as-promised/lib/chai-as-promised.js', {
-    type: 'test'
-  });
-
-}
+app.import(app.bowerDirectory + '/sinon/index.js', {
+  type: 'test'
+});
+app.import(app.bowerDirectory + '/chai-as-promised/lib/chai-as-promised.js', {
+  type: 'test'
+});
 
 
 module.exports = app.toTree();
