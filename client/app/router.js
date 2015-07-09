@@ -5,7 +5,9 @@ var Router = Ember.Router.extend({
   location: config.locationType
 });
 
-export default Router.map(function() {
+Router.map(function() {
   this.resource('channel', { path: '/channels/:channel_id'});
   this.route('channels/new', { path: '/channels/new' });
 });
+
+export default Router;

@@ -30,7 +30,7 @@ describeModule('transform:isodate', 'IsodateTransform', {
     equal(deserialized.month(), 0);
     equal(deserialized.date(), 10);
     equal(deserialized.hour(), 12);
-    equal(deserialized.minute(), 05);
+    equal(deserialized.minute(), 5);
     equal(deserialized.second(), 0);
 
   });
